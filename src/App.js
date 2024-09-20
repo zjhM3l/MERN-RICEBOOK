@@ -5,29 +5,26 @@ import { Feed } from './components/Feed';
 import { Navbar } from './components/Navbar';
 import { Add } from './components/Add';
 import { useState } from 'react';
-import Profile from './components/Profile';
 
 function App() {
+  const [mode, setMode] = useState('light');
 
-  const [mode,setMode] = useState('light');
-
-  const darkTheme = createTheme ({
+  const darkTheme = createTheme({
     palette: {
       mode: mode,
-    }
-  })
+    },
+  });
 
   return (
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
-        <Navbar/>
+        <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
-          <Sidebar setMode={setMode} mode={mode}/>
-          <Feed/>
-          {/* <Profile /> */}
-          <Rightbar/>
+          <Sidebar setMode={setMode} mode={mode} />
+          <Feed />
+          <Rightbar />
         </Stack>
-        <Add/>
+        <Add />
       </Box>
     </ThemeProvider>
   );
