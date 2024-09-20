@@ -21,93 +21,95 @@ export const Sidebar = () => {
 
   return (
     <Box flex={1} p={2} sx={{ display: {xs: "none", sm: "block"}}}>
-      <List>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#home'>
-              <ListItemIcon>
-                <HomeIcon/>
-              </ListItemIcon>
-              <ListItemText primary="Homepage" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#pages'>
-              <ListItemIcon>
-                <Article/>
-              </ListItemIcon>
-              <ListItemText primary="Pages" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#groups'>
-              <ListItemIcon>
-                <People/>
-              </ListItemIcon>
-              <ListItemText primary="Groups" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#friends'>
-              <ListItemIcon>
-                <Person/>
-              </ListItemIcon>
-              <ListItemText primary="Friends" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton onClick={handleClick}>
-              <ListItemIcon>
-                <Filter/>
-              </ListItemIcon>
-              <ListItemText primary="Filters" />
-              {open ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-          </ListItem>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem disablePadding>
-                <ListItemButton sx={{ pl: 4 }} component="a" href='#liked'>
-                  <ListItemIcon>
-                    <Favorite/>
-                  </ListItemIcon>
-                  <ListItemText primary="Liked" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton sx={{ pl: 4 }} component="a" href='#moments'>
-                  <ListItemIcon>
-                    <Camera/>
-                  </ListItemIcon>
-                  <ListItemText primary="Moments" />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Collapse>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#settings'>
-              <ListItemIcon>
-                <Settings/>
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component="a" href='#profile'>
-              <ListItemIcon>
-                <AccountBox/>
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <NightsStay/>
-              </ListItemIcon>
-              <Switch/>
-            </ListItemButton>
-          </ListItem>
-        </List>
+      <Box position='fixed'>
+        <List>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#home'>
+                <ListItemIcon>
+                  <HomeIcon/>
+                </ListItemIcon>
+                <ListItemText primary="Homepage" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#pages'>
+                <ListItemIcon>
+                  <Article/>
+                </ListItemIcon>
+                <ListItemText primary="Pages" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#groups'>
+                <ListItemIcon>
+                  <People/>
+                </ListItemIcon>
+                <ListItemText primary="Groups" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#friends'>
+                <ListItemIcon>
+                  <Person/>
+                </ListItemIcon>
+                <ListItemText primary="Friends" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleClick}>
+                <ListItemIcon>
+                  <Filter/>
+                </ListItemIcon>
+                <ListItemText primary="Filters" />
+                {open ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+            </ListItem>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem disablePadding>
+                  <ListItemButton sx={{ pl: 4 }} component="a" href='#liked'>
+                    <ListItemIcon>
+                      <Favorite/>
+                    </ListItemIcon>
+                    <ListItemText primary="Liked" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton sx={{ pl: 4 }} component="a" href='#moments'>
+                    <ListItemIcon>
+                      <Camera/>
+                    </ListItemIcon>
+                    <ListItemText primary="Moment" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Collapse>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#settings'>
+                <ListItemIcon>
+                  <Settings/>
+                </ListItemIcon>
+                <ListItemText primary="Settings" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component="a" href='#profile'>
+                <ListItemIcon>
+                  <AccountBox/>
+                </ListItemIcon>
+                <ListItemText primary="Profile" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <NightsStay/>
+                </ListItemIcon>
+                <Switch/>
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Box>
     </Box>
   )
 }
