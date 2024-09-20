@@ -12,7 +12,7 @@ import Settings from '@mui/icons-material/Settings';
 import AccountBox from '@mui/icons-material/AccountBox';
 import NightsStay from '@mui/icons-material/NightsStay';
 
-export const Sidebar = () => {
+export const Sidebar = ({mode,setMode}) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
@@ -105,7 +105,7 @@ export const Sidebar = () => {
                 <ListItemIcon>
                   <NightsStay/>
                 </ListItemIcon>
-                <Switch/>
+                <Switch onChange={e=>setMode(mode === "light" ? "dark" : "light")}/>
               </ListItemButton>
             </ListItem>
           </List>
