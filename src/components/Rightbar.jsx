@@ -87,7 +87,7 @@ export const Rightbar = () => {
               <Avatar alt="Remy Sharp" src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg" />
             </ListItemAvatar>
             <ListItemText
-              primary="Brunch this weekend?"
+              primary="Finish your homework?"
               secondary={
                 <React.Fragment>
                   <Typography
@@ -97,7 +97,7 @@ export const Rightbar = () => {
                   >
                     Ali Connors
                   </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
+                  {" — Do you want to go to the movies tonight?"}
                 </React.Fragment>
               }
             />
@@ -108,7 +108,7 @@ export const Rightbar = () => {
               <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
             </ListItemAvatar>
             <ListItemText
-              primary="Summer BBQ"
+              primary="RGA BBQ"
               secondary={
                 <React.Fragment>
                   <Typography
@@ -118,7 +118,7 @@ export const Rightbar = () => {
                   >
                     to Scott, Alex, Jennifer
                   </Typography>
-                  {" — Wish I could come, but I'm out of town this…"}
+                  {" — Come to the BBQ this weekend!"}
                 </React.Fragment>
               }
             />
@@ -129,7 +129,7 @@ export const Rightbar = () => {
               <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
             </ListItemAvatar>
             <ListItemText
-              primary="Oui Oui"
+              primary="Be sure to check in!"
               secondary={
                 <React.Fragment>
                   <Typography
@@ -139,7 +139,7 @@ export const Rightbar = () => {
                   >
                     Sandra Adams
                   </Typography>
-                  {' — Do you have Paris recommendations? Have you ever…'}
+                  {' — Are you coming to the meeting tomorrow?'}
                 </React.Fragment>
               }
             />
