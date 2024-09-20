@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Badge, Box, InputBase, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Badge, Box, colors, InputBase, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import FacebookIcon from '@mui/icons-material/Facebook';
 import MailIcon from '@mui/icons-material/Mail';
@@ -41,7 +41,7 @@ export const Navbar = () => {
       <StyledToolbar>
         <Typography variant='h6' sx={{display:{xs:"none", sm:"block"}}}>RICE BOOK</Typography>
         <FacebookIcon sx={{display:{xs:"block", sm:"none"}}}/>
-        <Search><InputBase placeholder='search...'/></Search>
+        <Search><InputBase sx={{color:"black"}} placeholder='search...'/></Search>
         <Icons>
           <Badge badgeContent={4} color="error">
             <MailIcon/>

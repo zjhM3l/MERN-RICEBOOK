@@ -3,7 +3,7 @@ import Favorite from '@mui/icons-material/Favorite'
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder'
 import MoreVert from '@mui/icons-material/MoreVert'
 import Share from '@mui/icons-material/Share'
-import { Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, IconButton, Typography } from '@mui/material'
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, IconButton, Typography } from '@mui/material'
 import { red } from '@mui/material/colors'
 
 export const Post = () => {
@@ -36,7 +36,15 @@ export const Post = () => {
         </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites">
-            <Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite sx={{color:"red"}}/>} />
+            <Checkbox icon={
+              <Badge anchorOrigin={{vertical:'bottom',horizontal:'right'}} color="red" badgeContent={99}>
+                <FavoriteBorder />
+              </Badge>
+              } checkedIcon={
+                <Badge anchorOrigin={{vertical:'bottom',horizontal:'right'}} color="red" badgeContent={100}>
+                  <Favorite sx={{color:"red"}}/>
+                </Badge>
+              } />
           </IconButton>
           <IconButton aria-label="share">
             <Share />
