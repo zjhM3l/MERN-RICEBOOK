@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Badge, Box, colors, InputBase, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material'
+import { AppBar, Avatar, Badge, Box, colors, IconButton, InputBase, Menu, MenuItem, styled, TextField, Toolbar, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import FacebookIcon from '@mui/icons-material/Facebook';
 import MailIcon from '@mui/icons-material/Mail';
@@ -11,7 +11,6 @@ const StyledToolbar = styled(Toolbar)({
 
 const Search = styled("div")(({ theme }) => ({
   backgroundColor: 'white',
-  padding: '0 10px',
   borderRadius: theme.shape.borderRadius,
   width: '40%',
 }));
@@ -41,14 +40,26 @@ export const Navbar = () => {
       <StyledToolbar>
         <Typography variant='h6' sx={{display:{xs:"none", sm:"block"}}}>RICE BOOK</Typography>
         <FacebookIcon sx={{display:{xs:"block", sm:"none"}}}/>
-        <Search><InputBase sx={{color:"black"}} placeholder='search...'/></Search>
+        <Search>
+          <TextField
+            sx={{color:"black", width:"100%"}}
+            id="filled-search"
+            label="Search..."
+            type="search"
+            variant="filled"
+          />
+        </Search>
         <Icons>
-          <Badge badgeContent={4} color="error">
-            <MailIcon/>
-          </Badge>
-          <Badge badgeContent={4} color="error">
-            <Notifications/>
-          </Badge>
+          <IconButton aria-label="mail" sx={{color:'white'}}>
+            <Badge badgeContent={4} color="error">
+              <MailIcon/>
+            </Badge>
+          </IconButton>
+          <IconButton aria-label="note" sx={{color:'white'}}>
+            <Badge badgeContent={4} color="error">
+              <Notifications/>
+            </Badge>
+          </IconButton>
           <Avatar 
           sx={{width:30, height:30}} 
           src="https://cdn.pixabay.com/photo/2024/08/24/05/02/woman-8993222_1280.jpg"

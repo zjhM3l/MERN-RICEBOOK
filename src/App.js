@@ -5,6 +5,7 @@ import { Feed } from './components/Feed';
 import { Navbar } from './components/Navbar';
 import { Add } from './components/Add';
 import { useState } from 'react';
+import Profile from './components/Profile';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar setMode={setMode} mode={mode}/>
           <Feed/>
+          {/* <Profile /> */}
           <Rightbar/>
         </Stack>
         <Add/>
