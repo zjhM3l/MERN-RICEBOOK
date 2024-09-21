@@ -6,7 +6,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        match: /^[a-zA-Z][a-zA-Z0-9]*$/, // Only letters and numbers, not starting with a number
+        // Validation message for username
+        validate: {
+            validator: function(v) {
+                return /^[a-zA-Z][a-zA-Z0-9]*$/.test(v);
+            },
+            message: 'Username must start with a letter and contain only letters and numbers.',
+        },
     },
     email: {
         type: String,
@@ -14,7 +20,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         validate: {
             validator: validator.isEmail,
-            message: 'Invalid email address',
+            message: 'Email must be a valid email address, such as example@example.com.',
         },
     },
     phone: {
@@ -24,7 +30,7 @@ const userSchema = new mongoose.Schema({
             validator: function(v) {
                 return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v);
             },
-            message: 'Invalid US phone number',
+            message: 'Phone number must be a valid US phone number in the format (123) 456-7890, 123-456-7890, or 123.456.7890.',
         },
     },
     dateOfBirth: {
@@ -40,23 +46,24 @@ const userSchema = new mongoose.Schema({
                 }
                 return age >= 18;
             },
-            message: 'Must be 18 years or older',
+            message: 'You must be at least 18 years old.',
         },
     },
     zipcode: {
         type: String,
         required: true,
-        match: /^[0-9]{5}$/, // Valid 5 digits
+        // Validation message for zipcode
+        validate: {
+            validator: function(v) {
+                return /^[0-9]{5}$/.test(v);
+            },
+            message: 'Zipcode must be a 5-digit number, e.g., 12345.',
+        },
     },
     password: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v) {
-                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v);
-            },
-            message: 'Password must be strong (at least 8 characters, including upper/lowercase letters, numbers, and punctuation)',
-        },
+        // Custom password validation here will casuse hashSync to fail
     },
 }, { timestamps: true });
 
