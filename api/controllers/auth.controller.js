@@ -1,5 +1,6 @@
 import User from '../models/user.model.js'; 
 import bcryptjs from 'bcryptjs';
+import { errorHandler } from '../utils/error.js';
 
 // Helper function to validate password strength
 const validatePassword = (password) => {
@@ -19,7 +20,7 @@ export const signup = async (req, res, next) => {
         !zipcode || 
         !password
     ) {
-        return res.status(400).json({message: 'Please fill all fields'});
+        next(errorHandler(400, 'All fields are required'));
     }
 
     // Password strength validation
