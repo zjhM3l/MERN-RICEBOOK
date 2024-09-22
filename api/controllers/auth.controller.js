@@ -7,7 +7,7 @@ const validatePassword = (password) => {
     return regex.test(password);
 };
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
     const {username, email, phone, dateOfBirth, zipcode, password} = req.body;
 
     // Basic field validation
@@ -46,6 +46,6 @@ export const signup = async (req, res) => {
         await newUser.save();
         res.json('Signup successful');
     } catch (error) {
-        res.status(500).json({message: error.message});
+        next(error);
     }
 };
