@@ -1,12 +1,21 @@
 import { Google } from '@mui/icons-material';
 import { Link, Box, Button, TextField } from '@mui/material';
-import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-
+import React, { useState, useEffect } from 'react';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
 export const SigninForm = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const email = params.get('email');
+    const password = params.get('password');
+    if (email) setFormData((prev) => ({ ...prev, email }));
+    if (password) setFormData((prev) => ({ ...prev, password }));
+  }, [location.search]);
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.id]: event.target.value });
@@ -30,14 +39,14 @@ export const SigninForm = () => {
           newErrors.general = 'All fields are required';
         } else {
           errorMessages.forEach((msg) => {
-            if (msg.includes('valid email')) newErrors.email = msg;
-            if (msg.includes('exist')) newErrors.email = msg;
+            if (msg.includes('Email')) newErrors.email = msg;
             if (msg.includes('Password')) newErrors.password = msg;
           });
         }
         setErrors(newErrors);
       } else {
         console.log('Signin successful:', data);
+        navigate('/home'); // Redirect to home page
       }
     } catch (error) {
       console.error('Error during signin:', error);
@@ -65,6 +74,7 @@ export const SigninForm = () => {
               type='email'
               autoComplete=""
               placeholder='email@company.com'
+              value={formData.email || ''}
               onChange={handleChange}
               error={!!errors.email}
               helperText={errors.email}
@@ -76,6 +86,7 @@ export const SigninForm = () => {
               label="Password"
               type='password'
               autoComplete=""
+              value={formData.password || ''}
               onChange={handleChange}
               error={!!errors.password}
               helperText={errors.password}
@@ -85,9 +96,9 @@ export const SigninForm = () => {
           <Button variant='contained' type='submit'>Sign In</Button>
           <Button variant='outlined' startIcon={<Google />}>Continue with Google</Button>
         <Box mt={2}>
-          <span>Didn't have an account? </span>
+          <span>Don't have an account? </span>
           <Link component={RouterLink} to='/sign-up' underline="none">
-            Sign up
+            Sign Up
           </Link>
         </Box>
       </Box>

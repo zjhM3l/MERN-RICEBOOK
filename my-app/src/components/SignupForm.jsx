@@ -1,12 +1,13 @@
 import { Google } from '@mui/icons-material';
 import { Link, Box, Button, TextField } from '@mui/material';
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 
 export const SignupForm = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.id]: event.target.value });
@@ -41,6 +42,7 @@ export const SignupForm = () => {
         setErrors(newErrors);
       } else {
         console.log('Signup successful:', data);
+        navigate(`/sign-in?email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`);
       }
     } catch (error) {
       console.error('Error during signup:', error);
