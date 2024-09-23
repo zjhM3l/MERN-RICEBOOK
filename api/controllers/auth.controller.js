@@ -1,6 +1,7 @@
 import User from '../models/user.model.js'; 
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
+import jwt from 'jsonwebtoken';
 
 // Helper function to validate password strength
 const validatePassword = (password) => {
@@ -107,8 +108,14 @@ export const signin = async (req, res, next) => {
             });
         }
 
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET, 
+        );
         // If no errors, signin successful
-        res.json('Signin successful');
+        res.status(200).cookie('access_token', token, {
+            httpOnly: true
+        }).json(user);
     } catch (error) {
         next(error);
     }
