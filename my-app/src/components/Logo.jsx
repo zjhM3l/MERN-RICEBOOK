@@ -6,11 +6,11 @@ export const Logo = () => {
   const isDarkMode = theme.palette.mode === 'dark';
 
   return (
-    <Box
+    <Box 
         flex={2} 
         position="relative"
         width="100%"
-        height="100vh"
+        // height="100vh"
         display="flex"
         alignItems="center"
         justifyContent="center"
