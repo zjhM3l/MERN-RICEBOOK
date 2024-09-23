@@ -1,10 +1,27 @@
 import { Google } from '@mui/icons-material';
 import { Link, Box, Button, TextField } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 
 export const SignupForm = () => {
+  const [formData, setFormData] = useState({});
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.id]: event.target.value });
+  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <Box flex={3} p={2} display="flex" flexDirection="column" alignItems="center">
       <Box
@@ -17,8 +34,8 @@ export const SignupForm = () => {
         }}
         noValidate
         autoComplete="off"
+        onSubmit={handleSubmit}
       >
-        <form>
           <div>
             <TextField
               id="username-input"
@@ -26,6 +43,7 @@ export const SignupForm = () => {
               type='text'
               autoComplete=""
               placeholder='username'
+              onChange={handleChange}
             />
           </div>
           <div>
@@ -35,6 +53,41 @@ export const SignupForm = () => {
               type='email'
               autoComplete=""
               placeholder='email@company.com'
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <TextField
+              id="phone-input"
+              label="Phone"
+              type='tel'
+              autoComplete=""
+              placeholder='123-456-7890'
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <TextField
+              id="dateOfBirth-input"
+              type='date'
+              label="Birthday"
+              autoComplete=""
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <TextField
+              id="zipcode-input"
+              label="Zipcode"
+              type='number'
+              autoComplete=""
+              placeholder='12345'
+              onChange={handleChange}
             />
           </div>
           <div>
@@ -43,6 +96,7 @@ export const SignupForm = () => {
               label="Password"
               type='password'
               autoComplete=""
+              onChange={handleChange}
             />
           </div>
           <div>
@@ -51,11 +105,11 @@ export const SignupForm = () => {
               label="Confirm Password"
               type='password'
               autoComplete=""
+              onChange={handleChange}
             />
           </div>
           <Button variant='contained' type='submit'>Sign Up</Button>
           <Button variant='outlined' startIcon={<Google />}>Continue with Google</Button>
-        </form>
         <Box mt={2}>
           <span>Have an account? </span>
           <Link component={RouterLink} to='/sign-in' underline="none">
