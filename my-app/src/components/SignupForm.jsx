@@ -6,9 +6,12 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export const SignupForm = () => {
   const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
+
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.id]: event.target.value });
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -18,8 +21,29 @@ export const SignupForm = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      if (!res.ok) {
+        // 假设后端返回的错误信息是一个字符串，包含多个错误消息
+        const errorMessages = data.message.split(', ');
+        const newErrors = {};
+
+        if (errorMessages.some(msg => msg.includes('All fields are required'))) {
+          newErrors.general = 'All fields are required';
+        } else {
+          errorMessages.forEach((msg) => {
+            if (msg.includes('Username')) newErrors.username = msg;
+            if (msg.includes('Email')) newErrors.email = msg;
+            if (msg.includes('Phone number')) newErrors.phone = msg;
+            if (msg.includes('You must be at least 18 years old')) newErrors.dateOfBirth = msg;
+            if (msg.includes('Zipcode')) newErrors.zipcode = msg;
+            if (msg.includes('Password')) newErrors.password = msg;
+          });
+        }
+        setErrors(newErrors);
+      } else {
+        console.log('Signup successful:', data);
+      }
     } catch (error) {
-      
+      console.error('Error during signup:', error);
     }
   }
 
@@ -45,6 +69,8 @@ export const SignupForm = () => {
               autoComplete=""
               placeholder='username'
               onChange={handleChange}
+              error={!!errors.username}
+              helperText={errors.username}
             />
           </div>
           <div>
@@ -55,6 +81,8 @@ export const SignupForm = () => {
               autoComplete=""
               placeholder='email@company.com'
               onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
             />
           </div>
           <div>
@@ -65,6 +93,8 @@ export const SignupForm = () => {
               autoComplete=""
               placeholder='123-456-7890'
               onChange={handleChange}
+              error={!!errors.phone}
+              helperText={errors.phone}
             />
           </div>
           <div>
@@ -79,6 +109,8 @@ export const SignupForm = () => {
                 },
               }}
               onChange={handleChange}
+              error={!!errors.dateOfBirth}
+              helperText={errors.dateOfBirth}
             />
           </div>
           <div>
@@ -89,6 +121,8 @@ export const SignupForm = () => {
               autoComplete=""
               placeholder='12345'
               onChange={handleChange}
+              error={!!errors.zipcode}
+              helperText={errors.zipcode}
             />
           </div>
           <div>
@@ -98,6 +132,8 @@ export const SignupForm = () => {
               type='password'
               autoComplete=""
               onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
             />
           </div>
           <div>
@@ -107,8 +143,11 @@ export const SignupForm = () => {
               type='password'
               autoComplete=""
               onChange={handleChange}
+              error={!!errors['confirm-password']}
+              helperText={errors['confirm-password']}
             />
           </div>
+          {errors.general && <Box mt={2} color="error.main">{errors.general}</Box>}
           <Button variant='contained' type='submit'>Sign Up</Button>
           <Button variant='outlined' startIcon={<Google />}>Continue with Google</Button>
         <Box mt={2}>

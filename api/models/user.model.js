@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         validate: {
             validator: validator.isEmail, 
-            message: 'Email must be a valid email address, such as example@example.com.',
+            message: 'Email must be a valid email address such as example@example.com.',
         },
     },
     phone: {
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
             validator: function(v) {
                 return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v);
             },
-            message: 'Phone number must be a valid US phone number in the format (123) 456-7890, 123-456-7890, or 123.456.7890.',
+            message: 'Phone number must be a valid US phone number in the format (123) 456-7890/123-456-7890/123.456.7890.',
         },
     },
     dateOfBirth: {
@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema({
             validator: function(v) {
                 return /^[0-9]{5}$/.test(v);
             },
-            message: 'Zipcode must be a 5-digit number, e.g., 12345.',
+            message: 'Zipcode must be a 5-digit number e.g. 12345.',
         },
     },
     password: {
