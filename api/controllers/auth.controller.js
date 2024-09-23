@@ -11,6 +11,9 @@ const validatePassword = (password) => {
 export const signup = async (req, res, next) => {
     const {username, email, phone, dateOfBirth, zipcode, password} = req.body;
 
+    // Collect error messages
+    let errorMessages = [];
+
     // Basic field validation
     if (
         !username || 
@@ -20,30 +23,47 @@ export const signup = async (req, res, next) => {
         !zipcode || 
         !password
     ) {
-        return next(errorHandler(400, 'All fields are required'));
+        errorMessages.push('All fields are required');
     }
   
     // Password strength validation
     if (!validatePassword(password)) {
-        return res.status(400).json({
-            message: 'Password must be strong (at least 8 characters including upper/lowercase letters numbers and special characters).',
-        });
+        errorMessages.push('Password must be strong (at least 8 characters including upper/lowercase letters, numbers, and special characters).');
     }
 
-    // Hash the password
-    const hashPassword = bcryptjs.hashSync(password, 10);
-
-    // Create new user with hashed password
-    const newUser = new User({
-        username, 
-        email, 
-        phone,
-        dateOfBirth,
-        zipcode,
-        password: hashPassword,
-    });
-
     try {
+        // Check if username already exists
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            errorMessages.push('Username already exists.');
+        }
+
+        // Check if email already exists
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            errorMessages.push('Email already exists.');
+        }
+
+        // If there are any error messages, return them
+        if (errorMessages.length > 0) {
+            return res.status(400).json({
+                message: errorMessages.join(', '),
+            });
+        }
+
+        // Hash the password
+        const hashPassword = bcryptjs.hashSync(password, 10);
+
+        // Create new user with hashed password
+        const newUser = new User({
+            username, 
+            email, 
+            phone,
+            dateOfBirth,
+            zipcode,
+            password: hashPassword,
+        });
+
         await newUser.save();
         res.json('Signup successful');
     } catch (error) {
@@ -52,6 +72,44 @@ export const signup = async (req, res, next) => {
             const message = Object.values(error.errors).map(err => err.message).join(', ');
             return res.status(400).json({ message });
         }
+        next(error);
+    }
+};
+
+export const signin = async (req, res, next) => {
+    const {email, password} = req.body;
+
+    // Collect error messages
+    let errorMessages = [];
+
+    // Basic field validation
+    if (!email || !password) {
+        errorMessages.push('All fields are required');
+    }
+
+    try {
+        // Check if email exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            errorMessages.push('Email does not exist.');
+        } else {
+            // Check if password matches
+            const isMatch = bcryptjs.compareSync(password, user.password);
+            if (!isMatch) {
+                errorMessages.push('Password does not match.');
+            }
+        }
+
+        // If there are any error messages, return them
+        if (errorMessages.length > 0) {
+            return res.status(400).json({
+                message: errorMessages.join(', '),
+            });
+        }
+
+        // If no errors, signin successful
+        res.json('Signin successful');
+    } catch (error) {
         next(error);
     }
 };
