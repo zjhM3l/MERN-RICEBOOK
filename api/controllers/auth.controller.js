@@ -8,6 +8,18 @@ const validatePassword = (password) => {
     return regex.test(password);
 };
 
+// Helper function to validate age
+const validateAge = (dateOfBirth) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age >= 18;
+};
+
 export const signup = async (req, res, next) => {
     const {username, email, phone, dateOfBirth, zipcode, password} = req.body;
 
@@ -21,6 +33,12 @@ export const signup = async (req, res, next) => {
         !password
     ) {
         next(errorHandler(400, 'All fields are required'));
+    }
+     // Age validation
+     if (!validateAge(dateOfBirth)) {
+        return res.status(400).json({
+            message: 'You must be at least 18 years old.',
+        });
     }
 
     // Password strength validation
@@ -47,6 +65,11 @@ export const signup = async (req, res, next) => {
         await newUser.save();
         res.json('Signup successful');
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            // Extract the first validation error message
+            const message = Object.values(error.errors).map(err => err.message).join(', ');
+            return res.status(400).json({ message });
+        }
         next(error);
     }
 };

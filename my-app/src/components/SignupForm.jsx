@@ -12,11 +12,12 @@ export const SignupForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch('http://localhost:3000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+      const data = await res.json();
     } catch (error) {
       
     }
@@ -38,7 +39,7 @@ export const SignupForm = () => {
       >
           <div>
             <TextField
-              id="username-input"
+              id="username"
               label="Username"
               type='text'
               autoComplete=""
@@ -48,7 +49,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="email-input"
+              id="email"
               label="Email"
               type='email'
               autoComplete=""
@@ -58,7 +59,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="phone-input"
+              id="phone"
               label="Phone"
               type='tel'
               autoComplete=""
@@ -68,7 +69,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="dateOfBirth-input"
+              id="dateOfBirth"
               type='date'
               label="Birthday"
               autoComplete=""
@@ -82,7 +83,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="zipcode-input"
+              id="zipcode"
               label="Zipcode"
               type='number'
               autoComplete=""
@@ -92,7 +93,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="password-input"
+              id="password"
               label="Password"
               type='password'
               autoComplete=""
@@ -101,7 +102,7 @@ export const SignupForm = () => {
           </div>
           <div>
             <TextField
-              id="confirm-password-input"
+              id="confirm-password"
               label="Confirm Password"
               type='password'
               autoComplete=""
