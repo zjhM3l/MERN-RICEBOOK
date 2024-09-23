@@ -76,3 +76,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 3. signup表单验证过程的逻辑顺序问题，一次返还很多message打包的object，怎么匹配对应的位置，怎么让对应的提示显示在对应的textfield的helpertext上
 4. 以及密码的特殊性，因为要处理成hash，在密码进入后端验证的时候已经变hash了，所以永远过不了validate，因此要在controller这一步就处理这个message
 ，这样的话又带来了另一个问题，因为其他的验证在数据库，pwd在controller，所以pwd优先级更高，表单为空也是同理，即便别的输入有问题，如果controller这一步检测到了密码强度和有空的话，也不会提示除此之外的message。
+
+
+
+一些特性：
+使用MUI
+谷歌认证OAuth登录
+前后端分离，API test用的是insomnia
+结构清晰，严格组件化复用，route controller model分离
