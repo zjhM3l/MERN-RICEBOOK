@@ -112,10 +112,14 @@ export const signin = async (req, res, next) => {
             { id: user._id }, 
             process.env.JWT_SECRET, 
         );
+        
+        // Remove password from user object
+        const { password: pass, ...rest } = user._doc;
+
         // If no errors, signin successful
         res.status(200).cookie('access_token', token, {
             httpOnly: true
-        }).json(user);
+        }).json(rest);
     } catch (error) {
         next(error);
     }
