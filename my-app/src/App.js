@@ -18,6 +18,7 @@ function App() {
         <Route path='/friend' element={<Friend />} />
         <Route path='/detail' element={<Detail />} />
         <Route path='/home' element={<Home />} />
+        <Route path='/sign-up' element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );

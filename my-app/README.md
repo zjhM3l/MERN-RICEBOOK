@@ -84,3 +84,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 谷歌认证OAuth登录
 前后端分离，API test用的是insomnia
 结构清晰，严格组件化复用，route controller model分离
+前端利用Redux Toolkit实现global的数据传输，结合token登录获取用户数据

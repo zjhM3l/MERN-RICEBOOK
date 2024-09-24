@@ -2,11 +2,15 @@ import { Google } from '@mui/icons-material';
 import { Link, Box, Button, TextField } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {signInStart, signInSuccess, signInFailure} from '../redux/user/userSlice';
 
 export const SigninForm = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const {loading, error} = useSelector((state) => state.user);
   const location = useLocation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +28,7 @@ export const SigninForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      dispatch(signInStart());
       const res = await fetch('http://localhost:3000/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,13 +50,13 @@ export const SigninForm = () => {
         }
         setErrors(newErrors);
       } else {
-        console.log('Signin successful:', data);
+        dispatch(signInSuccess(data));
         navigate('/home'); // Redirect to home page
       }
     } catch (error) {
-      console.error('Error during signin:', error);
+      dispatch(signInFailure(error.message));
     }
-  }
+  };
 
   return (
     <Box flex={3} p={2} display="flex" flexDirection="column" alignItems="center">
