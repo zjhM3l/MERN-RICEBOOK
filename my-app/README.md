@@ -81,8 +81,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 一些特性：
 使用MUI
-谷歌认证OAuth登录
+前端使用firebase谷歌认证OAuth登录
 前后端分离，API test用的是insomnia
 结构清晰，严格组件化复用，route controller model分离
 前端利用Redux Toolkit实现global的数据传输，结合token登录获取用户数据
 用redux toolkit+redux persist实现刷新页面等操作的情况下的跨全局存储当前用户数据（本地存储与验证）
+前后端均使用env保护信息，包括firebase的apikey（没成，因为dotenv引用env里面的东西的时候报错了），JWT_SECRET，mongo的api链接等等

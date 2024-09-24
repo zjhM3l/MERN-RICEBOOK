@@ -9,6 +9,49 @@ const validatePassword = (password) => {
     return regex.test(password);
 };
 
+// Helper function to generate a random password
+const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+};
+
+// Helper function to generate a random phone number
+const generateRandomPhone = () => {
+    const areaCode = Math.floor(100 + Math.random() * 900);
+    const centralOfficeCode = Math.floor(100 + Math.random() * 900);
+    const lineNumber = Math.floor(1000 + Math.random() * 9000);
+    return `${areaCode}-${centralOfficeCode}-${lineNumber}`;
+};
+
+// Helper function to generate a random date of birth (at least 18 years old)
+const generateRandomDateOfBirth = () => {
+    const start = new Date(1970, 0, 1);
+    const end = new Date();
+    end.setFullYear(end.getFullYear() - 18);
+    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return date;
+};
+
+// Helper function to generate a random 5-digit zipcode
+const generateRandomZipcode = () => {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+};
+
+// Helper function to generate a valid username
+const generateValidUsername = (name) => {
+    // Remove non-alphanumeric characters and ensure the username starts with a letter
+    let baseUsername = name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+    if (!/^[a-zA-Z]/.test(baseUsername)) {
+        baseUsername = 'user' + baseUsername;
+    }
+    const randomSuffix = Math.floor(Math.random() * 1000);
+    return `${baseUsername}${randomSuffix}`;
+};
+
 export const signup = async (req, res, next) => {
     const {username, email, phone, dateOfBirth, zipcode, password} = req.body;
 
@@ -124,3 +167,48 @@ export const signin = async (req, res, next) => {
         next(error);
     }
 };
+
+export const google = async (req, res, next) => {
+    const { name, email, googlePhotoURL } = req.body;
+    try {
+        const user = await User.findOne({email});
+        if (user) {
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+            const { password, ...rest } = user._doc;
+            res.status(200).cookie('access_token', token, {
+                httpOnly: true
+            }).json(rest);
+        } else {
+            const generatedPassword = generateRandomPassword();
+            const generatedPhone = generateRandomPhone();
+            const generatedDateOfBirth = generateRandomDateOfBirth();
+            const generatedZipcode = generateRandomZipcode();
+
+            // Hash the generated password
+            const hashPassword = bcryptjs.hashSync(generatedPassword, 10);
+            
+            console.log(generateValidUsername(name));
+
+            // Create new user with generated values
+            const newUser = new User({
+                username: generateValidUsername(name),
+                email,
+                phone: generatedPhone,
+                dateOfBirth: generatedDateOfBirth,
+                zipcode: generatedZipcode,
+                password: hashPassword,
+                profilePicture: googlePhotoURL,
+            });
+
+            await newUser.save();
+
+            const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+            const { password, ...rest } = newUser._doc;
+            res.status(200).cookie('access_token', token, {
+                httpOnly: true
+            }).json(rest);
+        }
+    } catch (error) {
+        next(error);
+    }
+}

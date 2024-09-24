@@ -1,7 +1,7 @@
-import { Google } from '@mui/icons-material';
 import { Link, Box, Button, TextField } from '@mui/material';
 import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { OAuth } from './OAuth';
 
 
 export const SignupForm = () => {
@@ -151,7 +151,7 @@ export const SignupForm = () => {
           </div>
           {errors.general && <Box mt={2} color="error.main">{errors.general}</Box>}
           <Button variant='contained' type='submit'>Sign Up</Button>
-          <Button variant='outlined' startIcon={<Google />}>Continue with Google</Button>
+          <OAuth />
         <Box mt={2}>
           <span>Have an account? </span>
           <Link component={RouterLink} to='/sign-in' underline="none">

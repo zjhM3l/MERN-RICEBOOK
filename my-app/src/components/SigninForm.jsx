@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {signInStart, signInSuccess, signInFailure} from '../redux/user/userSlice';
+import { OAuth } from './OAuth';
 
 export const SigninForm = () => {
   const [formData, setFormData] = useState({});
@@ -100,7 +101,7 @@ export const SigninForm = () => {
           </div>
           {errors.general && <Box mt={2} color="error.main">{errors.general}</Box>}
           <Button variant='contained' type='submit'>Sign In</Button>
-          <Button variant='outlined' startIcon={<Google />}>Continue with Google</Button>
+          <OAuth />
         <Box mt={2}>
           <span>Don't have an account? </span>
           <Link component={RouterLink} to='/sign-up' underline="none">
