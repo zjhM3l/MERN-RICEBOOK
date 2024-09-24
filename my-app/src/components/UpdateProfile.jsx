@@ -3,8 +3,7 @@ import './Profile.css';
 
 export const UpdateProfile = () => {
   const [formData, setFormData] = useState({
-    accountName: '',
-    displayName: '',
+    username: '',
     email: '',
     phone: '',
     birth: '',

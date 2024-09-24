@@ -122,7 +122,7 @@ export const Navbar = () => {
           </>
         ) : (
           <>
-            <MenuItem>Profile</MenuItem>
+            <MenuItem component={RouterLink} to="/profile">Profile</MenuItem>
             <MenuItem>My account</MenuItem>
             <MenuItem>Logout</MenuItem>
           </>
