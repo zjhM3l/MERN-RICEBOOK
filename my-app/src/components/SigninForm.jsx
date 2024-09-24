@@ -36,6 +36,7 @@ export const SigninForm = () => {
       });
       const data = await res.json();
       if (!res.ok) {
+        dispatch(signInFailure(data.message));
         // 假设后端返回的错误信息是一个字符串，包含多个错误消息
         const errorMessages = data.message.split(', ');
         const newErrors = {};
