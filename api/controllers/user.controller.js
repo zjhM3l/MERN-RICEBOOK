@@ -1,12 +1,8 @@
 import User from '../models/user.model.js'; 
 import bcryptjs from 'bcryptjs';
 
-export const test = (req, res) => {
-    res.json({message: 'API is working'});
-};
-
 export const profile = async (req, res, next) => {
-    const {username, email, phone, dateOfBirth, zipcode, password} = req.body;
+    const {username, phone, zipcode, password} = req.body;
 
     // Collect error messages
     let errorMessages = [];
@@ -20,7 +16,11 @@ export const profile = async (req, res, next) => {
 
         // Check for changes and validate
         if (username && username !== user.username) {
-            if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(username)) {
+            // Check if the new username already exists
+            const existingUsername = await User.findOne({ username });
+            if (existingUsername) {
+                errorMessages.push('Username already exists.');
+            } else if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(username)) {
                 errorMessages.push('Username must start with a letter and contain only letters and numbers.');
             } else {
                 user.username = username;
@@ -32,21 +32,6 @@ export const profile = async (req, res, next) => {
                 errorMessages.push('Phone number must be a valid US phone number in the format (123) 456-7890/123-456-7890/123.456.7890.');
             } else {
                 user.phone = phone;
-            }
-        }
-
-        if (dateOfBirth && new Date(dateOfBirth).toISOString() !== user.dateOfBirth.toISOString()) {
-            const today = new Date();
-            const dob = new Date(dateOfBirth);
-            const age = today.getFullYear() - dob.getFullYear();
-            const m = today.getMonth() - dob.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-                age--;
-            }
-            if (age < 18) {
-                errorMessages.push('You must be at least 18 years old.');
-            } else {
-                user.dateOfBirth = dob;
             }
         }
 
