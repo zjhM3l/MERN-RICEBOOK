@@ -11,11 +11,15 @@ import Camera from '@mui/icons-material/Camera';
 import Settings from '@mui/icons-material/Settings';
 import AccountBox from '@mui/icons-material/AccountBox';
 import NightsStay from '@mui/icons-material/NightsStay';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleMode } from '../redux/theme/themeSlice';
 
-export const Sidebar = ({ mode, setMode }) => {
+
+export const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useSelector((state) => state.user); // 从 Redux 获取当前用户状态
+  const dispatch = useDispatch();
+  const mode = useSelector((state) => state.theme.mode);
 
   const handleClick = () => {
     setOpen(!open);
@@ -114,7 +118,10 @@ export const Sidebar = ({ mode, setMode }) => {
               <ListItemIcon>
                 <NightsStay />
               </ListItemIcon>
-              <Switch onChange={(e) => setMode(mode === 'light' ? 'dark' : 'light')} />
+              <Switch 
+                checked={mode === 'dark'}
+                onChange={() => dispatch(toggleMode())}
+              />
             </ListItemButton>
           </ListItem>
         </List>

@@ -5,9 +5,10 @@ import { useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { SignupForm } from '../components/SignupForm';
 import { Logo } from '../components/Logo';
+import { useSelector } from 'react-redux';
 
 export const Signup = () => {
-  const [mode, setMode] = useState('light');
+  const mode = useSelector((state) => state.theme.mode);
 
     const darkTheme = createTheme({
         palette: {
@@ -20,7 +21,7 @@ export const Signup = () => {
         <Box bgcolor={"background.default"} color={"text.primary"}>
             <Navbar />
             <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Sidebar setMode={setMode} mode={mode} />
+              <Sidebar />
               <Stack 
                 spacing={2} 
                 flex={4} 
