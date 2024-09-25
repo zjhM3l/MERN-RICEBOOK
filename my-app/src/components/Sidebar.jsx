@@ -13,7 +13,7 @@ import AccountBox from '@mui/icons-material/AccountBox';
 import NightsStay from '@mui/icons-material/NightsStay';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleMode } from '../redux/theme/themeSlice';
-
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 export const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
@@ -30,7 +30,7 @@ export const Sidebar = () => {
       <Box position="fixed">
         <List>
           <ListItem disablePadding>
-            <ListItemButton component="a" href="#home">
+            <ListItemButton component={Link} to="/home"> {/* Use Link component */}
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -38,7 +38,7 @@ export const Sidebar = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton component="a" href="#pages">
+            <ListItemButton component={Link} to="/pages"> {/* Use Link component */}
               <ListItemIcon>
                 <Article />
               </ListItemIcon>
@@ -50,7 +50,7 @@ export const Sidebar = () => {
           {currentUser && (
             <>
               <ListItem disablePadding>
-                <ListItemButton component="a" href="#groups">
+                <ListItemButton component={Link} to="/groups"> {/* Use Link component */}
                   <ListItemIcon>
                     <People />
                   </ListItemIcon>
@@ -58,7 +58,7 @@ export const Sidebar = () => {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component="a" href="#friends">
+                <ListItemButton component={Link} to="/friends"> {/* Use Link component */}
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
@@ -77,7 +77,7 @@ export const Sidebar = () => {
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   <ListItem disablePadding>
-                    <ListItemButton sx={{ pl: 4 }} component="a" href="#liked">
+                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/liked"> {/* Use Link component */}
                       <ListItemIcon>
                         <Favorite />
                       </ListItemIcon>
@@ -85,7 +85,7 @@ export const Sidebar = () => {
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
-                    <ListItemButton sx={{ pl: 4 }} component="a" href="#moments">
+                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/moments"> {/* Use Link component */}
                       <ListItemIcon>
                         <Camera />
                       </ListItemIcon>
@@ -95,7 +95,7 @@ export const Sidebar = () => {
                 </List>
               </Collapse>
               <ListItem disablePadding>
-                <ListItemButton component="a" href="#profile">
+                <ListItemButton component={Link} to="/profile"> {/* Use Link component */}
                   <ListItemIcon>
                     <AccountBox />
                   </ListItemIcon>
@@ -106,7 +106,7 @@ export const Sidebar = () => {
           )}
 
           <ListItem disablePadding>
-            <ListItemButton component="a" href="#settings">
+            <ListItemButton component={Link} to="/settings"> {/* Use Link component */}
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
