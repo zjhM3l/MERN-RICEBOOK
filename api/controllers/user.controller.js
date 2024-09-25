@@ -82,7 +82,9 @@ export const profile = async (req, res, next) => {
 
         // Save the updated user
         await user.save();
-        res.json({ message: 'Profile updated successfully' });
+        res.json({ message: 'Profile updated successfully',
+            user
+         });
     } catch (error) {
         next(error);
     }

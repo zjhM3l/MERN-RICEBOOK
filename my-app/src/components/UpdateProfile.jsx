@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import CheckIcon from '@mui/icons-material/Check';
+import { updateProfileSuccess } from '../redux/user/userSlice'; // Adjust the import path as necessary
 
 export const UpdateProfile = () => {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     username: '',
@@ -63,12 +65,13 @@ export const UpdateProfile = () => {
       const res = await fetch('http://localhost:3000/api/user/profile', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSubmit)
+        body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) {
+        // 错误处理
         const errorMessages = data.message.split(', ');
         const newErrors = {};
         errorMessages.forEach((msg) => {
@@ -79,11 +82,15 @@ export const UpdateProfile = () => {
         });
         setErrors(newErrors);
       } else {
+        // 清除错误
         setErrors({});
+        // 更新 Redux 中的 currentUser 状态
+        dispatch(updateProfileSuccess(data.user)); // 确保 data.user 是最新的数据
+        // 禁用编辑状态
         setEditableFields((prev) => ({
           ...prev,
           [field]: false,
-          confirmPassword: false
+          confirmPassword: false,
         }));
       }
     } catch (error) {
@@ -129,6 +136,7 @@ export const UpdateProfile = () => {
           password: false,
           confirmPassword: false
         });
+        dispatch(updateProfileSuccess(data.user));
       }
     } catch (error) {
       console.error('Error updating profile:', error);
