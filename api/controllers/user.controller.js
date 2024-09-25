@@ -1,5 +1,23 @@
 import User from '../models/user.model.js'; 
+import Post from '../models/post.model.js';
 import bcryptjs from 'bcryptjs';
+
+export const createPost = async (req, res) => {
+    const { content, author } = req.body;
+  
+    try {
+      const newPost = new Post({
+        content,
+        author,
+      });
+  
+      await newPost.save();
+  
+      res.status(201).json(newPost);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create post', error });
+    }
+  };
 
 export const profile = async (req, res, next) => {
     const { email, username, phone, zipcode, password, confirm } = req.body;

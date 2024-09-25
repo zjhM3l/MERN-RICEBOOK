@@ -37,6 +37,31 @@ export const Add = () => {
     setContent(value);
   };
 
+  const handlePost = async () => {
+    if (!currentUser) return;
+
+    try {
+      const res = await fetch('http://localhost:3000/api/user/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content, author: currentUser._id }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to create post');
+      }
+
+      const data = await res.json();
+      console.log('Post created:', data);
+      setOpen(false);
+      setContent('');
+    } catch (error) {
+      console.error('Failed to create post:', error);
+    }
+  };
+  
   return (
     <>
       <Tooltip
@@ -109,7 +134,7 @@ export const Add = () => {
           <Stack direction="row" gap={1} mt={2} mb={0}>
           </Stack>
           <ButtonGroup fullWidth variant="contained" aria-label="Basic button group">
-            <Button disabled={!currentUser}>Post</Button>
+            <Button disabled={!currentUser} onClick={handlePost}>Post</Button>
             <Button sx={{ width: '100px' }} onClick={handleExpand}>
               <CropFree />
             </Button>
