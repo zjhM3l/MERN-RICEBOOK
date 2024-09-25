@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
+import CheckIcon from '@mui/icons-material/Check';
 
 export const UpdateProfile = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -24,6 +25,7 @@ export const UpdateProfile = () => {
     confirmPassword: false
   });
 
+  const [errors, setErrors] = useState({});
   const theme = useTheme();
 
   useEffect(() => {
@@ -37,8 +39,8 @@ export const UpdateProfile = () => {
         phone: currentUser.phone || '',
         birth: formattedBirthDate,
         zipcode: currentUser.zipcode || '',
-        password: '',
-        confirmPassword: ''
+        password: currentUser.password || '',
+        confirmPassword: currentUser.password || ''
       });
     }
   }, [currentUser]);
@@ -51,11 +53,109 @@ export const UpdateProfile = () => {
     });
   };
 
+  const handleSubmit = async (field) => {
+    const dataToSubmit = { email: formData.email, [field]: formData[field] };
+    if (field === 'password' && formData.password !== formData.confirmPassword) {
+      setErrors({ confirmPassword: 'Passwords do not match' });
+      return;
+    }
+    try {
+      const res = await fetch('http://localhost:3000/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSubmit)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const errorMessages = data.message.split(', ');
+        const newErrors = {};
+        errorMessages.forEach((msg) => {
+          if (msg.includes('Username')) newErrors.username = msg;
+          if (msg.includes('Phone number')) newErrors.phone = msg;
+          if (msg.includes('Zipcode')) newErrors.zipcode = msg;
+          if (msg.includes('Password')) newErrors.password = msg;
+        });
+        setErrors(newErrors);
+      } else {
+        setErrors({});
+        setEditableFields((prev) => ({
+          ...prev,
+          [field]: false,
+          confirmPassword: false
+        }));
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
+  const handleUpdateAll = async () => {
+    const dataToSubmit = {};
+    Object.keys(editableFields).forEach((field) => {
+      if (editableFields[field]) {
+        dataToSubmit[field] = formData[field];
+      }
+    });
+    dataToSubmit.email = formData.email;
+    try {
+      const res = await fetch('http://localhost:3000/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSubmit)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const errorMessages = data.message.split(', ');
+        const newErrors = {};
+        errorMessages.forEach((msg) => {
+          if (msg.includes('Username')) newErrors.username = msg;
+          if (msg.includes('Phone number')) newErrors.phone = msg;
+          if (msg.includes('Zipcode')) newErrors.zipcode = msg;
+          if (msg.includes('Password')) newErrors.password = msg;
+        });
+        setErrors(newErrors);
+      } else {
+        setErrors({});
+        setEditableFields({
+          username: false,
+          email: false,
+          phone: false,
+          birth: false,
+          zipcode: false,
+          password: false,
+          confirmPassword: false
+        });
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
   const toggleEditable = (field) => {
-    setEditableFields((prev) => ({
-      ...prev,
-      [field]: !prev[field]
-    }));
+    if (field === 'password') {
+      if (editableFields.password) {
+        handleSubmit('password');
+      } else {
+        setEditableFields((prev) => ({
+          ...prev,
+          password: !prev.password,
+          confirmPassword: !prev.confirmPassword
+        }));
+      }
+    } else {
+      if (editableFields[field]) {
+        handleSubmit(field);
+      } else {
+        setEditableFields((prev) => ({
+          ...prev,
+          [field]: !prev[field]
+        }));
+      }
+    }
   };
 
   return (
@@ -77,10 +177,11 @@ export const UpdateProfile = () => {
             value={formData.username}
             onChange={handleChange}
             disabled={!editableFields.username}
-            helperText="Username must start with a letter and contain only letters and numbers."
+            error={!!errors.username}
+            helperText={errors.username}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, mb: 3 }} onClick={() => toggleEditable('username')}>
-            {editableFields.username ? '...' : '✔️'}
+          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.username && { mb: 3 }) }} onClick={() => toggleEditable('username')}>
+            {editableFields.username ? '...' : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -95,11 +196,12 @@ export const UpdateProfile = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            disabled={!editableFields.email}
-            helperText="Email must be a valid email address."
+            disabled
+            error={!!errors.email}
+            helperText="Email cannot be changed"
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, mb: 3 }} onClick={() => toggleEditable('email')}>
-            {editableFields.email ? '...' : '✔️'}
+          <Button variant="contained" color="secondary" disabled sx={{ ml: 2, mb: 3 }}>
+            &#10006;
           </Button>
         </Box>
       </Box>
@@ -116,10 +218,11 @@ export const UpdateProfile = () => {
             onChange={handleChange}
             required
             disabled={!editableFields.phone}
-            helperText="Phone number format: XXX-XXX-XXXX or XXX.XXX.XXXX or (XXX) XXX-XXXX."
+            error={!!errors.phone}
+            helperText={errors.phone}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, mb: 3 }} onClick={() => toggleEditable('phone')}>
-            {editableFields.phone ? '...' : '✔️'}
+          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.phone && { mb: 3 }) }} onClick={() => toggleEditable('phone')}>
+            {editableFields.phone ? '...' : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -133,8 +236,8 @@ export const UpdateProfile = () => {
             type="date"
             value={formData.birth}
             onChange={handleChange}
-            disabled={!editableFields.birth}
-            helperText="Date of Birth cannot be edited."
+            disabled
+            helperText="Date of birth cannot be changed"
           />
           <Button variant="contained" color="secondary" disabled sx={{ ml: 2, mb: 3 }}>
             &#10006;
@@ -153,10 +256,11 @@ export const UpdateProfile = () => {
             onChange={handleChange}
             required
             disabled={!editableFields.zipcode}
-            helperText="Zip code should be 5 digits."
+            error={!!errors.zipcode}
+            helperText={errors.zipcode}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, mb: 3 }} onClick={() => toggleEditable('zipcode')}>
-            {editableFields.zipcode ? '...' : '✔️'}
+          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.zipcode && { mb: 3 }) }} onClick={() => toggleEditable('zipcode')}>
+            {editableFields.zipcode ? '...' : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -173,31 +277,35 @@ export const UpdateProfile = () => {
             onChange={handleChange}
             required
             disabled={!editableFields.password}
-            helperText="Password must be at least 8 characters long, including one uppercase letter, one lowercase letter, and one number."
+            error={!!errors.password}
+            helperText={errors.password}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, mb: 5 }} onClick={() => toggleEditable('password')}>
-            {editableFields.password ? '...' : '✔️'}
+          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.password && { mb: 3 }) }} onClick={() => toggleEditable('password')}>
+            {editableFields.password ? '...' : <CheckIcon />}
           </Button>
         </Box>
       </Box>
-      <Box mb={2} id="confirm-password-container" sx={{ display: 'none' }}>
-        <Typography variant="h6">Confirm Password:</Typography>
-        <Box display="flex" alignItems="center">
-          <TextField
-            fullWidth
-            id="confirm-password"
-            name="confirmPassword"
-            type="password"
-            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            disabled={!editableFields.confirmPassword}
-            helperText="Confirm password must match the new password."
-          />
+      {editableFields.password && (
+        <Box mb={2} id="confirm-password-container">
+          <Box display="flex" alignItems="center">
+            <TextField
+              fullWidth
+              id="confirm-password"
+              label="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              disabled={!editableFields.confirmPassword}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
+            />
+          </Box>
         </Box>
-      </Box>
-      <Button variant="contained" color="primary" id="update-button">
+      )}
+      <Button variant="contained" color="primary" id="update-button" onClick={handleUpdateAll}>
         Update All
       </Button>
     </Box>
