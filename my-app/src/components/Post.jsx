@@ -1,14 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Favorite from '@mui/icons-material/Favorite';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Share from '@mui/icons-material/Share';
-import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, Icon, IconButton, Typography } from '@mui/material';
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, IconButton, Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
 import CropFree from '@mui/icons-material/CropFree';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/material/styles';
+import parse, { domToReact } from 'html-react-parser';
+
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  marginLeft: 'auto',
+  transition: theme.transitions.create('transform', {
+    duration: theme.transitions.duration.shortest,
+  }),
+  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+}));
+
+const truncateHtml = (html, maxLines) => {
+  const lines = [];
+  let currentLine = '';
+  let lineCount = 0;
+
+  const options = {
+    replace: ({ name, children }) => {
+      if (lineCount >= maxLines) return null;
+
+      if (name === 'br' || name === 'p') {
+        lines.push(currentLine);
+        currentLine = '';
+        lineCount++;
+        if (lineCount >= maxLines) return null;
+      }
+
+      if (children) {
+        const text = domToReact(children, options);
+        currentLine += text;
+      }
+
+      return null;
+    },
+  };
+
+  parse(html, options);
+  if (currentLine) lines.push(currentLine);
+
+  return lines.join('\n') + (lineCount >= maxLines ? '...' : '');
+};
 
 export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
   return (
     <Card
       sx={{
@@ -54,11 +104,10 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         />
       )}
       <CardContent>
-        {/* 使用 dangerouslySetInnerHTML 渲染 HTML 内容 */}
         <Typography 
           variant="body2" 
           sx={{ color: 'text.secondary' }} 
-          dangerouslySetInnerHTML={{ __html: post.content }} 
+          dangerouslySetInnerHTML={{ __html: expanded ? post.content : truncateHtml(post.content, 3) }} 
         />
       </CardContent>
       <CardActions disableSpacing>
@@ -79,9 +128,14 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         <IconButton aria-label="share">
           <Share />
         </IconButton>
-        <IconButton aria-label="mnore">
+        <ExpandMore
+          expand={expanded}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
           <ExpandMoreIcon />
-        </IconButton>
+        </ExpandMore>
       </CardActions>
     </Card>
   );
