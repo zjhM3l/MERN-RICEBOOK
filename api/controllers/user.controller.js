@@ -19,19 +19,19 @@ export const toggleFollow = async (req, res) => {
             return res.status(404).json({ message: "User or target user not found." });
         }
 
-        // 检查用户是否已经关注了目标用户
-        const isFollowing = user.following.includes(targetId);
+        // 将 ObjectId 转换为字符串来进行比较
+        const isFollowing = user.following.some(followingId => followingId.toString() === targetId);
 
         if (isFollowing) {
             // 如果已经关注了目标用户，则取消关注
-            user.following = user.following.filter(id => id.toString() !== targetId);
+            user.following = user.following.filter(followingId => followingId.toString() !== targetId);
             await user.save();
-            return res.status(200).json({ message: "Unfollowed the user successfully." });
+            return res.status(200).json({ message: "Unfollowed the user successfully.", following: user.following });
         } else {
             // 如果没有关注目标用户，则进行关注
             user.following.push(targetId);
             await user.save();
-            return res.status(200).json({ message: "Followed the user successfully." });
+            return res.status(200).json({ message: "Followed the user successfully.", following: user.following });
         }
     } catch (error) {
         console.error(error);

@@ -10,6 +10,36 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import parse, { domToReact } from 'html-react-parser';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';  // 引入 dispatch
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -56,6 +86,7 @@ const truncateHtml = (html, maxLines) => {
 export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [expanded, setExpanded] = useState(false);
   const currentUser = useSelector((state) => state.user.currentUser); // 获取当前用户
+  const dispatch = useDispatch();  // 获取 dispatch 用于更新 Redux 状态
   const [isLongPressed, setIsLongPressed] = useState(false);
   const pressTimer = useRef(null);
 
@@ -80,10 +111,12 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
   // 处理关注/取消关注的请求
   const handleFollowToggle = async () => {
-    if (!currentUser || currentUser._id === post.author._id) return; // 如果是自己或未登录则不执行
+    if (!currentUser || currentUser._id === post.author._id) {
+        console.log("Cannot follow yourself.");
+        return;  // 如果是自己或者未登录，不执行关注/取消关注
+    }
 
     try {
-      console.log('Toggle follow:', currentUser._id, post.author._id);
       // 使用fetch发送请求到后端路由
       const response = await fetch('http://localhost:3000/api/user/toggleFollow', {
         method: 'POST',
@@ -102,10 +135,23 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
       const data = await response.json();
       console.log('Follow/unfollow success:', data);
+
+      // 更新 Redux 状态中的 currentUser.following
+      const updatedFollowing = data.following;  // 假设返回的数据包含更新后的 following 列表
+      dispatch({
+        type: 'UPDATE_FOLLOWING',
+        payload: updatedFollowing,  // 更新当前用户的 following 列表
+      });
+
     } catch (error) {
       console.error('Error during follow/unfollow:', error);
     }
-  };
+};
+
+  const isFollowing = currentUser?.following?.some(f => f.email === post.author.email);
+
+  console.log('isFollowing:', isFollowing);
+
 
   return (
     <Card
@@ -127,15 +173,21 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
     >
       <CardHeader
         avatar={
-          <Avatar
-            sx={{ bgcolor: red[500] }}
-            aria-label="recipe"
-            src={post.author?.profilePicture || ''}
-            onMouseDown={handleMouseDown} // 鼠标按下事件
-            onMouseUp={handleMouseUp} // 鼠标松开事件
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            variant={isFollowing ? "dot" : "standard"} // 如果关注了作者，显示绿色光点
           >
-            {post.author?.username ? post.author.username[0] : 'U'}
-          </Avatar>
+            <Avatar
+              sx={{ bgcolor: red[500] }}
+              aria-label="recipe"
+              src={post.author?.profilePicture || ''}
+              onMouseDown={handleMouseDown} // 鼠标按下事件
+              onMouseUp={handleMouseUp} // 鼠标松开事件
+            >
+              {post.author?.username ? post.author.username[0] : 'U'}
+            </Avatar>
+          </StyledBadge>
         }
         action={isExpanded ? (
           <IconButton aria-label="close" onClick={onCollapse}>
