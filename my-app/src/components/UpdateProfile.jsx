@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Typography, useTheme } from '@mui/material';
+import { Avatar, Box, Button, TextField, Typography, useTheme } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import CheckIcon from '@mui/icons-material/Check';
 import { updateProfileSuccess } from '../redux/user/userSlice'; // Adjust the import path as necessary
+import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
+import { app } from '../firebase'; // Adjust the import path as necessary
 
 export const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -14,7 +16,8 @@ export const UpdateProfile = () => {
     birth: '',
     zipcode: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    photoURL: ''
   });
 
   const [editableFields, setEditableFields] = useState({
@@ -37,6 +40,7 @@ export const UpdateProfile = () => {
         : '';
       setFormData({
         username: currentUser.username || '',
+        photoURL: currentUser.profilePicture || '',
         email: currentUser.email || '',
         phone: currentUser.phone || '',
         birth: formattedBirthDate,
@@ -166,6 +170,48 @@ export const UpdateProfile = () => {
     }
   };
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    const storage = getStorage(app);
+    const storageRef = ref(storage, `avatars/${currentUser.email}/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+  
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        // Handle progress
+      },
+      (error) => {
+        console.error('Upload error:', error);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setFormData((prev) => ({ ...prev, photoURL: downloadURL }));
+  
+        // Send the new photoURL to the backend
+        try {
+          const res = await fetch('http://localhost:3000/api/user/updateAvatar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user: currentUser, photoURL: downloadURL }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            dispatch(updateProfileSuccess(data.user));
+          } else {
+            console.error('Error updating avatar:', data.message);
+          }
+        } catch (error) {
+          console.error('Error updating avatar:', error);
+        }
+      }
+    );
+  };
+
   return (
     <Box sx={{
       maxWidth: '600px',
@@ -175,6 +221,21 @@ export const UpdateProfile = () => {
       borderRadius: '8px',
       boxShadow: theme.palette.mode === 'dark' ? '0 0 10px rgba(255, 255, 255, 0.1)' : '0 0 10px rgba(0, 0, 0, 0.1)',
     }}>
+      <Box mb={2}>
+        <input
+          accept="image/*"
+          style={{ display: 'none' }}
+          id="avatar-upload"
+          type="file"
+          onChange={handleAvatarChange}
+        />
+        <label htmlFor="avatar-upload">
+          <Avatar
+            sx={{ width: 100, height: 100, margin: '0 auto', cursor: 'pointer' }}
+            src={formData.photoURL}
+          />
+        </label>
+      </Box>
       <Box mb={2}>
         <Box display="flex" alignItems="center">
           <TextField

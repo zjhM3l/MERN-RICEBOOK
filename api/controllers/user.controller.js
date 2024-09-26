@@ -2,6 +2,26 @@ import User from '../models/user.model.js';
 import Post from '../models/post.model.js';
 import bcryptjs from 'bcryptjs';
 
+export const updateAvatar = async (req, res) => {
+  const { user, photoURL } = req.body;
+  console.log('user', user);
+  console.log('photoURL', photoURL);
+
+  try {
+    const existingUser = await User.findById(user._id);
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    existingUser.profilePicture = photoURL;
+    await existingUser.save();
+
+    res.json({ message: 'Avatar updated successfully', user: existingUser });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update avatar', error });
+  }
+};
+
 export const createPost = async (req, res) => {
     const { title, content, author, cover } = req.body; // 从请求体中获取 title, content, author, 和 cover (URL)
 

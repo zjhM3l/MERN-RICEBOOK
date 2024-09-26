@@ -92,7 +92,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
             <CropFree />
           </IconButton>
         )}
-        title={post.title}
+        title={post.author.username}
         subheader={new Date(post.createdAt).toLocaleDateString()}
       />
       {post.cover && (
