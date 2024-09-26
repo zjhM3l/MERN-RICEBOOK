@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, Box, Button, ButtonGroup, Fab, Modal, Stack, styled, Tooltip, Typography, TextField } from '@mui/material';
+import { Avatar, Box, Button, Fab, Modal, Stack, styled, Tooltip, Typography, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CropFree from '@mui/icons-material/CropFree';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -100,7 +100,7 @@ export const Add = () => {
       >
         <Box
           width={isExpanded ? '80vw' : 400}
-          height={isExpanded ? '80vh' : 280}
+          height={isExpanded ? '80vh' : 400} // Adjusted height for collapsed state
           bgcolor={"background.default"}
           color={"text.primary"}
           p={3}
@@ -156,29 +156,38 @@ export const Add = () => {
             ]}
             placeholder="What's on your mind?"
           />
-          {/* 封面图片上传按钮 */}
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<CloudUploadIcon />}
-            sx={{ marginTop: 2 }}
-          >
-            Upload cover
-            {/* 隐藏的 input 用于上传图片 */}
-            <VisuallyHiddenInput
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </Button>
-          <Stack direction="row" gap={1} mt={2} mb={0}>
-          </Stack>
-          <ButtonGroup fullWidth variant="contained" aria-label="Basic button group">
-            <Button disabled={!currentUser || !title || !content} onClick={handlePost}>Post</Button>
-            <Button sx={{ width: '100px' }} onClick={handleExpand}>
+          {/* 按钮组 */}
+          <Stack direction="row" gap={0} mt={2} mb={0} justifyContent="space-between">
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              sx={{ flex: 1 }}
+            >
+              Cover
+              {/* 隐藏的 input 用于上传图片 */}
+              <VisuallyHiddenInput
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+            <Button
+              disabled={!currentUser || !title || !content}
+              onClick={handlePost}
+              variant="contained"
+              sx={{ flex: 2 }}
+            >
+              Post
+            </Button>
+            <Button
+              onClick={handleExpand}
+              variant="contained"
+              sx={{ width: '50px' }}
+            >
               <CropFree />
             </Button>
-          </ButtonGroup>
+          </Stack>
         </Box>
       </StyledModal>
     </>
