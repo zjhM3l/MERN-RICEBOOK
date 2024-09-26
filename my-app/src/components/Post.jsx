@@ -2,10 +2,11 @@ import React from 'react';
 import Favorite from '@mui/icons-material/Favorite';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Share from '@mui/icons-material/Share';
-import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, IconButton, Typography } from '@mui/material';
+import { Avatar, Badge, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, Icon, IconButton, Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
 import CropFree from '@mui/icons-material/CropFree';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   return (
@@ -77,6 +78,9 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         </IconButton>
         <IconButton aria-label="share">
           <Share />
+        </IconButton>
+        <IconButton aria-label="mnore">
+          <ExpandMoreIcon />
         </IconButton>
       </CardActions>
     </Card>
