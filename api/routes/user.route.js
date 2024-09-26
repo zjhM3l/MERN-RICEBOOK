@@ -1,5 +1,5 @@
 import express from 'express';
-import { profile, createPost, updateAvatar } from '../controllers/user.controller.js';
+import { profile, createPost, updateAvatar, toggleFollow } from '../controllers/user.controller.js';
 
 const router = express.Router();
 
@@ -7,6 +7,6 @@ const router = express.Router();
 router.post('/posts', createPost); 
 router.post('/profile', profile)
 router.post('/updateAvatar', updateAvatar)
-
+router.post('/toggleFollow', toggleFollow);
 
 export default router;

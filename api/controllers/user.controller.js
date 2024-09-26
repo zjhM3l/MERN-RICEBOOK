@@ -2,6 +2,43 @@ import User from '../models/user.model.js';
 import Post from '../models/post.model.js';
 import bcryptjs from 'bcryptjs';
 
+// 关注或取消关注用户
+export const toggleFollow = async (req, res) => {
+    try {
+        const { userId, targetId } = req.body;  // 从请求体中获取用户和目标用户的ID
+
+        if (!userId || !targetId) {
+            return res.status(400).json({ message: "Both userId and targetId are required." });
+        }
+
+        // 查找用户和目标用户
+        const user = await User.findById(userId);
+        const targetUser = await User.findById(targetId);
+
+        if (!user || !targetUser) {
+            return res.status(404).json({ message: "User or target user not found." });
+        }
+
+        // 检查用户是否已经关注了目标用户
+        const isFollowing = user.following.includes(targetId);
+
+        if (isFollowing) {
+            // 如果已经关注了目标用户，则取消关注
+            user.following = user.following.filter(id => id.toString() !== targetId);
+            await user.save();
+            return res.status(200).json({ message: "Unfollowed the user successfully." });
+        } else {
+            // 如果没有关注目标用户，则进行关注
+            user.following.push(targetId);
+            await user.save();
+            return res.status(200).json({ message: "Followed the user successfully." });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error." });
+    }
+};
+
 export const updateAvatar = async (req, res) => {
   const { user, photoURL } = req.body;
   console.log('user', user);

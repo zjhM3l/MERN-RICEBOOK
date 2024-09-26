@@ -128,101 +128,116 @@ export const Add = () => {
         </Fab>
       </Tooltip>
       <StyledModal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+  open={open}
+  onClose={() => setOpen(false)}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box
+    width={isExpanded ? '80vw' : '400px'}
+    maxWidth="90vw"
+    maxHeight="90vh"
+    height={isExpanded ? '80vh' : 'auto'}  // 动态高度
+    bgcolor={"background.default"}
+    color={"text.primary"}
+    p={3}
+    borderRadius={5}
+    sx={{
+      overflowY: 'auto',  // 当内容超出时启用滚动条
+      transition: 'transform 0.4s ease, opacity 0.4s ease',
+      transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
+      opacity: isExpanded ? 1 : 0.9,
+      position: isExpanded ? 'fixed' : 'relative',
+      top: isExpanded ? '10%' : 'auto',
+      left: isExpanded ? '10%' : 'auto',
+    }}
+  >
+    <Typography variant="h6" color="gray" textAlign="center">
+      Create post
+    </Typography>
+    <UserBox>
+      <Avatar
+        src={
+          currentUser?.profilePicture ||
+          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+        }
+        sx={{ width: 30, height: 30 }}
+      />
+      <Typography fontWeight={500} variant="span">
+        {currentUser?.username || 'Guest'}
+      </Typography>
+    </UserBox>
+    <TextField
+      fullWidth
+      label="Title"
+      variant="outlined"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      required
+      sx={{ marginBottom: 2 }}
+    />
+    <Box
+      sx={{
+        maxHeight: isExpanded ? '65vh' : '200px',  // 设置文本框的最大高度
+        overflowY: 'auto',  // 启用文本框内部滚动
+        marginBottom: '10px',
+      }}
+    >
+      <ReactQuill
+        value={content}
+        onChange={handleContentChange}
+        modules={{
+          toolbar: [
+            [{ header: '1' }, { header: '2' }, { font: [] }],
+            [{ size: [] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+            ['link', 'image', 'video'],
+            ['clean'],
+          ],
+        }}
+        formats={[
+          'header', 'font', 'size',
+          'bold', 'italic', 'underline', 'strike', 'blockquote',
+          'list', 'bullet', 'indent',
+          'link', 'image', 'video',
+        ]}
+        placeholder="What's on your mind?"
+      />
+    </Box>
+    <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
+      <Button
+        component="label"
+        variant="contained"
+        startIcon={<CloudUploadIcon />}
+        sx={{ flex: 1 }}
+        disabled={uploading} // 禁用按钮如果正在上传
       >
-        <Box
-          width={isExpanded ? '80vw' : 400}
-          height={isExpanded ? '80vh' : 400}
-          bgcolor={"background.default"}
-          color={"text.primary"}
-          p={3}
-          borderRadius={5}
-          sx={{
-            transition: 'transform 0.4s ease, opacity 0.4s ease',
-            transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
-            opacity: isExpanded ? 1 : 0.9,
-            position: isExpanded ? 'fixed' : 'relative',
-            top: isExpanded ? '10%' : 'auto',
-            left: isExpanded ? '10%' : 'auto',
-            overflowY: isExpanded ? 'auto' : 'visible',
-          }}
-        >
-          <Typography variant="h6" color="gray" textAlign="center">
-            Create post
-          </Typography>
-          <UserBox>
-            <Avatar src={currentUser?.profilePicture || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} sx={{ width: 30, height: 30 }} />
-            <Typography fontWeight={500} variant="span">
-              {currentUser?.username || 'Guest'}
-            </Typography>
-          </UserBox>
-          <TextField
-            fullWidth
-            label="Title"
-            variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            sx={{ marginBottom: 2 }}
-          />
-          <ReactQuill
-            value={content}
-            onChange={handleContentChange}
-            modules={{
-              toolbar: [
-                [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-                [{size: []}],
-                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                [{'list': 'ordered'}, {'list': 'bullet'}, 
-                 {'indent': '-1'}, {'indent': '+1'}],
-                ['link', 'image', 'video'],
-                ['clean']
-              ],
-            }}
-            formats={[
-              'header', 'font', 'size',
-              'bold', 'italic', 'underline', 'strike', 'blockquote',
-              'list', 'bullet', 'indent',
-              'link', 'image', 'video'
-            ]}
-            placeholder="What's on your mind?"
-          />
-          <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
-            <Button
-              component="label"
-              variant="contained"
-              startIcon={<CloudUploadIcon />}
-              sx={{ flex: 1 }}
-              disabled={uploading} // 禁用按钮如果正在上传
-            >
-              Cover
-              <VisuallyHiddenInput
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-            <Button
-              disabled={!currentUser || !title || !content || uploading}
-              onClick={handlePost}
-              variant="contained"
-              sx={{ flex: 2 }}
-            >
-              Post
-            </Button>
-            <Button
-              onClick={handleExpand}
-              variant="contained"
-              sx={{ width: '50px' }}
-            >
-              <CropFree />
-            </Button>
-          </Stack>
-        </Box>
-      </StyledModal>
+        Cover
+        <VisuallyHiddenInput
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </Button>
+      <Button
+        disabled={!currentUser || !title || !content || uploading}
+        onClick={handlePost}
+        variant="contained"
+        sx={{ flex: 2 }}
+      >
+        Post
+      </Button>
+      <Button
+        onClick={handleExpand}
+        variant="contained"
+        sx={{ width: '50px' }}
+      >
+        <CropFree />
+      </Button>
+    </Stack>
+  </Box>
+</StyledModal>
     </>
   );
 };
