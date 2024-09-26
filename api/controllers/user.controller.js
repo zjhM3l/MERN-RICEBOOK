@@ -3,21 +3,25 @@ import Post from '../models/post.model.js';
 import bcryptjs from 'bcryptjs';
 
 export const createPost = async (req, res) => {
-    const { content, author } = req.body;
-  
+    const { title, content, author } = req.body; // 从请求体中获取 title, content 和 author
+    const cover = req.file; // 通过 multer 处理的文件
+
     try {
-      const newPost = new Post({
-        content,
-        author,
-      });
-  
-      await newPost.save();
-  
-      res.status(201).json(newPost);
+        const newPost = new Post({
+            title,
+            content,
+            cover: cover ? cover.path : null, // 如果封面存在，使用文件路径，否则设置为 null
+            author,
+        });
+
+        await newPost.save();
+
+        res.status(201).json(newPost);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to create post', error });
+        res.status(500).json({ message: 'Failed to create post', error });
     }
-  };
+};
+  
 
 export const profile = async (req, res, next) => {
     const { email, username, phone, zipcode, password, confirm } = req.body;

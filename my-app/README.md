@@ -90,3 +90,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 redux的问题：更新用户信息，提交，数据库改变，但是redux导致页面显示不变，所以在userSlice里加上update，然后controller把新的user返还过来，让前端在handlesubmit的时候更新redux
 前后端均使用env保护信息，包括firebase的apikey（没成，因为dotenv引用env里面的东西的时候报错了），JWT_SECRET，mongo的api链接等等
 使用react quill集成富文本区域编辑和展示
+
+传post这种复杂的多媒体文件的时候用formData，在后端处理包含文件的FormData请求时使用multer中间件

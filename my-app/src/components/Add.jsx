@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { Avatar, Box, Button, ButtonGroup, Fab, Modal, Stack, styled, Tooltip, Typography } from '@mui/material';
+import { Avatar, Box, Button, ButtonGroup, Fab, Modal, Stack, styled, Tooltip, Typography, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import EmojiEmotions from '@mui/icons-material/EmojiEmotions';
-import Image from '@mui/icons-material/Image';
-import VideoCameraBack from '@mui/icons-material/VideoCameraBack';
-import PersonAdd from '@mui/icons-material/PersonAdd';
 import CropFree from '@mui/icons-material/CropFree';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useSelector } from 'react-redux';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -23,11 +20,17 @@ const UserBox = styled(Box)({
   marginBottom: '20px',
 });
 
+const VisuallyHiddenInput = styled('input')({
+  display: 'none',
+});
+
 export const Add = () => {
   const [open, setOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const { currentUser } = useSelector((state) => state.user);
+  const [cover, setCover] = useState(null); // 用于保存封面图片文件
+  const { currentUser } = useSelector((state) => state.user); // 获取当前用户
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -37,16 +40,26 @@ export const Add = () => {
     setContent(value);
   };
 
+  const handleFileChange = (e) => {
+    setCover(e.target.files[0]); // 获取文件
+  };
+
   const handlePost = async () => {
-    if (!currentUser) return;
+    if (!currentUser || !title || !content) return; // 检查 title 和 content 是否有值
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('author', currentUser._id); // 从 Redux 获取当前用户的 ID
+
+    if (cover) {
+      formData.append('cover', cover); // 如果上传了封面，添加到 formData
+    }
 
     try {
       const res = await fetch('http://localhost:3000/api/user/posts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ content, author: currentUser._id }),
+        body: formData, // 发送 FormData
       });
 
       if (!res.ok) {
@@ -56,12 +69,14 @@ export const Add = () => {
       const data = await res.json();
       console.log('Post created:', data);
       setOpen(false);
-      setContent('');
+      setTitle(''); // 清空标题
+      setContent(''); // 清空内容
+      setCover(null); // 清空封面
     } catch (error) {
       console.error('Failed to create post:', error);
     }
   };
-  
+
   return (
     <>
       <Tooltip
@@ -109,6 +124,16 @@ export const Add = () => {
               {currentUser?.username || 'Guest'}
             </Typography>
           </UserBox>
+          {/* 新增标题输入框 */}
+          <TextField
+            fullWidth
+            label="Title"
+            variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            sx={{ marginBottom: 2 }}
+          />
           <ReactQuill
             value={content}
             onChange={handleContentChange}
@@ -131,10 +156,25 @@ export const Add = () => {
             ]}
             placeholder="What's on your mind?"
           />
+          {/* 封面图片上传按钮 */}
+          <Button
+            component="label"
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            sx={{ marginTop: 2 }}
+          >
+            Upload cover
+            {/* 隐藏的 input 用于上传图片 */}
+            <VisuallyHiddenInput
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </Button>
           <Stack direction="row" gap={1} mt={2} mb={0}>
           </Stack>
           <ButtonGroup fullWidth variant="contained" aria-label="Basic button group">
-            <Button disabled={!currentUser} onClick={handlePost}>Post</Button>
+            <Button disabled={!currentUser || !title || !content} onClick={handlePost}>Post</Button>
             <Button sx={{ width: '100px' }} onClick={handleExpand}>
               <CropFree />
             </Button>
