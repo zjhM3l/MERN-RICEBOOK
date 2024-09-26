@@ -6,6 +6,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useSelector } from 'react-redux';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
+import { app } from '../firebase';
 
 const StyledModal = styled(Modal)({
   display: 'flex',
@@ -29,7 +31,8 @@ export const Add = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [cover, setCover] = useState(null); // 用于保存封面图片文件
+  const [cover, setCover] = useState(null); // 保存封面图片文件
+  const [uploading, setUploading] = useState(false); // 上传状态
   const { currentUser } = useSelector((state) => state.user); // 获取当前用户
 
   const handleExpand = () => {
@@ -47,35 +50,67 @@ export const Add = () => {
   const handlePost = async () => {
     if (!currentUser || !title || !content) return; // 检查 title 和 content 是否有值
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    formData.append('author', currentUser._id); // 从 Redux 获取当前用户的 ID
+    let coverUrl = null;
 
+    // 如果封面存在，则上传到 Firebase Storage
     if (cover) {
-      formData.append('cover', cover); // 如果上传了封面，添加到 formData
-    }
+      setUploading(true); // 设置上传状态为 true
 
+      const storage = getStorage(app);
+      const storageRef = ref(storage, `covers/${cover.name}-${Date.now()}`);
+      const uploadTask = uploadBytesResumable(storageRef, cover);
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // 可以根据需要添加进度条逻辑
+        },
+        (error) => {
+          console.error('Error uploading cover:', error);
+          setUploading(false); // 上传失败
+        },
+        async () => {
+          coverUrl = await getDownloadURL(uploadTask.snapshot.ref); // 获取封面图片的下载 URL
+          setUploading(false); // 上传成功，设置上传状态为 false
+          createPostRequest(coverUrl); // 上传成功后调用创建帖子逻辑
+        }
+      );
+    } else {
+      createPostRequest(null); // 没有封面时调用创建帖子逻辑
+    }
+  };
+
+  const createPostRequest = async (coverUrl) => {
+    const postData = {
+      title,
+      content,
+      author: currentUser._id, // 当前用户 ID
+      cover: coverUrl, // 包含封面图片的 URL 或者 null
+    };
+  
     try {
       const res = await fetch('http://localhost:3000/api/user/posts', {
         method: 'POST',
-        body: formData, // 发送 FormData
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData), // 将帖子数据发送到后端
       });
-
+  
       if (!res.ok) {
         throw new Error('Failed to create post');
       }
-
+  
       const data = await res.json();
       console.log('Post created:', data);
-      setOpen(false);
+      setOpen(false); // 关闭 Modal
       setTitle(''); // 清空标题
       setContent(''); // 清空内容
       setCover(null); // 清空封面
     } catch (error) {
       console.error('Failed to create post:', error);
     }
-  };
+  };  
 
   return (
     <>
@@ -100,7 +135,7 @@ export const Add = () => {
       >
         <Box
           width={isExpanded ? '80vw' : 400}
-          height={isExpanded ? '80vh' : 400} // Adjusted height for collapsed state
+          height={isExpanded ? '80vh' : 400}
           bgcolor={"background.default"}
           color={"text.primary"}
           p={3}
@@ -124,7 +159,6 @@ export const Add = () => {
               {currentUser?.username || 'Guest'}
             </Typography>
           </UserBox>
-          {/* 新增标题输入框 */}
           <TextField
             fullWidth
             label="Title"
@@ -156,16 +190,15 @@ export const Add = () => {
             ]}
             placeholder="What's on your mind?"
           />
-          {/* 按钮组 */}
-          <Stack direction="row" gap={0} mt={2} mb={0} justifyContent="space-between">
+          <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
             <Button
               component="label"
               variant="contained"
               startIcon={<CloudUploadIcon />}
               sx={{ flex: 1 }}
+              disabled={uploading} // 禁用按钮如果正在上传
             >
               Cover
-              {/* 隐藏的 input 用于上传图片 */}
               <VisuallyHiddenInput
                 type="file"
                 accept="image/*"
@@ -173,7 +206,7 @@ export const Add = () => {
               />
             </Button>
             <Button
-              disabled={!currentUser || !title || !content}
+              disabled={!currentUser || !title || !content || uploading}
               onClick={handlePost}
               variant="contained"
               sx={{ flex: 2 }}
