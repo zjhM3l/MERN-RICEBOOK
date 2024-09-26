@@ -53,9 +53,12 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         />
       )}
       <CardContent>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {post.content}
-        </Typography>
+        {/* 使用 dangerouslySetInnerHTML 渲染 HTML 内容 */}
+        <Typography 
+          variant="body2" 
+          sx={{ color: 'text.secondary' }} 
+          dangerouslySetInnerHTML={{ __html: post.content }} 
+        />
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
