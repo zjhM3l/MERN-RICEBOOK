@@ -54,34 +54,49 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [expanded, setExpanded] = useState(false);
   const currentUser = useSelector((state) => state.user.currentUser); // 获取当前用户
   const dispatch = useDispatch(); // 获取 dispatch 用于更新 Redux 状态
-  const pressTimer = useRef(null);
+  const pressTimer = useRef(null); // 长按计时器
+  const restoreTimer = useRef(null); // 动画恢复计时器
   const [isFollowing, setIsFollowing] = useState(false); // 用于存储当前的关注状态
+  const [isPressed, setIsPressed] = useState(false); // 用于存储按住状态以触发动画
 
   useEffect(() => {
-    console.log("currentUser.following updated:", currentUser?.following); // 调试输出
+    console.log('currentUser.following updated:', currentUser?.following); // 调试输出
     if (currentUser && currentUser.following) {
-      // 确保 currentUser 存在，避免 null 或 undefined 错误
       const following = currentUser.following.some(f => f.toString() === post.author._id.toString());
       setIsFollowing(following);
     } else {
-      // 未登录或 currentUser 不存在时，清空 isFollowing 状态
       setIsFollowing(false);
     }
-  }, [currentUser, post.author._id]); // 监听 currentUser 和 post.author._id 的变化
+  }, [currentUser, post.author._id]);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
   const handleMouseDown = () => {
+    setIsPressed(true); // 开始动画，触发头像变大
+
     pressTimer.current = setTimeout(() => {
       handleFollowToggle(); // 执行关注/取消关注
     }, 800); // 800毫秒定义为长按
+
+    // 在800毫秒时触发最大化
+    restoreTimer.current = setTimeout(() => {
+      setIsPressed(false); // 在800毫秒后触发恢复到原始大小
+    }, 800); // 动画恢复计时
   };
 
   const handleMouseUp = () => {
+    // 停止动画，恢复头像大小
+    setIsPressed(false);
+
+    // 清除计时器
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
+    }
+
+    if (restoreTimer.current) {
+      clearTimeout(restoreTimer.current); // 如果用户提前松开鼠标，停止动画恢复
     }
   };
 
@@ -90,7 +105,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
       console.log('Cannot follow yourself.');
       return;
     }
-  
+
     try {
       const response = await fetch('http://localhost:3000/api/user/toggleFollow', {
         method: 'POST',
@@ -102,30 +117,28 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           targetId: post.author._id,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to toggle follow');
       }
-  
+
       const data = await response.json();
       console.log('Follow/unfollow success:', data);
-  
-      // 更新 Redux 状态中的 currentUser.following
+
       const updatedFollowing = data.following;
       dispatch({
         type: 'UPDATE_FOLLOWING',
         payload: {
-          ...currentUser, // 保持其他用户属性不变
-          following: updatedFollowing, // 仅更新 following 列表
+          ...currentUser,
+          following: updatedFollowing,
         },
       });
-  
-      // **立即更新当前组件的 isFollowing 状态**
+
       setIsFollowing(updatedFollowing.some(f => f.toString() === post.author._id.toString()));
     } catch (error) {
       console.error('Error during follow/unfollow:', error);
     }
-  };  
+  };
 
   return (
     <Card
@@ -150,14 +163,19 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           <StyledBadge
             overlap="circular"
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            variant={isFollowing ? 'dot' : 'standard'} // 如果关注了作者，显示绿色光点
+            variant={isFollowing ? 'dot' : 'standard'}
           >
             <Avatar
-              sx={{ bgcolor: red[500] }}
+              sx={{
+                bgcolor: red[500],
+                transform: isPressed ? 'scale(1.2)' : 'scale(1)', // 头像的动画效果
+                transition: 'transform 0.3s ease-in-out', // 平滑的动画
+              }}
               aria-label="recipe"
               src={post.author?.profilePicture || ''}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp} // 防止用户在长按前移开鼠标
             >
               {post.author?.username ? post.author.username[0] : 'U'}
             </Avatar>

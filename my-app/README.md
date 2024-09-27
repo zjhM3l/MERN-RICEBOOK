@@ -102,6 +102,13 @@ html-react-parser切割html文本隐藏展示内容，展开卡片
 当前代码中，你已经通过 dispatch 更新了 Redux 中的 following 列表，确保 currentUser 更新后，useEffect 中的依赖项会监听到 currentUser 的变化。
 3. 整体原理：当 handleFollowToggle 成功执行时，setIsFollowing 立即更新本地状态，触发当前组件的重新渲染。
 依赖 currentUser 的变化，通过 useEffect 自动监听 currentUser.following 的变化，确保状态同步。
+4. 动画原理：
+在按下头像时，使用 useState 来触发一个动画类，逐步放大头像。
+当长按计时结束后（800 毫秒），将头像恢复到原来的大小。
+无论是否触发了关注或取消关注操作，鼠标松开时都会移除动画。
+延迟动画恢复：我们使用 setTimeout 控制动画在 800 毫秒时到达最大尺寸，完成后再缩回到原来的大小。
+延迟设置恢复动画：当达到 800 毫秒后，头像会自动恢复到原始大小。为此，我们可以用一个新的 timeoutRef 来控制恢复时间。
+
 
 
 
