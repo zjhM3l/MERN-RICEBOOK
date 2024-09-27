@@ -71,13 +71,14 @@ export const createPost = async (req, res) => {
         });
 
         await newPost.save();
-
         res.status(201).json(newPost); // 返回成功响应
     } catch (error) {
+        if (error.type === 'entity.too.large') {
+            return res.status(413).json({ message: 'File is too large' }); // 捕获 413 错误
+        }
         res.status(500).json({ message: 'Failed to create post', error });
     }
 };
-  
 
 export const profile = async (req, res, next) => {
     const { email, username, phone, zipcode, password, confirm } = req.body;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, Box, Button, Fab, Modal, Stack, styled, Tooltip, Typography, TextField } from '@mui/material';
+import { Avatar, Box, Button, Fab, Modal, Stack, styled, Tooltip, Typography, TextField, Alert } from '@mui/material';  // 引入 Alert 组件
 import AddIcon from '@mui/icons-material/Add';
 import CropFree from '@mui/icons-material/CropFree';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -26,13 +26,14 @@ const VisuallyHiddenInput = styled('input')({
   display: 'none',
 });
 
-export const Add = () => {
+export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
   const [open, setOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [cover, setCover] = useState(null); // 保存封面图片文件
   const [uploading, setUploading] = useState(false); // 上传状态
+  const [error, setError] = useState(null); // 用于保存错误消息
   const { currentUser } = useSelector((state) => state.user); // 获取当前用户
 
   const handleExpand = () => {
@@ -68,6 +69,7 @@ export const Add = () => {
         (error) => {
           console.error('Error uploading cover:', error);
           setUploading(false); // 上传失败
+          setError('Failed to upload cover image.');
         },
         async () => {
           coverUrl = await getDownloadURL(uploadTask.snapshot.ref); // 获取封面图片的下载 URL
@@ -98,6 +100,9 @@ export const Add = () => {
       });
   
       if (!res.ok) {
+        if (res.status === 413) {
+          throw new Error('File too large. Please select a smaller file.'); // 捕获 413 错误
+        }
         throw new Error('Failed to create post');
       }
   
@@ -107,10 +112,14 @@ export const Add = () => {
       setTitle(''); // 清空标题
       setContent(''); // 清空内容
       setCover(null); // 清空封面
+      setError(null); // 清空错误消息
+
+      onPostSuccess(); // 调用回调函数刷新 Feed
     } catch (error) {
       console.error('Failed to create post:', error);
+      setError(error.message); // 显示错误消息
     }
-  };  
+  };
 
   return (
     <>
@@ -128,116 +137,117 @@ export const Add = () => {
         </Fab>
       </Tooltip>
       <StyledModal
-  open={open}
-  onClose={() => setOpen(false)}
-  aria-labelledby="modal-modal-title"
-  aria-describedby="modal-modal-description"
->
-  <Box
-    width={isExpanded ? '80vw' : '400px'}
-    maxWidth="90vw"
-    maxHeight="90vh"
-    height={isExpanded ? '80vh' : 'auto'}  // 动态高度
-    bgcolor={"background.default"}
-    color={"text.primary"}
-    p={3}
-    borderRadius={5}
-    sx={{
-      overflowY: 'auto',  // 当内容超出时启用滚动条
-      transition: 'transform 0.4s ease, opacity 0.4s ease',
-      transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
-      opacity: isExpanded ? 1 : 0.9,
-      position: isExpanded ? 'fixed' : 'relative',
-      top: isExpanded ? '10%' : 'auto',
-      left: isExpanded ? '10%' : 'auto',
-    }}
-  >
-    <Typography variant="h6" color="gray" textAlign="center">
-      Create post
-    </Typography>
-    <UserBox>
-      <Avatar
-        src={
-          currentUser?.profilePicture ||
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
-        }
-        sx={{ width: 30, height: 30 }}
-      />
-      <Typography fontWeight={500} variant="span">
-        {currentUser?.username || 'Guest'}
-      </Typography>
-    </UserBox>
-    <TextField
-      fullWidth
-      label="Title"
-      variant="outlined"
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      required
-      sx={{ marginBottom: 2 }}
-    />
-    <Box
-      sx={{
-        maxHeight: isExpanded ? '65vh' : '200px',  // 设置文本框的最大高度
-        overflowY: 'auto',  // 启用文本框内部滚动
-        marginBottom: '10px',
-      }}
-    >
-      <ReactQuill
-        value={content}
-        onChange={handleContentChange}
-        modules={{
-          toolbar: [
-            [{ header: '1' }, { header: '2' }, { font: [] }],
-            [{ size: [] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-            ['link', 'image', 'video'],
-            ['clean'],
-          ],
-        }}
-        formats={[
-          'header', 'font', 'size',
-          'bold', 'italic', 'underline', 'strike', 'blockquote',
-          'list', 'bullet', 'indent',
-          'link', 'image', 'video',
-        ]}
-        placeholder="What's on your mind?"
-      />
-    </Box>
-    <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
-      <Button
-        component="label"
-        variant="contained"
-        startIcon={<CloudUploadIcon />}
-        sx={{ flex: 1 }}
-        disabled={uploading} // 禁用按钮如果正在上传
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
       >
-        Cover
-        <VisuallyHiddenInput
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-      </Button>
-      <Button
-        disabled={!currentUser || !title || !content || uploading}
-        onClick={handlePost}
-        variant="contained"
-        sx={{ flex: 2 }}
-      >
-        Post
-      </Button>
-      <Button
-        onClick={handleExpand}
-        variant="contained"
-        sx={{ width: '50px' }}
-      >
-        <CropFree />
-      </Button>
-    </Stack>
-  </Box>
-</StyledModal>
+        <Box
+          width={isExpanded ? '80vw' : '400px'}
+          maxWidth="90vw"
+          maxHeight="90vh"
+          height={isExpanded ? '80vh' : 'auto'}  // 动态高度
+          bgcolor={"background.default"}
+          color={"text.primary"}
+          p={3}
+          borderRadius={5}
+          sx={{
+            overflowY: 'auto',  // 当内容超出时启用滚动条
+            transition: 'transform 0.4s ease, opacity 0.4s ease',
+            transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
+            opacity: isExpanded ? 1 : 0.9,
+            position: isExpanded ? 'fixed' : 'relative',
+            top: isExpanded ? '10%' : 'auto',
+            left: isExpanded ? '10%' : 'auto',
+          }}
+        >
+          <Typography variant="h6" color="gray" textAlign="center">
+            Create post
+          </Typography>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>} {/* 错误提示框 */}
+          <UserBox>
+            <Avatar
+              src={
+                currentUser?.profilePicture ||
+                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+              }
+              sx={{ width: 30, height: 30 }}
+            />
+            <Typography fontWeight={500} variant="span">
+              {currentUser?.username || 'Guest'}
+            </Typography>
+          </UserBox>
+          <TextField
+            fullWidth
+            label="Title"
+            variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            sx={{ marginBottom: 2 }}
+          />
+          <Box
+            sx={{
+              maxHeight: isExpanded ? '65vh' : '200px',  // 设置文本框的最大高度
+              overflowY: 'auto',  // 启用文本框内部滚动
+              marginBottom: '10px',
+            }}
+          >
+            <ReactQuill
+              value={content}
+              onChange={handleContentChange}
+              modules={{
+                toolbar: [
+                  [{ header: '1' }, { header: '2' }, { font: [] }],
+                  [{ size: [] }],
+                  ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                  [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+                  ['image', 'video'],
+                ],
+              }}
+              formats={[
+                'header', 'font', 'size',
+                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                'list', 'bullet', 'indent',
+                'image', 'video',
+              ]}
+              placeholder="What's on your mind?"
+            />
+          </Box>
+          <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              sx={{ flex: 1 }}
+              disabled={uploading} // 禁用按钮如果正在上传
+            >
+              Cover
+              <VisuallyHiddenInput
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+            <Button
+              disabled={!currentUser || !title || !content || uploading}
+              onClick={handlePost}
+              variant="contained"
+              sx={{ flex: 2 }}
+            >
+              Post
+            </Button>
+            <Button
+              onClick={handleExpand}
+              variant="contained"
+              sx={{ width: '50px' }}
+            >
+              <CropFree />
+            </Button>
+          </Stack>
+        </Box>
+      </StyledModal>
     </>
   );
 };
+
