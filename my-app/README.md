@@ -96,6 +96,17 @@ html-react-parser切割html文本隐藏展示内容，展开卡片
 
 用dispatch的时候，payload设置一定要小心，就像post的avatar关注这块，如果直接redux掉整个user就直接换人了，只redux掉following就好
 
+难点一：实现长按头像关注用户并且刷新绿点。
+1. 刚才提到的dispatch小心刷过头了
+2. 不刷新页面的情况下直接出绿点没绿点:使用 setIsFollowing 更新状态。在 handleFollowToggle 函数内，你可以在成功关注/取消关注用户后立即更新 isFollowing 的状态。由于 React 是基于状态的 UI 框架，状态的改变会触发重新渲染当前组件。将 setIsFollowing 放在成功响应后，立即更新 UI。确保 Redux 状态变更触发重新渲染
+当前代码中，你已经通过 dispatch 更新了 Redux 中的 following 列表，确保 currentUser 更新后，useEffect 中的依赖项会监听到 currentUser 的变化。
+3. 整体原理：当 handleFollowToggle 成功执行时，setIsFollowing 立即更新本地状态，触发当前组件的重新渲染。
+依赖 currentUser 的变化，通过 useEffect 自动监听 currentUser.following 的变化，确保状态同步。
+
+
+
+
+
 ztt建议看一下axios封装前端的请求！
 
 功能想法：长按头像关注，关注的用户头像有边框，第一次注册的用户进网站有提示，enjoy your journey to the ricebook，然后一个提示长按头像关注，点一下是profile，展示的部分用开发者我的账号做例子，所有人都要关注我。

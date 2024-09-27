@@ -58,6 +58,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [isFollowing, setIsFollowing] = useState(false); // 用于存储当前的关注状态
 
   useEffect(() => {
+    console.log("currentUser.following updated:", currentUser?.following); // 调试输出
     if (currentUser && currentUser.following) {
       // 确保 currentUser 存在，避免 null 或 undefined 错误
       const following = currentUser.following.some(f => f.toString() === post.author._id.toString());
@@ -87,9 +88,9 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const handleFollowToggle = async () => {
     if (!currentUser || currentUser._id === post.author._id) {
       console.log('Cannot follow yourself.');
-      return; // 如果是自己或者未登录，不执行关注/取消关注
+      return;
     }
-
+  
     try {
       const response = await fetch('http://localhost:3000/api/user/toggleFollow', {
         method: 'POST',
@@ -97,18 +98,18 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: currentUser._id, // 当前用户ID
-          targetId: post.author._id, // 帖子作者ID
+          userId: currentUser._id,
+          targetId: post.author._id,
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to toggle follow');
       }
-
+  
       const data = await response.json();
       console.log('Follow/unfollow success:', data);
-
+  
       // 更新 Redux 状态中的 currentUser.following
       const updatedFollowing = data.following;
       dispatch({
@@ -118,10 +119,13 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           following: updatedFollowing, // 仅更新 following 列表
         },
       });
+  
+      // **立即更新当前组件的 isFollowing 状态**
+      setIsFollowing(updatedFollowing.some(f => f.toString() === post.author._id.toString()));
     } catch (error) {
       console.error('Error during follow/unfollow:', error);
     }
-  };
+  };  
 
   return (
     <Card
