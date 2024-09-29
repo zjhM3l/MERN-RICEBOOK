@@ -9,6 +9,7 @@ import CropFree from '@mui/icons-material/CropFree';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import { useSelector, useDispatch } from 'react-redux';
+import { updateFollowingSuccess } from '../redux/user/userSlice.js' // 导入新的 action
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -125,16 +126,13 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
       const data = await response.json();
       console.log('Follow/unfollow success:', data);
 
-      const updatedFollowing = data.following;
-      dispatch({
-        type: 'UPDATE_FOLLOWING',
-        payload: {
-          ...currentUser,
-          following: updatedFollowing,
-        },
-      });
+      // 更新 Redux 中的 currentUser.following
+      dispatch(updateFollowingSuccess({
+        following: data.following, // 将新的 following 列表传递给 Redux
+      }));
 
-      setIsFollowing(updatedFollowing.some(f => f.toString() === post.author._id.toString()));
+      // 更新本地状态以便立即显示
+      setIsFollowing(data.following.some(f => f.toString() === post.author._id.toString()));
     } catch (error) {
       console.error('Error during follow/unfollow:', error);
     }

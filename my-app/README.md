@@ -109,6 +109,13 @@ html-react-parser切割html文本隐藏展示内容，展开卡片
 延迟动画恢复：我们使用 setTimeout 控制动画在 800 毫秒时到达最大尺寸，完成后再缩回到原来的大小。
 延迟设置恢复动画：当达到 800 毫秒后，头像会自动恢复到原始大小。为此，我们可以用一个新的 timeoutRef 来控制恢复时间。
 
+这个长按关注是很典型的redux，有个challenge就是，follow和redux的问题，现在的问题就是，用户长按别的用户的头像之后，各种动画还有follow和取消follow的功能都挺正常，然后远程的数据库也能及时变化，但是唯一的问题是，用户自己本地的redux的的following的内容实际上没有变，就一直都是一个固定的状态不变。这就需要userreducer里面针对UPDATE_USER_FOLLOWING要能够正确处理，在userSlice里面加上针对dollowing的更新语句，然后在Post组件调用action才可以。
+
+Redux 更新后的工作流程
+当用户长按头像并成功关注或取消关注时，后端会返回更新后的 following 列表。
+然后你通过 dispatch(updateFollowingSuccess) 更新 Redux 中的 currentUser.following 列表。
+组件中本地的 isFollowing 状态也会被同步更新，以便立即显示新的关注状态。
+
 关于自动刷新：关注用户自动局部刷新，靠的是react自身特性。add post之后成功之后局部刷新feed靠的：
 1 在 Home 组件中传递一个更新 Feed 的回调函数（refreshFeed）给 Add 组件。
 2 在 Add 组件中，帖子上传成功后，调用传递的回调函数来更新 Feed。接受 onPostSuccess 作为一个回调函数。帖子创建成功后，调用该回调函数来触发 Feed 刷新。

@@ -25,14 +25,20 @@ export const toggleFollow = async (req, res) => {
         if (isFollowing) {
             // 如果已经关注了目标用户，则取消关注
             user.following = user.following.filter(followingId => followingId.toString() !== targetId);
-            await user.save();
-            return res.status(200).json({ message: "Unfollowed the user successfully.", following: user.following });
         } else {
             // 如果没有关注目标用户，则进行关注
             user.following.push(targetId);
-            await user.save();
-            return res.status(200).json({ message: "Followed the user successfully.", following: user.following });
         }
+
+        // 保存用户的更新
+        await user.save();
+
+        // 返回成功响应，确保 following 列表包含最新的关注状态
+        return res.status(200).json({
+            message: isFollowing ? "Unfollowed the user successfully." : "Followed the user successfully.",
+            following: user.following, // 更新后的 following 列表
+            userId: user._id, // 可以返回用户 ID 供前端确认
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal server error." });

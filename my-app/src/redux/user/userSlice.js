@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'; 
 
 const initialState = {
     currentUser: null,
@@ -25,10 +25,20 @@ const userSlice = createSlice({
         },
         updateProfileSuccess: (state, action) => {
             state.currentUser = { ...state.currentUser, ...action.payload };
-        }
-    }
+        },
+        // 新的 reducer：更新 currentUser 的 following 列表
+        updateFollowingSuccess: (state, action) => {
+            state.currentUser.following = action.payload.following; // 更新 following 列表
+        },
+    },
 });
 
-export const { signInStart, signInSuccess, signInFailure, updateProfileSuccess } = userSlice.actions;
+export const { 
+    signInStart, 
+    signInSuccess, 
+    signInFailure, 
+    updateProfileSuccess, 
+    updateFollowingSuccess // 导出新的 action
+} = userSlice.actions;
 
 export default userSlice.reducer;
