@@ -121,8 +121,12 @@ Redux 更新后的工作流程
 2 在 Add 组件中，帖子上传成功后，调用传递的回调函数来更新 Feed。接受 onPostSuccess 作为一个回调函数。帖子创建成功后，调用该回调函数来触发 Feed 刷新。
 3 在 Feed 组件中，当收到更新信号时重新获取数据，刷新帖子列表。Feed 组件会根据 key 变化重新获取帖子并渲染，确保页面自动刷新新发布的帖子。
 
-
-
+路由冲突：main里面如果把
+router.get("/recent-posts", getRecentPosts);
+放在
+router.get("/:postId", getPostById);
+后面就会报错，优先匹配到哪一个的问题。
+/recent-posts 路由是在 /:postId 之后定义的。当 Express 匹配到路径 /:postId 时，它会优先认为 "recent-posts" 是一个 postId，因此导致了错误。
 
 
 ztt建议看一下axios封装前端的请求！

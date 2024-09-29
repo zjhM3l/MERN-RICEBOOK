@@ -68,7 +68,9 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [isHovered, setIsHovered] = useState(false); // 控制卡片放大动画
   const [isFollowAction, setIsFollowAction] = useState(false); // 新增：用于标记是否是关注操作
   const currentUser = useSelector((state) => state.user.currentUser); // 获取当前用户
-  const [isLiked, setIsLiked] = useState(post.likes.includes(currentUser._id)); // 通过后端获取的点赞状态
+  const [isLiked, setIsLiked] = useState(
+    currentUser && post.likes.includes(currentUser._id) // 添加 null 检查
+  ); // 通过后端获取的点赞状态
   const [likeCount, setLikeCount] = useState(post.likes.length); // 用于存储点赞次数
   const dispatch = useDispatch(); // 获取 dispatch 用于更新 Redux 状态
   const pressTimer = useRef(null); // 长按计时器
@@ -121,6 +123,8 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
   const handleFollowToggle = async (event) => {
     event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+
+    // 添加检查，确保用户已登录
     if (!currentUser || currentUser._id === post.author._id) {
       console.log("You cannot follow yourself."); // Log or alert for trying to follow self
       setIsFollowAction(true); // 防止跳转，和关注别人一样
@@ -166,6 +170,12 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
   const handleLikeToggle = async (event) => {
     event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+
+    // 添加检查，确保用户已登录
+    if (!currentUser) {
+      console.log("You must be logged in to like a post.");
+      return;
+    }
 
     try {
       const response = await fetch(

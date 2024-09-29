@@ -3,11 +3,12 @@ import {
   getPosts,
   getPostById,
   toggleLikePost,
+  getRecentPosts,
 } from "../controllers/main.controller.js";
 
 const router = express.Router();
 
-// 获取所有帖子
+router.get("/recent-posts", getRecentPosts);
 router.get("/posts", getPosts);
 router.get("/:postId", getPostById);
 router.post("/:postId/like", toggleLikePost);

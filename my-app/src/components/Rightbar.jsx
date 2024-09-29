@@ -11,9 +11,40 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // 用于导航到帖子详情页
 
 export const Rightbar = () => {
+  const [recentPosts, setRecentPosts] = useState([]); // 存储最新带封面的帖子
+  const navigate = useNavigate(); // 用于导航
+
+  useEffect(() => {
+    const fetchRecentPosts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/main/recent-posts"
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Recent posts:", data);
+
+        if (Array.isArray(data)) {
+          setRecentPosts(data); // 确保 data 是数组后进行设置
+        } else {
+          setRecentPosts([]); // 如果 data 不是数组，设置为空数组
+        }
+      } catch (error) {
+        console.error("Error fetching recent posts:", error);
+        setRecentPosts([]); // 出现错误时，设置为空数组
+      }
+    };
+    fetchRecentPosts();
+  }, []);
+
   return (
     <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={300}>
@@ -64,63 +95,28 @@ export const Rightbar = () => {
         </AvatarGroup>
 
         <Typography variant="h6" fontWeight={100} mt={2} mb={2}>
-          Latest Photos
+          Latest Posts
         </Typography>
+
+        {/* 显示最近的封面图片，没有标题和滚动条，一行最多显示三个 */}
         <ImageList cols={3} rowHeight={100} gap={5}>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/09/03/18/03/desert-9019840_1280.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2023/10/24/05/08/dog-8337394_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/04/09/22/28/trees-8686902_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/02/20/05/16/hummingbird-8584603_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2022/12/19/18/01/gingerbread-7666269_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/03/19/19/08/book-8643905_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/05/05/07/41/lizard-8740424_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/08/19/15/01/sunflowers-8980921_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
-          <ImageListItem>
-            <img
-              src="https://cdn.pixabay.com/photo/2024/07/15/21/46/daylily-8897976_640.jpg"
-              alt=""
-            />
-          </ImageListItem>
+          {Array.isArray(recentPosts) && recentPosts.length > 0 ? (
+            recentPosts.map((post) => (
+              <ImageListItem
+                key={post._id}
+                onClick={() => navigate(`/post/${post._id}`)} // 点击帖子后跳转详情页
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={post.cover}
+                  alt={`Post cover ${post._id}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} // 图片等比例填充
+                />
+              </ImageListItem>
+            ))
+          ) : (
+            <Typography variant="body2">No recent posts available</Typography>
+          )}
         </ImageList>
 
         <Typography variant="h6" fontWeight={100} mt={2}>

@@ -1,5 +1,25 @@
 import Post from "../models/post.model.js";
 
+export const getRecentPosts = async (req, res) => {
+  try {
+    console.log("Fetching recent posts with covers..."); // 添加日志以查看是否调用了此路由
+
+    // 查找最近发布且带有封面的帖子，按创建时间倒序排列
+    const posts = await Post.find({ cover: { $ne: null } }) // 查询条件，确保 cover 不为 null
+      .sort({ createdAt: -1 }) // 按创建时间倒序排序
+      .limit(9); // 限制返回数量为 9 条
+
+    console.log("Fetched posts with covers:", posts); // 添加日志来查看返回的内容
+
+    res.status(200).json(posts || []); // 返回帖子对象，确保返回数组
+  } catch (error) {
+    console.error("Error fetching recent posts with covers:", error); // 打印详细错误
+    res
+      .status(500)
+      .json({ message: "Failed to fetch recent posts with covers", error });
+  }
+};
+
 // 获取所有帖子
 export const getPosts = async (req, res) => {
   try {
@@ -58,12 +78,10 @@ export const toggleLikePost = async (req, res) => {
 
     await post.save();
 
-    res
-      .status(200)
-      .json({
-        message: hasLiked ? "Unliked the post" : "Liked the post",
-        post,
-      });
+    res.status(200).json({
+      message: hasLiked ? "Unliked the post" : "Liked the post",
+      post,
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to like/unlike the post", error });
   }
