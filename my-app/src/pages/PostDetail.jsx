@@ -1,15 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useState } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { SignupForm } from "../components/SignupForm";
-import { Logo } from "../components/Logo";
-import { useSelector } from "react-redux";
+import { Rightbar } from "../components/Rightbar";
+import { PostDetailMain } from "../components/PostDetailMain";
 
-export const Signup = () => {
+export const PostDetail = () => {
   const mode = useSelector((state) => state.theme.mode);
-
   const darkTheme = createTheme({
     palette: {
       mode: mode,
@@ -22,17 +20,8 @@ export const Signup = () => {
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar />
-          <Stack
-            spacing={2}
-            flex={4}
-            p={2}
-            sx={{ flexDirection: { xs: "column", sm: "row" } }}
-            justifyContent="center"
-            alignItems="center" // 确保竖直方向居中
-          >
-            <Logo />
-            <SignupForm />
-          </Stack>
+          <PostDetailMain />
+          <Rightbar />
         </Stack>
       </Box>
     </ThemeProvider>

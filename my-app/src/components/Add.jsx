@@ -1,36 +1,54 @@
-import React, { useState } from 'react';
-import { Avatar, Box, Button, Fab, Modal, Stack, styled, Tooltip, Typography, TextField, Alert } from '@mui/material';  // 引入 Alert 组件
-import AddIcon from '@mui/icons-material/Add';
-import CropFree from '@mui/icons-material/CropFree';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useSelector } from 'react-redux';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
-import { app } from '../firebase';
+import React, { useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Fab,
+  Modal,
+  Stack,
+  styled,
+  Tooltip,
+  Typography,
+  TextField,
+  Alert,
+} from "@mui/material"; // 引入 Alert 组件
+import AddIcon from "@mui/icons-material/Add";
+import CropFree from "@mui/icons-material/CropFree";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useSelector } from "react-redux";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getStorage,
+} from "firebase/storage";
+import { app } from "../firebase";
 
 const StyledModal = styled(Modal)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 });
 
 const UserBox = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-  marginBottom: '20px',
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  marginBottom: "20px",
 });
 
-const VisuallyHiddenInput = styled('input')({
-  display: 'none',
+const VisuallyHiddenInput = styled("input")({
+  display: "none",
 });
 
-export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
+export const Add = ({ onPostSuccess }) => {
+  // 接受 onPostSuccess 回调
   const [open, setOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [cover, setCover] = useState(null); // 保存封面图片文件
   const [uploading, setUploading] = useState(false); // 上传状态
   const [error, setError] = useState(null); // 用于保存错误消息
@@ -62,14 +80,14 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
       const uploadTask = uploadBytesResumable(storageRef, cover);
 
       uploadTask.on(
-        'state_changed',
+        "state_changed",
         (snapshot) => {
           // 可以根据需要添加进度条逻辑
         },
         (error) => {
-          console.error('Error uploading cover:', error);
+          console.error("Error uploading cover:", error);
           setUploading(false); // 上传失败
-          setError('Failed to upload cover image.');
+          setError("Failed to upload cover image.");
         },
         async () => {
           coverUrl = await getDownloadURL(uploadTask.snapshot.ref); // 获取封面图片的下载 URL
@@ -89,34 +107,34 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
       author: currentUser._id, // 当前用户 ID
       cover: coverUrl, // 包含封面图片的 URL 或者 null
     };
-  
+
     try {
-      const res = await fetch('http://localhost:3000/api/user/posts', {
-        method: 'POST',
+      const res = await fetch("http://localhost:3000/api/user/posts", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(postData), // 将帖子数据发送到后端
       });
-  
+
       if (!res.ok) {
         if (res.status === 413) {
-          throw new Error('File too large. Please select a smaller file.'); // 捕获 413 错误
+          throw new Error("File too large. Please select a smaller file."); // 捕获 413 错误
         }
-        throw new Error('Failed to create post');
+        throw new Error("Failed to create post");
       }
-  
+
       const data = await res.json();
-      console.log('Post created:', data);
+      console.log("Post created:", data);
       setOpen(false); // 关闭 Modal
-      setTitle(''); // 清空标题
-      setContent(''); // 清空内容
+      setTitle(""); // 清空标题
+      setContent(""); // 清空内容
       setCover(null); // 清空封面
       setError(null); // 清空错误消息
 
       onPostSuccess(); // 调用回调函数刷新 Feed
     } catch (error) {
-      console.error('Failed to create post:', error);
+      console.error("Failed to create post:", error);
       setError(error.message); // 显示错误消息
     }
   };
@@ -127,9 +145,9 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
         onClick={() => setOpen(true)}
         title="Add"
         sx={{
-          position: 'fixed',
+          position: "fixed",
           bottom: 20,
-          left: { xs: 'calc(50% - 25px)', md: 30 },
+          left: { xs: "calc(50% - 25px)", md: 30 },
         }}
       >
         <Fab color="primary" aria-label="add">
@@ -143,38 +161,43 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
         aria-describedby="modal-modal-description"
       >
         <Box
-          width={isExpanded ? '80vw' : '400px'}
+          width={isExpanded ? "80vw" : "400px"}
           maxWidth="90vw"
           maxHeight="90vh"
-          height={isExpanded ? '80vh' : 'auto'}  // 动态高度
+          height={isExpanded ? "80vh" : "auto"} // 动态高度
           bgcolor={"background.default"}
           color={"text.primary"}
           p={3}
           borderRadius={5}
           sx={{
-            overflowY: 'auto',  // 当内容超出时启用滚动条
-            transition: 'transform 0.4s ease, opacity 0.4s ease',
-            transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
+            overflowY: "auto", // 当内容超出时启用滚动条
+            transition: "transform 0.4s ease, opacity 0.4s ease",
+            transform: isExpanded ? "scale(1.05)" : "scale(1)",
             opacity: isExpanded ? 1 : 0.9,
-            position: isExpanded ? 'fixed' : 'relative',
-            top: isExpanded ? '10%' : 'auto',
-            left: isExpanded ? '10%' : 'auto',
+            position: isExpanded ? "fixed" : "relative",
+            top: isExpanded ? "10%" : "auto",
+            left: isExpanded ? "10%" : "auto",
           }}
         >
           <Typography variant="h6" color="gray" textAlign="center">
             Create post
           </Typography>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>} {/* 错误提示框 */}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}{" "}
+          {/* 错误提示框 */}
           <UserBox>
             <Avatar
               src={
                 currentUser?.profilePicture ||
-                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
               }
               sx={{ width: 30, height: 30 }}
             />
             <Typography fontWeight={500} variant="span">
-              {currentUser?.username || 'Guest'}
+              {currentUser?.username || "Guest"}
             </Typography>
           </UserBox>
           <TextField
@@ -188,9 +211,9 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
           />
           <Box
             sx={{
-              maxHeight: isExpanded ? '65vh' : '200px',  // 设置文本框的最大高度
-              overflowY: 'auto',  // 启用文本框内部滚动
-              marginBottom: '10px',
+              maxHeight: isExpanded ? "65vh" : "200px", // 设置文本框的最大高度
+              overflowY: "auto", // 启用文本框内部滚动
+              marginBottom: "10px",
             }}
           >
             <ReactQuill
@@ -198,23 +221,43 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
               onChange={handleContentChange}
               modules={{
                 toolbar: [
-                  [{ header: '1' }, { header: '2' }, { font: [] }],
+                  [{ header: "1" }, { header: "2" }, { font: [] }],
                   [{ size: [] }],
-                  ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                  [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-                  ['image', 'video'],
+                  ["bold", "italic", "underline", "strike", "blockquote"],
+                  [
+                    { list: "ordered" },
+                    { list: "bullet" },
+                    { indent: "-1" },
+                    { indent: "+1" },
+                  ],
+                  ["image", "video"],
                 ],
               }}
               formats={[
-                'header', 'font', 'size',
-                'bold', 'italic', 'underline', 'strike', 'blockquote',
-                'list', 'bullet', 'indent',
-                'image', 'video',
+                "header",
+                "font",
+                "size",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "blockquote",
+                "list",
+                "bullet",
+                "indent",
+                "image",
+                "video",
               ]}
               placeholder="What's on your mind?"
             />
           </Box>
-          <Stack direction="row" gap={1} mt={2} mb={0} justifyContent="space-between">
+          <Stack
+            direction="row"
+            gap={1}
+            mt={2}
+            mb={0}
+            justifyContent="space-between"
+          >
             <Button
               component="label"
               variant="contained"
@@ -240,7 +283,7 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
             <Button
               onClick={handleExpand}
               variant="contained"
-              sx={{ width: '50px' }}
+              sx={{ width: "50px" }}
             >
               <CropFree />
             </Button>
@@ -250,4 +293,3 @@ export const Add = ({ onPostSuccess }) => { // 接受 onPostSuccess 回调
     </>
   );
 };
-

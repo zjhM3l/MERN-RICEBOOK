@@ -11,7 +11,7 @@ const firebaseConfig = {
   projectId: "mern-ricebook",
   storageBucket: "mern-ricebook.appspot.com",
   messagingSenderId: "687486044831",
-  appId: "1:687486044831:web:019e9a573e4bcd10f7b0aa"
+  appId: "1:687486044831:web:019e9a573e4bcd10f7b0aa",
 };
 
 // Initialize Firebase

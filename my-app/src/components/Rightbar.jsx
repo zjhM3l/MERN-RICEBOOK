@@ -1,90 +1,140 @@
-import { Avatar, AvatarGroup, Box, Divider, ImageList, ImageListItem, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material'
-import React from 'react'
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  Divider,
+  ImageList,
+  ImageListItem,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+} from "@mui/material";
+import React from "react";
 
 export const Rightbar = () => {
   return (
-    <Box 
-    flex={2} 
-    p={2} 
-    sx={{ display: {xs: "none", sm: "block"}}}>
-      <Box position='fixed' width={300}>
-        <Typography variant='h6' fontWeight={100}>Online Friends</Typography>
+    <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
+      <Box position="fixed" width={300}>
+        <Typography variant="h6" fontWeight={100}>
+          Online Friends
+        </Typography>
         <AvatarGroup max={7}>
-          <Avatar alt="Remy Sharp" src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg" />
-          <Avatar alt="Travis Howard" src="https://cdn.pixabay.com/photo/2019/09/10/01/31/fisherman-4465032_1280.jpg" />
-          <Avatar alt="Cindy Baker" src="https://cdn.pixabay.com/photo/2024/08/24/18/49/spurred-turtle-8994997_1280.jpg" />
-          <Avatar alt="Agnes Walker" src="https://cdn.pixabay.com/photo/2024/09/03/08/56/dairy-cattle-9018750_1280.jpg" />
-          <Avatar alt="Trevor Henderson" src="https://cdn.pixabay.com/photo/2022/11/02/14/47/bird-7565103_1280.jpg" />
-          <Avatar alt="Remy Sharp" src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg" />
-          <Avatar alt="Travis Howard" src="https://cdn.pixabay.com/photo/2019/09/10/01/31/fisherman-4465032_1280.jpg" />
-          <Avatar alt="Cindy Baker" src="https://cdn.pixabay.com/photo/2024/08/24/18/49/spurred-turtle-8994997_1280.jpg" />
-          <Avatar alt="Agnes Walker" src="https://cdn.pixabay.com/photo/2024/09/03/08/56/dairy-cattle-9018750_1280.jpg" />
-          <Avatar alt="Trevor Henderson" src="https://cdn.pixabay.com/photo/2022/11/02/14/47/bird-7565103_1280.jpg" />
+          <Avatar
+            alt="Remy Sharp"
+            src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg"
+          />
+          <Avatar
+            alt="Travis Howard"
+            src="https://cdn.pixabay.com/photo/2019/09/10/01/31/fisherman-4465032_1280.jpg"
+          />
+          <Avatar
+            alt="Cindy Baker"
+            src="https://cdn.pixabay.com/photo/2024/08/24/18/49/spurred-turtle-8994997_1280.jpg"
+          />
+          <Avatar
+            alt="Agnes Walker"
+            src="https://cdn.pixabay.com/photo/2024/09/03/08/56/dairy-cattle-9018750_1280.jpg"
+          />
+          <Avatar
+            alt="Trevor Henderson"
+            src="https://cdn.pixabay.com/photo/2022/11/02/14/47/bird-7565103_1280.jpg"
+          />
+          <Avatar
+            alt="Remy Sharp"
+            src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg"
+          />
+          <Avatar
+            alt="Travis Howard"
+            src="https://cdn.pixabay.com/photo/2019/09/10/01/31/fisherman-4465032_1280.jpg"
+          />
+          <Avatar
+            alt="Cindy Baker"
+            src="https://cdn.pixabay.com/photo/2024/08/24/18/49/spurred-turtle-8994997_1280.jpg"
+          />
+          <Avatar
+            alt="Agnes Walker"
+            src="https://cdn.pixabay.com/photo/2024/09/03/08/56/dairy-cattle-9018750_1280.jpg"
+          />
+          <Avatar
+            alt="Trevor Henderson"
+            src="https://cdn.pixabay.com/photo/2022/11/02/14/47/bird-7565103_1280.jpg"
+          />
         </AvatarGroup>
-        
-        <Typography variant='h6' fontWeight={100} mt={2} mb={2}>Latest Photos</Typography>
+
+        <Typography variant="h6" fontWeight={100} mt={2} mb={2}>
+          Latest Photos
+        </Typography>
         <ImageList cols={3} rowHeight={100} gap={5}>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/09/03/18/03/desert-9019840_1280.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/09/03/18/03/desert-9019840_1280.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2023/10/24/05/08/dog-8337394_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2023/10/24/05/08/dog-8337394_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/04/09/22/28/trees-8686902_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/04/09/22/28/trees-8686902_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/02/20/05/16/hummingbird-8584603_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/02/20/05/16/hummingbird-8584603_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2022/12/19/18/01/gingerbread-7666269_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2022/12/19/18/01/gingerbread-7666269_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/03/19/19/08/book-8643905_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/03/19/19/08/book-8643905_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/05/05/07/41/lizard-8740424_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/05/05/07/41/lizard-8740424_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/08/19/15/01/sunflowers-8980921_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/08/19/15/01/sunflowers-8980921_640.jpg"
+              alt=""
             />
           </ImageListItem>
           <ImageListItem>
             <img
-              src='https://cdn.pixabay.com/photo/2024/07/15/21/46/daylily-8897976_640.jpg'
-              alt=''
+              src="https://cdn.pixabay.com/photo/2024/07/15/21/46/daylily-8897976_640.jpg"
+              alt=""
             />
           </ImageListItem>
         </ImageList>
 
-        <Typography variant='h6' fontWeight={100} mt={2}>Latest Conversations</Typography>
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <Typography variant="h6" fontWeight={100} mt={2}>
+          Latest Conversations
+        </Typography>
+        <List
+          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+        >
           <ListItem alignItems="flex-start">
             <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg" />
+              <Avatar
+                alt="Remy Sharp"
+                src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg"
+              />
             </ListItemAvatar>
             <ListItemText
               primary="Finish your homework?"
@@ -93,7 +143,7 @@ export const Rightbar = () => {
                   <Typography
                     component="span"
                     variant="body2"
-                    sx={{ color: 'text.primary', display: 'inline' }}
+                    sx={{ color: "text.primary", display: "inline" }}
                   >
                     Ali Connors
                   </Typography>
@@ -114,7 +164,7 @@ export const Rightbar = () => {
                   <Typography
                     component="span"
                     variant="body2"
-                    sx={{ color: 'text.primary', display: 'inline' }}
+                    sx={{ color: "text.primary", display: "inline" }}
                   >
                     to Scott, Alex, Jennifer
                   </Typography>
@@ -135,11 +185,11 @@ export const Rightbar = () => {
                   <Typography
                     component="span"
                     variant="body2"
-                    sx={{ color: 'text.primary', display: 'inline' }}
+                    sx={{ color: "text.primary", display: "inline" }}
                   >
                     Sandra Adams
                   </Typography>
-                  {' — Are you coming to the meeting tomorrow?'}
+                  {" — Are you coming to the meeting tomorrow?"}
                 </React.Fragment>
               }
             />
@@ -147,5 +197,5 @@ export const Rightbar = () => {
         </List>
       </Box>
     </Box>
-  )
-}
+  );
+};

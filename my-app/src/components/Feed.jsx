@@ -1,6 +1,6 @@
-import { Box } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import { Post } from './Post';
+import { Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Post } from "./Post";
 
 export const Feed = () => {
   const [expandedPost, setExpandedPost] = useState(null);
@@ -10,11 +10,11 @@ export const Feed = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/main/posts');
+        const res = await fetch("http://localhost:3000/api/main/posts");
         const data = await res.json();
         setPosts(data); // 设置帖子数据
       } catch (error) {
-        console.error('Failed to fetch posts:', error);
+        console.error("Failed to fetch posts:", error);
       }
     };
 

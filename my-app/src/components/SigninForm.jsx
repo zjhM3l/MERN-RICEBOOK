@@ -1,23 +1,27 @@
-import { Google } from '@mui/icons-material';
-import { Link, Box, Button, TextField } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import {signInStart, signInSuccess, signInFailure} from '../redux/user/userSlice';
-import { OAuth } from './OAuth';
+import { Google } from "@mui/icons-material";
+import { Link, Box, Button, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { OAuth } from "./OAuth";
 
 export const SigninForm = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
-  const {loading, error} = useSelector((state) => state.user);
+  const { loading, error } = useSelector((state) => state.user);
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const email = params.get('email');
-    const password = params.get('password');
+    const email = params.get("email");
+    const password = params.get("password");
     if (email) setFormData((prev) => ({ ...prev, email }));
     if (password) setFormData((prev) => ({ ...prev, password }));
   }, [location.search]);
@@ -30,30 +34,32 @@ export const SigninForm = () => {
     event.preventDefault();
     try {
       dispatch(signInStart());
-      const res = await fetch('http://localhost:3000/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("http://localhost:3000/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (!res.ok) {
         dispatch(signInFailure(data.message));
         // 假设后端返回的错误信息是一个字符串，包含多个错误消息
-        const errorMessages = data.message.split(', ');
+        const errorMessages = data.message.split(", ");
         const newErrors = {};
 
-        if (errorMessages.some(msg => msg.includes('All fields are required'))) {
-          newErrors.general = 'All fields are required';
+        if (
+          errorMessages.some((msg) => msg.includes("All fields are required"))
+        ) {
+          newErrors.general = "All fields are required";
         } else {
           errorMessages.forEach((msg) => {
-            if (msg.includes('Email')) newErrors.email = msg;
-            if (msg.includes('Password')) newErrors.password = msg;
+            if (msg.includes("Email")) newErrors.email = msg;
+            if (msg.includes("Password")) newErrors.password = msg;
           });
         }
         setErrors(newErrors);
       } else {
         dispatch(signInSuccess(data));
-        navigate('/home'); // Redirect to home page
+        navigate("/home"); // Redirect to home page
       }
     } catch (error) {
       dispatch(signInFailure(error.message));
@@ -61,50 +67,62 @@ export const SigninForm = () => {
   };
 
   return (
-    <Box flex={3} p={2} display="flex" flexDirection="column" alignItems="center">
+    <Box
+      flex={3}
+      p={2}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Box
         component="form"
-        sx={{ 
-          '& .MuiTextField-root': { m: 1, width: 'calc(100% - 20px)' }, 
-          '& .MuiButton-root': { m: 1, width: 'calc(100% - 20px)' },
-          maxWidth: '600px',
-          width: '100%'
+        sx={{
+          "& .MuiTextField-root": { m: 1, width: "calc(100% - 20px)" },
+          "& .MuiButton-root": { m: 1, width: "calc(100% - 20px)" },
+          maxWidth: "600px",
+          width: "100%",
         }}
         noValidate
         autoComplete="off"
         onSubmit={handleSubmit}
       >
-          <div>
-            <TextField
-              id="email"
-              label="Email"
-              type='email'
-              autoComplete=""
-              placeholder='email@company.com'
-              value={formData.email || ''}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
-          </div>
-          <div>
-            <TextField
-              id="password"
-              label="Password"
-              type='password'
-              autoComplete=""
-              value={formData.password || ''}
-              onChange={handleChange}
-              error={!!errors.password}
-              helperText={errors.password}
-            />
-          </div>
-          {errors.general && <Box mt={2} color="error.main">{errors.general}</Box>}
-          <Button variant='contained' type='submit'>Sign In</Button>
-          <OAuth />
+        <div>
+          <TextField
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete=""
+            placeholder="email@company.com"
+            value={formData.email || ""}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
+          />
+        </div>
+        <div>
+          <TextField
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete=""
+            value={formData.password || ""}
+            onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
+          />
+        </div>
+        {errors.general && (
+          <Box mt={2} color="error.main">
+            {errors.general}
+          </Box>
+        )}
+        <Button variant="contained" type="submit">
+          Sign In
+        </Button>
+        <OAuth />
         <Box mt={2}>
           <span>Don't have an account? </span>
-          <Link component={RouterLink} to='/sign-up' underline="none">
+          <Link component={RouterLink} to="/sign-up" underline="none">
             Sign Up
           </Link>
         </Box>

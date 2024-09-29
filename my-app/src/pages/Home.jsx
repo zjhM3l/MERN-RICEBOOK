@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Box, createTheme, Stack, ThemeProvider } from '@mui/material';
-import { Sidebar } from '../components/Sidebar';
-import { Rightbar } from '../components/Rightbar';
-import { Feed } from '../components/Feed';
-import { Navbar } from '../components/Navbar';
-import { Add } from '../components/Add';
-import { useSelector } from 'react-redux';
+import React, { useState } from "react";
+import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
+import { Sidebar } from "../components/Sidebar";
+import { Rightbar } from "../components/Rightbar";
+import { Feed } from "../components/Feed";
+import { Navbar } from "../components/Navbar";
+import { Add } from "../components/Add";
+import { useSelector } from "react-redux";
 
 export const Home = () => {
   const mode = useSelector((state) => state.theme.mode);
@@ -13,7 +13,7 @@ export const Home = () => {
 
   // 定义刷新 Feed 的函数
   const refreshFeed = () => {
-    setFeedKey(prevKey => prevKey + 1); // 通过更新 key 强制 Feed 重新加载
+    setFeedKey((prevKey) => prevKey + 1); // 通过更新 key 强制 Feed 重新加载
   };
 
   const darkTheme = createTheme({

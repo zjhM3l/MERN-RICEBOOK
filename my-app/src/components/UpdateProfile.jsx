@@ -1,23 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { Avatar, Box, Button, TextField, Typography, useTheme } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import CheckIcon from '@mui/icons-material/Check';
-import { updateProfileSuccess } from '../redux/user/userSlice'; // Adjust the import path as necessary
-import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
-import { app } from '../firebase'; // Adjust the import path as necessary
+import React, { useState, useEffect } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import CheckIcon from "@mui/icons-material/Check";
+import { updateProfileSuccess } from "../redux/user/userSlice"; // Adjust the import path as necessary
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getStorage,
+} from "firebase/storage";
+import { app } from "../firebase"; // Adjust the import path as necessary
 
 export const UpdateProfile = () => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    phone: '',
-    birth: '',
-    zipcode: '',
-    password: '',
-    confirmPassword: '',
-    photoURL: ''
+    username: "",
+    email: "",
+    phone: "",
+    birth: "",
+    zipcode: "",
+    password: "",
+    confirmPassword: "",
+    photoURL: "",
   });
 
   const [editableFields, setEditableFields] = useState({
@@ -27,7 +39,7 @@ export const UpdateProfile = () => {
     birth: false,
     zipcode: false,
     password: false,
-    confirmPassword: false
+    confirmPassword: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -36,17 +48,17 @@ export const UpdateProfile = () => {
   useEffect(() => {
     if (currentUser) {
       const formattedBirthDate = currentUser.dateOfBirth
-        ? new Date(currentUser.dateOfBirth).toISOString().split('T')[0]
-        : '';
+        ? new Date(currentUser.dateOfBirth).toISOString().split("T")[0]
+        : "";
       setFormData({
-        username: currentUser.username || '',
-        photoURL: currentUser.profilePicture || '',
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
+        username: currentUser.username || "",
+        photoURL: currentUser.profilePicture || "",
+        email: currentUser.email || "",
+        phone: currentUser.phone || "",
         birth: formattedBirthDate,
-        zipcode: currentUser.zipcode || '',
-        password: currentUser.password || '',
-        confirmPassword: currentUser.password || ''
+        zipcode: currentUser.zipcode || "",
+        password: currentUser.password || "",
+        confirmPassword: currentUser.password || "",
       });
     }
   }, [currentUser]);
@@ -55,34 +67,37 @@ export const UpdateProfile = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (field) => {
     const dataToSubmit = { email: formData.email, [field]: formData[field] };
-    if (field === 'password' && formData.password !== formData.confirmPassword) {
-      setErrors({ confirmPassword: 'Passwords do not match' });
+    if (
+      field === "password" &&
+      formData.password !== formData.confirmPassword
+    ) {
+      setErrors({ confirmPassword: "Passwords do not match" });
       return;
     }
     try {
-      const res = await fetch('http://localhost:3000/api/user/profile', {
-        method: 'POST',
+      const res = await fetch("http://localhost:3000/api/user/profile", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) {
         // 错误处理
-        const errorMessages = data.message.split(', ');
+        const errorMessages = data.message.split(", ");
         const newErrors = {};
         errorMessages.forEach((msg) => {
-          if (msg.includes('Username')) newErrors.username = msg;
-          if (msg.includes('Phone number')) newErrors.phone = msg;
-          if (msg.includes('Zipcode')) newErrors.zipcode = msg;
-          if (msg.includes('Password')) newErrors.password = msg;
+          if (msg.includes("Username")) newErrors.username = msg;
+          if (msg.includes("Phone number")) newErrors.phone = msg;
+          if (msg.includes("Zipcode")) newErrors.zipcode = msg;
+          if (msg.includes("Password")) newErrors.password = msg;
         });
         setErrors(newErrors);
       } else {
@@ -98,7 +113,7 @@ export const UpdateProfile = () => {
         }));
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -111,22 +126,22 @@ export const UpdateProfile = () => {
     });
     dataToSubmit.email = formData.email;
     try {
-      const res = await fetch('http://localhost:3000/api/user/profile', {
-        method: 'POST',
+      const res = await fetch("http://localhost:3000/api/user/profile", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSubmit)
+        body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) {
-        const errorMessages = data.message.split(', ');
+        const errorMessages = data.message.split(", ");
         const newErrors = {};
         errorMessages.forEach((msg) => {
-          if (msg.includes('Username')) newErrors.username = msg;
-          if (msg.includes('Phone number')) newErrors.phone = msg;
-          if (msg.includes('Zipcode')) newErrors.zipcode = msg;
-          if (msg.includes('Password')) newErrors.password = msg;
+          if (msg.includes("Username")) newErrors.username = msg;
+          if (msg.includes("Phone number")) newErrors.phone = msg;
+          if (msg.includes("Zipcode")) newErrors.zipcode = msg;
+          if (msg.includes("Password")) newErrors.password = msg;
         });
         setErrors(newErrors);
       } else {
@@ -138,24 +153,24 @@ export const UpdateProfile = () => {
           birth: false,
           zipcode: false,
           password: false,
-          confirmPassword: false
+          confirmPassword: false,
         });
         dispatch(updateProfileSuccess(data.user));
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     }
   };
 
   const toggleEditable = (field) => {
-    if (field === 'password') {
+    if (field === "password") {
       if (editableFields.password) {
-        handleSubmit('password');
+        handleSubmit("password");
       } else {
         setEditableFields((prev) => ({
           ...prev,
           password: !prev.password,
-          confirmPassword: !prev.confirmPassword
+          confirmPassword: !prev.confirmPassword,
         }));
       }
     } else {
@@ -164,7 +179,7 @@ export const UpdateProfile = () => {
       } else {
         setEditableFields((prev) => ({
           ...prev,
-          [field]: !prev[field]
+          [field]: !prev[field],
         }));
       }
     }
@@ -173,65 +188,84 @@ export const UpdateProfile = () => {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     const storage = getStorage(app);
-    const storageRef = ref(storage, `avatars/${currentUser.email}/${file.name}`);
+    const storageRef = ref(
+      storage,
+      `avatars/${currentUser.email}/${file.name}`
+    );
     const uploadTask = uploadBytesResumable(storageRef, file);
-  
+
     uploadTask.on(
-      'state_changed',
+      "state_changed",
       (snapshot) => {
         // Handle progress
       },
       (error) => {
-        console.error('Upload error:', error);
+        console.error("Upload error:", error);
       },
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
         setFormData((prev) => ({ ...prev, photoURL: downloadURL }));
-  
+
         // Send the new photoURL to the backend
         try {
-          const res = await fetch('http://localhost:3000/api/user/updateAvatar', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user: currentUser, photoURL: downloadURL }),
-          });
+          const res = await fetch(
+            "http://localhost:3000/api/user/updateAvatar",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user: currentUser,
+                photoURL: downloadURL,
+              }),
+            }
+          );
           const data = await res.json();
           if (res.ok) {
             dispatch(updateProfileSuccess(data.user));
           } else {
-            console.error('Error updating avatar:', data.message);
+            console.error("Error updating avatar:", data.message);
           }
         } catch (error) {
-          console.error('Error updating avatar:', error);
+          console.error("Error updating avatar:", error);
         }
       }
     );
   };
 
   return (
-    <Box sx={{
-      maxWidth: '600px',
-      margin: '20px auto',
-      padding: '20px',
-      backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#fff',
-      borderRadius: '8px',
-      boxShadow: theme.palette.mode === 'dark' ? '0 0 10px rgba(255, 255, 255, 0.1)' : '0 0 10px rgba(0, 0, 0, 0.1)',
-    }}>
+    <Box
+      sx={{
+        maxWidth: "600px",
+        margin: "20px auto",
+        padding: "20px",
+        backgroundColor: theme.palette.mode === "dark" ? "#333" : "#fff",
+        borderRadius: "8px",
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? "0 0 10px rgba(255, 255, 255, 0.1)"
+            : "0 0 10px rgba(0, 0, 0, 0.1)",
+      }}
+    >
       <Box mb={2}>
         <input
           accept="image/*"
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           id="avatar-upload"
           type="file"
           onChange={handleAvatarChange}
         />
         <label htmlFor="avatar-upload">
           <Avatar
-            sx={{ width: 100, height: 100, margin: '0 auto', cursor: 'pointer' }}
+            sx={{
+              width: 100,
+              height: 100,
+              margin: "0 auto",
+              cursor: "pointer",
+            }}
             src={formData.photoURL}
           />
         </label>
@@ -249,8 +283,13 @@ export const UpdateProfile = () => {
             error={!!errors.username}
             helperText={errors.username}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.username && { mb: 3 }) }} onClick={() => toggleEditable('username')}>
-            {editableFields.username ? '...' : <CheckIcon />}
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, ...(errors.username && { mb: 3 }) }}
+            onClick={() => toggleEditable("username")}
+          >
+            {editableFields.username ? "..." : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -269,7 +308,12 @@ export const UpdateProfile = () => {
             error={!!errors.email}
             helperText="Email cannot be changed"
           />
-          <Button variant="contained" color="secondary" disabled sx={{ ml: 2, mb: 3 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            disabled
+            sx={{ ml: 2, mb: 3 }}
+          >
             &#10006;
           </Button>
         </Box>
@@ -290,8 +334,13 @@ export const UpdateProfile = () => {
             error={!!errors.phone}
             helperText={errors.phone}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.phone && { mb: 3 }) }} onClick={() => toggleEditable('phone')}>
-            {editableFields.phone ? '...' : <CheckIcon />}
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, ...(errors.phone && { mb: 3 }) }}
+            onClick={() => toggleEditable("phone")}
+          >
+            {editableFields.phone ? "..." : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -308,7 +357,12 @@ export const UpdateProfile = () => {
             disabled
             helperText="Date of birth cannot be changed"
           />
-          <Button variant="contained" color="secondary" disabled sx={{ ml: 2, mb: 3 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            disabled
+            sx={{ ml: 2, mb: 3 }}
+          >
             &#10006;
           </Button>
         </Box>
@@ -328,8 +382,13 @@ export const UpdateProfile = () => {
             error={!!errors.zipcode}
             helperText={errors.zipcode}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.zipcode && { mb: 3 }) }} onClick={() => toggleEditable('zipcode')}>
-            {editableFields.zipcode ? '...' : <CheckIcon />}
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, ...(errors.zipcode && { mb: 3 }) }}
+            onClick={() => toggleEditable("zipcode")}
+          >
+            {editableFields.zipcode ? "..." : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -349,8 +408,13 @@ export const UpdateProfile = () => {
             error={!!errors.password}
             helperText={errors.password}
           />
-          <Button variant="contained" color="primary" sx={{ ml: 2, ...(errors.password && { mb: 3 }) }} onClick={() => toggleEditable('password')}>
-            {editableFields.password ? '...' : <CheckIcon />}
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, ...(errors.password && { mb: 3 }) }}
+            onClick={() => toggleEditable("password")}
+          >
+            {editableFields.password ? "..." : <CheckIcon />}
           </Button>
         </Box>
       </Box>
@@ -374,7 +438,12 @@ export const UpdateProfile = () => {
           </Box>
         </Box>
       )}
-      <Button variant="contained" color="primary" id="update-button" onClick={handleUpdateAll}>
+      <Button
+        variant="contained"
+        color="primary"
+        id="update-button"
+        onClick={handleUpdateAll}
+      >
         Update All
       </Button>
     </Box>

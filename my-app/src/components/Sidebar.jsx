@@ -1,19 +1,28 @@
-import { ExpandLess, ExpandMore, Home } from '@mui/icons-material';
-import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Switch } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import React from 'react';
-import Article from '@mui/icons-material/Article';
-import People from '@mui/icons-material/People';
-import Person from '@mui/icons-material/Person';
-import Filter from '@mui/icons-material/Filter';
-import Favorite from '@mui/icons-material/Favorite';
-import Camera from '@mui/icons-material/Camera';
-import Settings from '@mui/icons-material/Settings';
-import AccountBox from '@mui/icons-material/AccountBox';
-import NightsStay from '@mui/icons-material/NightsStay';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleMode } from '../redux/theme/themeSlice';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { ExpandLess, ExpandMore, Home } from "@mui/icons-material";
+import {
+  Box,
+  Collapse,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Switch,
+} from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import React from "react";
+import Article from "@mui/icons-material/Article";
+import People from "@mui/icons-material/People";
+import Person from "@mui/icons-material/Person";
+import Filter from "@mui/icons-material/Filter";
+import Favorite from "@mui/icons-material/Favorite";
+import Camera from "@mui/icons-material/Camera";
+import Settings from "@mui/icons-material/Settings";
+import AccountBox from "@mui/icons-material/AccountBox";
+import NightsStay from "@mui/icons-material/NightsStay";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMode } from "../redux/theme/themeSlice";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 export const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
@@ -26,11 +35,13 @@ export const Sidebar = () => {
   };
 
   return (
-    <Box flex={1} p={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
+    <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed">
         <List>
           <ListItem disablePadding>
-            <ListItemButton component={Link} to="/home"> {/* Use Link component */}
+            <ListItemButton component={Link} to="/home">
+              {" "}
+              {/* Use Link component */}
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -38,7 +49,9 @@ export const Sidebar = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton component={Link} to="/pages"> {/* Use Link component */}
+            <ListItemButton component={Link} to="/pages">
+              {" "}
+              {/* Use Link component */}
               <ListItemIcon>
                 <Article />
               </ListItemIcon>
@@ -50,7 +63,9 @@ export const Sidebar = () => {
           {currentUser && (
             <>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/groups"> {/* Use Link component */}
+                <ListItemButton component={Link} to="/groups">
+                  {" "}
+                  {/* Use Link component */}
                   <ListItemIcon>
                     <People />
                   </ListItemIcon>
@@ -58,7 +73,9 @@ export const Sidebar = () => {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/friends"> {/* Use Link component */}
+                <ListItemButton component={Link} to="/friends">
+                  {" "}
+                  {/* Use Link component */}
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
@@ -77,7 +94,9 @@ export const Sidebar = () => {
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   <ListItem disablePadding>
-                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/liked"> {/* Use Link component */}
+                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/liked">
+                      {" "}
+                      {/* Use Link component */}
                       <ListItemIcon>
                         <Favorite />
                       </ListItemIcon>
@@ -85,7 +104,13 @@ export const Sidebar = () => {
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
-                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/moments"> {/* Use Link component */}
+                    <ListItemButton
+                      sx={{ pl: 4 }}
+                      component={Link}
+                      to="/moments"
+                    >
+                      {" "}
+                      {/* Use Link component */}
                       <ListItemIcon>
                         <Camera />
                       </ListItemIcon>
@@ -95,7 +120,9 @@ export const Sidebar = () => {
                 </List>
               </Collapse>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/profile"> {/* Use Link component */}
+                <ListItemButton component={Link} to="/profile">
+                  {" "}
+                  {/* Use Link component */}
                   <ListItemIcon>
                     <AccountBox />
                   </ListItemIcon>
@@ -106,7 +133,9 @@ export const Sidebar = () => {
           )}
 
           <ListItem disablePadding>
-            <ListItemButton component={Link} to="/settings"> {/* Use Link component */}
+            <ListItemButton component={Link} to="/settings">
+              {" "}
+              {/* Use Link component */}
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
@@ -118,8 +147,8 @@ export const Sidebar = () => {
               <ListItemIcon>
                 <NightsStay />
               </ListItemIcon>
-              <Switch 
-                checked={mode === 'dark'}
+              <Switch
+                checked={mode === "dark"}
                 onChange={() => dispatch(toggleMode())}
               />
             </ListItemButton>
