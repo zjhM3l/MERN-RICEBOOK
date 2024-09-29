@@ -168,6 +168,27 @@ export const signin = async (req, res, next) => {
     }
 };
 
+// 登出用户
+export const logoutUser = (req, res) => {
+    try {
+        // 如果使用的是session，可以销毁会话
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Failed to log out' });
+            }
+            // 清除客户端cookie
+            res.clearCookie('connect.sid'); // 如果使用express-session
+
+            return res.status(200).json({ message: 'Logged out successfully' });
+        });
+
+        // 如果使用的是JWT，不需要销毁会话，只需要在客户端删除token
+        // res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error during logout', error });
+    }
+};
+
 export const google = async (req, res, next) => {
     const { name, email, googlePhotoURL } = req.body;
     try {

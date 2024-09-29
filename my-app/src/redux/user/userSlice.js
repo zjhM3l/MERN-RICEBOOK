@@ -26,9 +26,12 @@ const userSlice = createSlice({
         updateProfileSuccess: (state, action) => {
             state.currentUser = { ...state.currentUser, ...action.payload };
         },
-        // 新的 reducer：更新 currentUser 的 following 列表
         updateFollowingSuccess: (state, action) => {
-            state.currentUser.following = action.payload.following; // 更新 following 列表
+            state.currentUser.following = action.payload.following;
+        },
+        // 新的 reducer：处理登出时清空 currentUser
+        signOutSuccess: (state) => {
+            state.currentUser = null;
         },
     },
 });
@@ -38,7 +41,9 @@ export const {
     signInSuccess, 
     signInFailure, 
     updateProfileSuccess, 
-    updateFollowingSuccess // 导出新的 action
+    updateFollowingSuccess, 
+    signOutSuccess  // 导出登出 action
 } = userSlice.actions;
 
 export default userSlice.reducer;
+
