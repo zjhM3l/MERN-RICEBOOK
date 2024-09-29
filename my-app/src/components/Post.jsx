@@ -9,7 +9,8 @@ import CropFree from '@mui/icons-material/CropFree';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateFollowingSuccess } from '../redux/user/userSlice.js' // 导入新的 action
+import { updateFollowingSuccess } from '../redux/user/userSlice.js'; // 导入新的 action
+import { useNavigate } from 'react-router-dom'; // 导入 useNavigate 进行导航
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -53,15 +54,16 @@ const ExpandMore = styled((props) => {
 
 export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [expanded, setExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false); // 控制卡片放大动画
   const currentUser = useSelector((state) => state.user.currentUser); // 获取当前用户
   const dispatch = useDispatch(); // 获取 dispatch 用于更新 Redux 状态
   const pressTimer = useRef(null); // 长按计时器
   const restoreTimer = useRef(null); // 动画恢复计时器
   const [isFollowing, setIsFollowing] = useState(false); // 用于存储当前的关注状态
   const [isPressed, setIsPressed] = useState(false); // 用于存储按住状态以触发动画
+  const navigate = useNavigate(); // 导航到详情页面
 
   useEffect(() => {
-    console.log('currentUser.following updated:', currentUser?.following); // 调试输出
     if (currentUser && currentUser.following) {
       const following = currentUser.following.some(f => f.toString() === post.author._id.toString());
       setIsFollowing(following);
@@ -70,28 +72,28 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
     }
   }, [currentUser, post.author._id]);
 
-  const handleExpandClick = () => {
+  const handleExpandClick = (event) => {
+    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
     setExpanded(!expanded);
   };
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (event) => {
+    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
     setIsPressed(true); // 开始动画，触发头像变大
 
     pressTimer.current = setTimeout(() => {
-      handleFollowToggle(); // 执行关注/取消关注
+      handleFollowToggle(event); // 执行关注/取消关注
     }, 800); // 800毫秒定义为长按
 
-    // 在800毫秒时触发最大化
     restoreTimer.current = setTimeout(() => {
       setIsPressed(false); // 在800毫秒后触发恢复到原始大小
     }, 800); // 动画恢复计时
   };
 
-  const handleMouseUp = () => {
-    // 停止动画，恢复头像大小
-    setIsPressed(false);
+  const handleMouseUp = (event) => {
+    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+    setIsPressed(false); // 停止动画，恢复头像大小
 
-    // 清除计时器
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
     }
@@ -101,9 +103,8 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
     }
   };
 
-  const handleFollowToggle = async () => {
+  const handleFollowToggle = async (event) => {
     if (!currentUser || currentUser._id === post.author._id) {
-      console.log('Cannot follow yourself.');
       return;
     }
 
@@ -124,27 +125,34 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
       }
 
       const data = await response.json();
-      console.log('Follow/unfollow success:', data);
 
       // 更新 Redux 中的 currentUser.following
       dispatch(updateFollowingSuccess({
         following: data.following, // 将新的 following 列表传递给 Redux
       }));
 
-      // 更新本地状态以便立即显示
       setIsFollowing(data.following.some(f => f.toString() === post.author._id.toString()));
     } catch (error) {
       console.error('Error during follow/unfollow:', error);
     }
   };
 
+  const handleCardClick = () => {
+    // 点击卡片时导航到详情页
+    navigate(`/post/${post._id}`);
+  };
+
   return (
     <Card
+      onClick={handleCardClick} // 添加点击事件
+      onMouseEnter={() => setIsHovered(true)} // 鼠标悬停时放大
+      onMouseLeave={() => setIsHovered(false)} // 鼠标离开时缩小
       sx={{
         margin: 5,
-        transition: 'transform 0.4s ease, opacity 0.4s ease',
-        transform: isExpanded ? 'scale(1.05)' : 'scale(1)',
-        opacity: isExpanded ? 1 : 0.9,
+        cursor: 'pointer', // 鼠标变成手型
+        transition: 'transform 0.3s ease, opacity 0.4s ease',
+        transform: isHovered ? 'scale(1.02)' : 'scale(1)', // 控制放大动画
+        opacity: isHovered ? 1 : 0.9,
         width: isExpanded ? '80vw' : 'auto',
         height: isExpanded ? 'auto' : 'fit-content',
         zIndex: isExpanded ? 10 : 1,
@@ -181,11 +189,17 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         }
         action={
           isExpanded ? (
-            <IconButton aria-label="close" onClick={onCollapse}>
+            <IconButton aria-label="close" onClick={(event) => {
+              event.stopPropagation(); // 阻止事件冒泡
+              onCollapse();
+            }}>
               <CloseIcon />
             </IconButton>
           ) : (
-            <IconButton aria-label="settings" onClick={onExpand}>
+            <IconButton aria-label="settings" onClick={(event) => {
+              event.stopPropagation(); // 阻止事件冒泡
+              onExpand();
+            }}>
               <CropFree />
             </IconButton>
           )
@@ -195,10 +209,30 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
       />
       {post.cover && <CardMedia component="img" height="20%" image={post.cover} alt={post.title} />}
       <CardContent>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }} dangerouslySetInnerHTML={{ __html: expanded ? post.content : `${post.title}...` }} />
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            '& img': {
+              maxWidth: '100%', // 设置图片最大宽度为100%，不会超出容器
+              height: 'auto', // 保持图片的原始比例
+              display: 'block', // 确保图片占据单独一行
+              margin: '10px 0', // 给图片加一点上下边距
+            },
+          }}
+          dangerouslySetInnerHTML={{
+            __html: expanded ? post.content : `${post.title}...`,
+          }}
+        />
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton 
+          aria-label="add to favorites"
+          onClick={(event) => {
+            event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+            // 处理点赞功能的逻辑
+          }}
+        >
           <Checkbox
             icon={
               <Badge anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} color="red" badgeContent={99}>
@@ -212,7 +246,13 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
             }
           />
         </IconButton>
-        <IconButton aria-label="share">
+        <IconButton 
+          aria-label="share"
+          onClick={(event) => {
+            event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+            // 处理分享功能的逻辑
+          }}
+        >
           <Share />
         </IconButton>
         <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more">
