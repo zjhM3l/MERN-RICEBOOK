@@ -2,6 +2,47 @@ import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import bcryptjs from "bcryptjs";
 
+// 获取用户的好友列表
+export const getFriends = async (req, res) => {
+  const { userId } = req.params; // 从请求的参数中获取用户ID
+
+  try {
+    // 查找当前用户
+    const user = await User.findById(userId).populate("following followers");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followingSet = new Set(user.following.map((f) => f._id.toString()));
+    const followersSet = new Set(user.followers.map((f) => f._id.toString()));
+
+    // 单向关注（我关注了对方，但对方没有关注我）
+    const oneWayFollowings = user.following.filter(
+      (followedUser) => !followersSet.has(followedUser._id.toString())
+    );
+
+    // 双向关注（互相关注）
+    const mutualFollowings = user.following.filter((followedUser) =>
+      followersSet.has(followedUser._id.toString())
+    );
+
+    // 被关注但未关注（对方关注了我，但我没有关注对方）
+    const followersNotFollowingBack = user.followers.filter(
+      (followerUser) => !followingSet.has(followerUser._id.toString())
+    );
+
+    return res.status(200).json({
+      oneWayFollowings,          // 我关注了但对方没关注的
+      mutualFollowings,          // 互相关注的
+      followersNotFollowingBack, // 对方关注了我但我没关注的
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // 关注或取消关注用户
 export const toggleFollow = async (req, res) => {
   try {

@@ -4,6 +4,7 @@ import {
   createPost,
   updateAvatar,
   toggleFollow,
+  getFriends,
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.post("/posts", createPost);
 router.post("/profile", profile);
 router.post("/updateAvatar", updateAvatar);
 router.post("/toggleFollow", toggleFollow);
+router.get("/:userId/friends", getFriends);
 
 export default router;
