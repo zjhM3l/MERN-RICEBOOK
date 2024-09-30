@@ -3,6 +3,50 @@ import Post from "../models/post.model.js";
 import bcryptjs from "bcryptjs";
 import Chat from "../models/chat.model.js";
 
+// Get the latest messages received by the current user where the user hasn't replied yet
+export const getLatestConversations = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Find chats where the user is a participant
+    const chats = await Chat.find({
+      participants: userId
+    })
+    .populate('messages.sender', 'username profilePicture')  // Populate sender details
+    .sort({ lastMessageAt: -1 })  // Sort by most recent message
+    .lean();  // Use lean() for better performance since we're not modifying the data
+
+    const latestMessages = [];
+
+    for (const chat of chats) {
+      // Get the last message in the chat
+      const lastMessage = chat.messages[chat.messages.length - 1];
+
+      // Only process if the last message was sent by someone other than the current user
+      if (lastMessage.sender._id.toString() !== userId) {
+        // Check if the user has replied after the last message
+        const userRepliedAfterLastMessage = chat.messages.slice(chat.messages.length - 1)
+          .some(message => message.sender._id.toString() === userId);
+
+        // If the user hasn't replied, include this conversation
+        if (!userRepliedAfterLastMessage) {
+          latestMessages.push({ ...lastMessage, chatId: chat._id });  // Include chatId with the message
+        }
+
+        // Stop if we already have 4 messages
+        if (latestMessages.length >= 4) {
+          break;
+        }
+      }
+    }
+
+    res.status(200).json(latestMessages);
+  } catch (error) {
+    console.error("Failed to fetch latest conversations:", error);
+    res.status(500).json({ message: "Failed to fetch latest conversations" });
+  }
+};
+
 // Get or create a chat between two users
 export const getOrCreateChat = async (req, res) => {
   const { userId, targetId } = req.body;

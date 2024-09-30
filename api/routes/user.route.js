@@ -7,7 +7,8 @@ import {
   getFriends,
   getOrCreateChat,
   getChatMessages,      // Import the new controller
-  postMessageToChat     // Import the new controller
+  postMessageToChat,     // Import the new controller
+  getLatestConversations
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -23,5 +24,6 @@ router.post("/chat", getOrCreateChat);
 // New routes for chat messages
 router.get("/chat/:chatId/messages", getChatMessages);   // Fetch chat messages
 router.post("/chat/:chatId/messages", postMessageToChat); // Post a message to chat
+router.get('/latest-conversations/:userId', getLatestConversations);  // New route to get latest conversations
 
 export default router;

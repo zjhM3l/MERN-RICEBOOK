@@ -12,13 +12,34 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"; // 用于导航到帖子详情页
 
 export const Rightbar = () => {
+  const [latestConversations, setLatestConversations] = useState([]);  // Store latest messages
+  const currentUser = useSelector((state) => state.user.currentUser);  // Get current user from Redux
   const [recentPosts, setRecentPosts] = useState([]); // 存储最新带封面的帖子
   const navigate = useNavigate(); // 用于导航
 
   useEffect(() => {
+    const fetchLatestConversations = async () => {
+      if (currentUser) {
+        try {
+          const response = await fetch(`http://localhost:3000/api/user/latest-conversations/${currentUser._id}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setLatestConversations(data);  // Store the latest messages
+        } catch (error) {
+          console.error("Error fetching latest conversations:", error);
+          setLatestConversations([]);  // Set to empty array in case of error
+        }
+      }
+    };
+
     const fetchRecentPosts = async () => {
       try {
         const response = await fetch(
@@ -42,8 +63,9 @@ export const Rightbar = () => {
         setRecentPosts([]); // 出现错误时，设置为空数组
       }
     };
+    fetchLatestConversations();
     fetchRecentPosts();
-  }, []);
+  }, [currentUser]);
 
   return (
     <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
@@ -122,74 +144,46 @@ export const Rightbar = () => {
         <Typography variant="h6" fontWeight={100} mt={2}>
           Latest Conversations
         </Typography>
-        <List
-          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-        >
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar
-                alt="Remy Sharp"
-                src="https://cdn.pixabay.com/photo/2023/06/26/02/57/man-8088588_1280.jpg"
-              />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Finish your homework?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ color: "text.primary", display: "inline" }}
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — Do you want to go to the movies tonight?"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="RGA BBQ"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ color: "text.primary", display: "inline" }}
-                  >
-                    to Scott, Alex, Jennifer
-                  </Typography>
-                  {" — Come to the BBQ this weekend!"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Be sure to check in!"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ color: "text.primary", display: "inline" }}
-                  >
-                    Sandra Adams
-                  </Typography>
-                  {" — Are you coming to the meeting tomorrow?"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
+        <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+          {latestConversations.length > 0 ? (
+            latestConversations.map((message, index) => (
+              <React.Fragment key={index}>
+                <ListItem alignItems="flex-start" button onClick={() => navigate(`/chat/${message.chatId}`)}>
+                  <ListItemAvatar>
+                    <Avatar alt={message.sender.username} src={message.sender.profilePicture || ''} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    // Render the Quill content using dangerouslySetInnerHTML
+                    primary={
+                      <div
+                        dangerouslySetInnerHTML={{ __html: message.content }}
+                        style={{ maxWidth: "240px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                      />
+                    }
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ color: "text.primary", display: "inline" }}
+                        >
+                          {message.sender.username}
+                        </Typography>
+                        {" — "}
+                        <div
+                          dangerouslySetInnerHTML={{ __html: message.content }}
+                          style={{ maxWidth: "240px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                        />
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+              </React.Fragment>
+            ))
+          ) : (
+            <Typography variant="body2">No recent conversations</Typography>
+          )}
         </List>
       </Box>
     </Box>
