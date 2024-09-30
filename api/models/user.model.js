@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      // Validation message for username
       validate: {
         validator: function (v) {
           return /^[a-zA-Z][a-zA-Z0-9]*$/.test(v);
@@ -56,7 +55,6 @@ const userSchema = new mongoose.Schema(
     zipcode: {
       type: String,
       required: true,
-      // Validation message for zipcode
       validate: {
         validator: function (v) {
           return /^[0-9]{5}$/.test(v);
@@ -67,7 +65,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      // Custom password validation here will casuse hashSync to fail
     },
     profilePicture: {
       type: String,
@@ -75,6 +72,13 @@ const userSchema = new mongoose.Schema(
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     },
     following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    // 新增 followers 字段，存储关注该用户的粉丝
+    followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
