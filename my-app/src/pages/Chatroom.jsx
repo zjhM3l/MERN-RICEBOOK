@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
-import { Rightbar } from "../components/Rightbar";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom"; // To get chatId from URL
+import { Box, Stack, ThemeProvider, createTheme } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { Add } from "../components/Add";
-import { useSelector } from "react-redux";
 import { Chat } from "../components/Chat";
 import { FriendSidebar } from "../components/FriendSidebar";
+import { useSelector } from "react-redux";
+import { Rightbar } from "../components/Rightbar";
 
 export const ChatRoom = () => {
+  const { chatId } = useParams(); // Get chatId from URL
   const mode = useSelector((state) => state.theme.mode);
 
   const darkTheme = createTheme({
@@ -16,16 +17,17 @@ export const ChatRoom = () => {
     },
   });
 
+  // You can add logic here to fetch messages for the chat based on chatId
+
   return (
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <FriendSidebar />
-          <Chat />
+          <Chat chatId={chatId} /> {/* Pass chatId to Chat component */}
           <Rightbar />
         </Stack>
-        <Add onPostSuccess={refreshFeed} /> {/* 将刷新函数传递给 Add */}
       </Box>
     </ThemeProvider>
   );

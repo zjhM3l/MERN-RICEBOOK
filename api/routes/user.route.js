@@ -5,6 +5,9 @@ import {
   updateAvatar,
   toggleFollow,
   getFriends,
+  getOrCreateChat,
+  getChatMessages,      // Import the new controller
+  postMessageToChat     // Import the new controller
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -15,5 +18,10 @@ router.post("/profile", profile);
 router.post("/updateAvatar", updateAvatar);
 router.post("/toggleFollow", toggleFollow);
 router.get("/:userId/friends", getFriends);
+router.post("/chat", getOrCreateChat);
+
+// New routes for chat messages
+router.get("/chat/:chatId/messages", getChatMessages);   // Fetch chat messages
+router.post("/chat/:chatId/messages", postMessageToChat); // Post a message to chat
 
 export default router;

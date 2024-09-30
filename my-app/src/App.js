@@ -6,7 +6,8 @@ import { Signin } from "./pages/Signin";
 import { Signup } from "./pages/Signup";
 import { Friend } from "./pages/Friend";
 import { Detail } from "./pages/Detail";
-import { PostDetail } from "./pages/PostDetail"; // 导入 PostDetail 组件
+import { PostDetail } from "./pages/PostDetail";
+import { ChatRoom } from "./pages/Chatroom"; // Import ChatRoom component
 
 function App() {
   return (
@@ -20,8 +21,8 @@ function App() {
         <Route path="/detail" element={<Detail />} />
         <Route path="/home" element={<Home />} />
         <Route path="/sign-up" element={<Signup />} />
-        <Route path="/post/:postId" element={<PostDetail />} />{" "}
-        {/* 配置详情页面路由 */}
+        <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/chat/:chatId" element={<ChatRoom />} /> {/* Chat room route */}
       </Routes>
     </BrowserRouter>
   );

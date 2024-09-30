@@ -1,6 +1,82 @@
 import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import bcryptjs from "bcryptjs";
+import Chat from "../models/chat.model.js";
+
+// Get or create a chat between two users
+export const getOrCreateChat = async (req, res) => {
+  const { userId, targetId } = req.body;
+
+  try {
+    // Check if a chat already exists between the users
+    let chat = await Chat.findOne({
+      participants: { $all: [userId, targetId] }
+    });
+
+    // If chat does not exist, create a new one
+    if (!chat) {
+      chat = new Chat({
+        participants: [userId, targetId],
+        messages: []
+      });
+      await chat.save();
+    }
+
+    // Return the chat object
+    res.status(200).json(chat);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get or create chat" });
+  }
+};
+
+// Get messages for a specific chat
+export const getChatMessages = async (req, res) => {
+  const { chatId } = req.params;
+
+  try {
+    const chat = await Chat.findById(chatId).populate('messages.sender', 'username profilePicture'); // populate sender details
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    res.status(200).json(chat.messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get messages" });
+  }
+};
+
+// Post a new message to a chat
+export const postMessageToChat = async (req, res) => {
+  const { chatId } = req.params;
+  const { content, senderId } = req.body;
+
+  try {
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    const newMessage = {
+      sender: senderId,
+      content,
+      timestamp: new Date(),
+    };
+
+    // Add the message to the chat
+    chat.messages.push(newMessage);
+    chat.lastMessageAt = new Date();
+    await chat.save();
+
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to post message" });
+  }
+};
 
 // 获取用户的好友列表
 export const getFriends = async (req, res) => {
