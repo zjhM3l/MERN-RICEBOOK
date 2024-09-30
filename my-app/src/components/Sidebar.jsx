@@ -1,3 +1,4 @@
+import { useLocation, Link } from "react-router-dom"; // 引入 useLocation
 import { ExpandLess, ExpandMore, Home } from "@mui/icons-material";
 import {
   Box,
@@ -22,13 +23,15 @@ import AccountBox from "@mui/icons-material/AccountBox";
 import NightsStay from "@mui/icons-material/NightsStay";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMode } from "../redux/theme/themeSlice";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 export const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useSelector((state) => state.user); // 从 Redux 获取当前用户状态
   const dispatch = useDispatch();
   const mode = useSelector((state) => state.theme.mode);
+
+  // 获取当前页面路径
+  const location = useLocation();
 
   const handleClick = () => {
     setOpen(!open);
@@ -73,7 +76,7 @@ export const Sidebar = () => {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/friends">
+                <ListItemButton component={Link} to="/friend">
                   {" "}
                   {/* Use Link component */}
                   <ListItemIcon>
@@ -82,43 +85,53 @@ export const Sidebar = () => {
                   <ListItemText primary="Friends" />
                 </ListItemButton>
               </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton onClick={handleClick}>
-                  <ListItemIcon>
-                    <Filter />
-                  </ListItemIcon>
-                  <ListItemText primary="Filters" />
-                  {open ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-              </ListItem>
-              <Collapse in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
+
+              {/* 只在非 PostDetail 页面显示 Filters */}
+              {!location.pathname.startsWith("/post/") && (
+                <>
                   <ListItem disablePadding>
-                    <ListItemButton sx={{ pl: 4 }} component={Link} to="/liked">
-                      {" "}
-                      {/* Use Link component */}
+                    <ListItemButton onClick={handleClick}>
                       <ListItemIcon>
-                        <Favorite />
+                        <Filter />
                       </ListItemIcon>
-                      <ListItemText primary="Liked" />
+                      <ListItemText primary="Filters" />
+                      {open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                   </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      sx={{ pl: 4 }}
-                      component={Link}
-                      to="/moments"
-                    >
-                      {" "}
-                      {/* Use Link component */}
-                      <ListItemIcon>
-                        <Camera />
-                      </ListItemIcon>
-                      <ListItemText primary="Moment" />
-                    </ListItemButton>
-                  </ListItem>
-                </List>
-              </Collapse>
+                  <Collapse in={open} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          sx={{ pl: 4 }}
+                          component={Link}
+                          to="/liked"
+                        >
+                          {" "}
+                          {/* Use Link component */}
+                          <ListItemIcon>
+                            <Favorite />
+                          </ListItemIcon>
+                          <ListItemText primary="Liked" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          sx={{ pl: 4 }}
+                          component={Link}
+                          to="/moments"
+                        >
+                          {" "}
+                          {/* Use Link component */}
+                          <ListItemIcon>
+                            <Camera />
+                          </ListItemIcon>
+                          <ListItemText primary="Moment" />
+                        </ListItemButton>
+                      </ListItem>
+                    </List>
+                  </Collapse>
+                </>
+              )}
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/profile">
                   {" "}

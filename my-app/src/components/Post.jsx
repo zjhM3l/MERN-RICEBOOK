@@ -123,14 +123,14 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
   const handleFollowToggle = async (event) => {
     event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
-
+  
     // 添加检查，确保用户已登录
     if (!currentUser || currentUser._id === post.author._id) {
       console.log("You cannot follow yourself."); // Log or alert for trying to follow self
       setIsFollowAction(true); // 防止跳转，和关注别人一样
       return;
     }
-
+  
     try {
       const response = await fetch(
         "http://localhost:3000/api/user/toggleFollow",
@@ -145,28 +145,30 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           }),
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Failed to toggle follow");
       }
-
+  
       const data = await response.json();
-
+  
       // 更新 Redux 中的 currentUser.following
       dispatch(
         updateFollowingSuccess({
           following: data.following, // 将新的 following 列表传递给 Redux
         })
       );
-
+  
+      // 更新目标用户的粉丝数或状态（如果需要）
       setIsFollowing(
         data.following.some((f) => f.toString() === post.author._id.toString())
       );
+  
       setIsFollowAction(true); // 关注操作完成后设置为true，防止跳转
     } catch (error) {
       console.error("Error during follow/unfollow:", error);
     }
-  };
+  };  
 
   const handleLikeToggle = async (event) => {
     event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击

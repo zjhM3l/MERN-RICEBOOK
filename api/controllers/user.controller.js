@@ -33,21 +33,28 @@ export const toggleFollow = async (req, res) => {
       user.following = user.following.filter(
         (followingId) => followingId.toString() !== targetId
       );
+      targetUser.followers = targetUser.followers.filter(
+        (followerId) => followerId.toString() !== userId
+      );
     } else {
       // 如果没有关注目标用户，则进行关注
       user.following.push(targetId);
+      targetUser.followers.push(userId);
     }
 
     // 保存用户的更新
     await user.save();
+    await targetUser.save();
 
-    // 返回成功响应，确保 following 列表包含最新的关注状态
+    // 返回成功响应，确保 following 列表和 followers 列表包含最新的关注状态
     return res.status(200).json({
       message: isFollowing
         ? "Unfollowed the user successfully."
         : "Followed the user successfully.",
       following: user.following, // 更新后的 following 列表
-      userId: user._id, // 可以返回用户 ID 供前端确认
+      followers: targetUser.followers, // 更新后的目标用户的 followers 列表
+      userId: user._id, // 当前用户的 ID
+      targetId: targetUser._id, // 目标用户的 ID
     });
   } catch (error) {
     console.error(error);

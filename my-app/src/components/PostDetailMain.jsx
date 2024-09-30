@@ -61,23 +61,28 @@ export const PostDetailMain = () => {
   const currentUser = useSelector((state) => state.user.currentUser); // 当前用户
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/main/${postId}`
-        );
-        const data = await response.json();
-        setPost(data);
-        setIsLiked(data.likes.includes(currentUser._id)); // 检查用户是否已经点赞
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [postId, currentUser._id]);
+    if (currentUser) {
+      const fetchPost = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/main/${postId}`
+          );
+          const data = await response.json();
+          setPost(data);
+          setIsLiked(data.likes.includes(currentUser._id)); // 检查用户是否已经点赞
+          setLoading(false);
+        } catch (err) {
+          setError(err.message);
+          setLoading(false);
+        }
+      };
+  
+      fetchPost();
+    } else {
+      setIsLiked(false); // 如果用户未登录，设为未点赞
+      setLoading(false); // 停止加载
+    }
+  }, [postId, currentUser]);  
 
   const handleLike = async () => {
     try {
