@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider } from '@mui/material';
+import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider, IconButton, Typography } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';  // Import the back arrow icon
 import { useNavigate } from 'react-router-dom';  // For navigation
 import { useSelector } from 'react-redux';
 
@@ -56,6 +57,15 @@ export const FriendSidebar = () => {
       overflow="auto"
       maxHeight="85vh"
     >
+      {/* Back button at the top */}
+      <Box display="flex" alignItems="center" mb={2}>
+        <IconButton onClick={() => navigate('/friend')}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h6">Friends</Typography>
+      </Box>
+
+      {/* Friends List */}
       <List>
         {friends.mutualFollowings.length > 0 && friends.mutualFollowings.map((friend) => (
           <React.Fragment key={friend._id}>
