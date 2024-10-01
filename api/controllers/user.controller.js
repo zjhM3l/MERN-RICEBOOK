@@ -101,13 +101,13 @@ export const getLatestConversations = async (req, res) => {
 
         // If the user hasn't replied, include this conversation
         if (!userRepliedAfterLastMessage) {
-          latestMessages.push({ ...lastMessage, chatId: chat._id });  // Include chatId with the message
-          unrepliedMessagesCount++; // 未回复的计数增加
-        }
+          // Increase the unreplied message count regardless of the limit
+          unrepliedMessagesCount++;
 
-        // Stop if we already have 4 messages
-        if (latestMessages.length >= 4) {
-          break;
+          // Only push to latestMessages if we have less than 4 messages
+          if (latestMessages.length < 4) {
+            latestMessages.push({ ...lastMessage, chatId: chat._id });  // Include chatId with the message
+          }
         }
       }
     }
@@ -115,7 +115,7 @@ export const getLatestConversations = async (req, res) => {
     res.status(200).json({
       latestMessages,
       unrepliedMessagesCount
-  });
+    });
   } catch (error) {
     console.error("Failed to fetch latest conversations:", error);
     res.status(500).json({ message: "Failed to fetch latest conversations" });

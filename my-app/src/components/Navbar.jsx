@@ -133,11 +133,11 @@ export const Navbar = () => {
                   <MailIcon />
                 </Badge>
               </IconButton>
-              <IconButton aria-label="note" sx={{ color: "white" }}>
-                <Badge badgeContent={4} color="error">
+              {/* <IconButton aria-label="note" sx={{ color: "white" }}>
+                <Badge badgeContent={unrepliedMessagesCount} color="error">
                   <Notifications />
                 </Badge>
-              </IconButton>
+              </IconButton> */}
             </>
           )}
           <Avatar

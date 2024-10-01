@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 
 export const getComments = async (req, res) => {
-  const { postId } = req.params;  // 从 req.params 获取 postId
+  const { postId } = req.params; // 从 req.params 获取 postId
 
   try {
     const post = await Post.findById(postId); // 使用 postId 查找帖子
