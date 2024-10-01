@@ -4,6 +4,42 @@ import bcryptjs from "bcryptjs";
 import Chat from "../models/chat.model.js";
 import Comment from "../models/comment.model.js";
 
+// Like or unlike a comment
+export const likeComment = async (req, res) => {
+  const { commentId, userId } = req.body;
+
+  try {
+    // Find the comment by ID
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Check if the user has already liked the comment
+    const hasLiked = comment.likes.includes(userId);
+
+    if (hasLiked) {
+      // If already liked, unlike the comment
+      comment.likes.pull(userId);
+    } else {
+      // If not liked, add the user's like
+      comment.likes.push(userId);
+    }
+
+    // Save the updated comment
+    await comment.save();
+
+    res.status(200).json({
+      message: hasLiked ? "Comment unliked" : "Comment liked",
+      likes: comment.likes.length, // Return updated like count
+    });
+  } catch (error) {
+    console.error("Error toggling like on comment:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // 创建评论
 export const createComment = async (req, res) => {
   const { postId, content, author } = req.body; // 从请求体中获取 author
@@ -51,6 +87,7 @@ export const getLatestConversations = async (req, res) => {
     .lean();  // Use lean() for better performance since we're not modifying the data
 
     const latestMessages = [];
+    let unrepliedMessagesCount = 0; // 未回复消息的计数
 
     for (const chat of chats) {
       // Get the last message in the chat
@@ -65,6 +102,7 @@ export const getLatestConversations = async (req, res) => {
         // If the user hasn't replied, include this conversation
         if (!userRepliedAfterLastMessage) {
           latestMessages.push({ ...lastMessage, chatId: chat._id });  // Include chatId with the message
+          unrepliedMessagesCount++; // 未回复的计数增加
         }
 
         // Stop if we already have 4 messages
@@ -74,7 +112,10 @@ export const getLatestConversations = async (req, res) => {
       }
     }
 
-    res.status(200).json(latestMessages);
+    res.status(200).json({
+      latestMessages,
+      unrepliedMessagesCount
+  });
   } catch (error) {
     console.error("Failed to fetch latest conversations:", error);
     res.status(500).json({ message: "Failed to fetch latest conversations" });

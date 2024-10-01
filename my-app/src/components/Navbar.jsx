@@ -17,8 +17,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import Notifications from "@mui/icons-material/Notifications";
 import { useSelector, useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { signOutSuccess } from "../redux/user/userSlice.js"; // 导入 signOutSuccess action
-import { useLocation } from "react-router-dom"; // 导入 useLocation
+import { signOutSuccess } from "../redux/user/userSlice.js";
+import { useLocation } from "react-router-dom";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -51,16 +51,15 @@ const UserBox = styled(Box)(({ theme }) => ({
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // 未回复消息的数量
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // 使用 navigate 进行页面跳转
-  const location = useLocation(); // 获取当前页面 URL
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    // 触发 Redux 中的 signOutSuccess
     dispatch(signOutSuccess());
 
-    // 可选择调用后端的登出API，假设有需要
     fetch("http://localhost:3000/api/auth/logout", {
       method: "POST",
       credentials: "include", // 以便清除session
@@ -70,7 +69,6 @@ export const Navbar = () => {
           throw new Error("Failed to log out");
         }
         console.log("Logout successful, redirecting...");
-        // 成功登出后，重定向到首页
         navigate("/home");
       })
       .catch((error) => {
@@ -78,15 +76,35 @@ export const Navbar = () => {
       });
   };
 
-  // 当用户登出时自动导航到首页，但排除 Sign in 和 Sign up 页面
+  // Fetch unreplied messages count from the backend
   useEffect(() => {
-    // 如果用户已经登出并且当前不在登录或注册页面，则重定向到首页
+    const fetchUnrepliedMessagesCount = async () => {
+      if (currentUser) {
+        try {
+          const response = await fetch(`http://localhost:3000/api/user/latest-conversations/${currentUser._id}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setUnrepliedMessagesCount(data.unrepliedMessagesCount); // 更新未回复消息的数量
+        } catch (error) {
+          console.error("Error fetching unreplied messages count:", error);
+        }
+      }
+    };
+
+    fetchUnrepliedMessagesCount();
+  }, [currentUser]); // 当 currentUser 改变时重新获取消息数量
+
+  useEffect(() => {
     if (
       !currentUser &&
       location.pathname !== "/sign-in" &&
       location.pathname !== "/sign-up"
     ) {
-      navigate("/home"); // 或 navigate('/');
+      navigate("/home");
     }
   }, [currentUser, location.pathname, navigate]);
 
@@ -104,14 +122,14 @@ export const Navbar = () => {
             label="Search..."
             type="search"
             variant="filled"
-            disabled={!currentUser} // 禁用输入框
+            disabled={!currentUser}
           />
         </Search>
         <Icons>
           {currentUser && (
             <>
               <IconButton aria-label="mail" sx={{ color: "white" }}>
-                <Badge badgeContent={4} color="error">
+                <Badge badgeContent={unrepliedMessagesCount} color="error"> {/* 使用未读消息数量 */}
                   <MailIcon />
                 </Badge>
               </IconButton>
@@ -122,7 +140,6 @@ export const Navbar = () => {
               </IconButton>
             </>
           )}
-          {/* 头像部分，如果用户存在则显示用户的profilePicture，否则显示默认头像 */}
           <Avatar
             sx={{ width: 30, height: 30 }}
             src={
@@ -132,7 +149,7 @@ export const Navbar = () => {
             onClick={(e) => setOpen(true)}
           />
         </Icons>
-        {!currentUser && ( // 如果没有用户，显示头像和 Guest 文本
+        {!currentUser && (
           <UserBox onClick={(e) => setOpen(true)}>
             <Avatar
               sx={{ width: 30, height: 30 }}
@@ -141,7 +158,7 @@ export const Navbar = () => {
             <Typography variant="span">Guest</Typography>
           </UserBox>
         )}
-        {currentUser && ( // 如果用户存在，显示用户名
+        {currentUser && (
           <UserBox onClick={(e) => setOpen(true)}>
             <Avatar
               sx={{ width: 30, height: 30 }}
@@ -168,7 +185,7 @@ export const Navbar = () => {
           horizontal: "right",
         }}
       >
-        {!currentUser ? ( // 如果没有用户，显示 Sign in 和 Sign up
+        {!currentUser ? (
           <>
             <MenuItem component={RouterLink} to="/sign-in">
               Sign in

@@ -10,6 +10,7 @@ import {
   postMessageToChat,     // Import the new controller
   getLatestConversations,
   createComment,
+  likeComment
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.post("/toggleFollow", toggleFollow);
 router.get("/:userId/friends", getFriends);
 router.post("/chat", getOrCreateChat);
 router.post('/createcomment', createComment);
+router.post('/likecomment', likeComment);
 
 // New routes for chat messages
 router.get("/chat/:chatId/messages", getChatMessages);   // Fetch chat messages
