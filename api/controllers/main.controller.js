@@ -2,23 +2,21 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 
-// 获取与特定帖子相关的评论
 export const getComments = async (req, res) => {
-  const { postId } = req.query;
+  const { postId } = req.params;  // 从 req.params 获取 postId
+  console.log("postId", postId);
 
   try {
-    // 验证是否存在该帖子
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId); // 使用 postId 查找帖子
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // 获取与该帖子相关的评论，并填充评论作者和喜欢的用户信息
     const comments = await Comment.find({ post: postId })
       .populate("author", "username profilePicture")
       .populate("likes", "username profilePicture");
 
-    res.status(200).json({ comments });
+    res.status(200).json({ comments: comments || [] });
   } catch (error) {
     console.error("Error fetching comments:", error);
     res.status(500).json({ message: "Server error" });

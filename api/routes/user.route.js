@@ -21,6 +21,7 @@ router.post("/updateAvatar", updateAvatar);
 router.post("/toggleFollow", toggleFollow);
 router.get("/:userId/friends", getFriends);
 router.post("/chat", getOrCreateChat);
+router.post('/createcomment', createComment);
 
 // New routes for chat messages
 router.get("/chat/:chatId/messages", getChatMessages);   // Fetch chat messages

@@ -2,10 +2,40 @@ import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import bcryptjs from "bcryptjs";
 import Chat from "../models/chat.model.js";
+import Comment from "../models/comment.model.js";
 
+// 创建评论
 export const createComment = async (req, res) => {
-  
-}
+  const { postId, content, author } = req.body; // 从请求体中获取 author
+
+  try {
+    // 验证帖子是否存在
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // 验证用户是否存在
+    const user = await User.findById(author);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 创建并保存评论
+    const newComment = new Comment({
+      author, // 使用传递过来的 author ID
+      post: postId,
+      content,
+    });
+    await newComment.save();
+
+    // 返回成功消息
+    res.status(201).json({ message: "Comment created successfully", comment: newComment });
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 // Get the latest messages received by the current user where the user hasn't replied yet
 export const getLatestConversations = async (req, res) => {
