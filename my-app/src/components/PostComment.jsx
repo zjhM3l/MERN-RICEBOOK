@@ -77,7 +77,7 @@ export const PostComment = ({ postId, refresh }) => {
               display: "flex",
               flexDirection: "column",
               mb: 2,
-              p: 2,
+              p: 1,  // 调整整体 padding
               boxShadow: 1,
               borderRadius: 2,
             }}
@@ -86,13 +86,14 @@ export const PostComment = ({ postId, refresh }) => {
               <Avatar src={comment.author.profilePicture} />
               <Typography variant="body1">{comment.author.username}</Typography>
             </Stack>
-            <CardContent>
+            <CardContent sx={{ paddingBottom: "8px", paddingTop: "4px" }}> {/* 减少上下 padding */}
               <Typography variant="body2">{comment.content}</Typography>
             </CardContent>
-            <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
+            <CardActions sx={{ display: "flex", justifyContent: "space-between", padding: "4px 8px" }}> {/* 调整左右 padding */}
               <IconButton
                 aria-label="like comment"
                 onClick={() => handleLikeToggle(comment._id)}
+                size="small"  // 调整按钮大小
               >
                 <Checkbox
                   icon={
