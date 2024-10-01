@@ -3,6 +3,10 @@ import Post from "../models/post.model.js";
 import bcryptjs from "bcryptjs";
 import Chat from "../models/chat.model.js";
 
+export const createComment = async (req, res) => {
+  
+}
+
 // Get the latest messages received by the current user where the user hasn't replied yet
 export const getLatestConversations = async (req, res) => {
   const { userId } = req.params;

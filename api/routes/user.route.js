@@ -8,7 +8,8 @@ import {
   getOrCreateChat,
   getChatMessages,      // Import the new controller
   postMessageToChat,     // Import the new controller
-  getLatestConversations
+  getLatestConversations,
+  createComment,
 } from "../controllers/user.controller.js";
 
 const router = express.Router();

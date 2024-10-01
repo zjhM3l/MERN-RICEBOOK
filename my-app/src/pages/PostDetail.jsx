@@ -5,6 +5,8 @@ import { Navbar } from "../components/Navbar";
 import { Sidebar } from "../components/Sidebar";
 import { Rightbar } from "../components/Rightbar";
 import { PostDetailMain } from "../components/PostDetailMain";
+import { PostComment } from "../components/PostComment";
+import { AddComment } from "../components/AddComment";
 
 export const PostDetail = () => {
   const mode = useSelector((state) => state.theme.mode);
@@ -20,7 +22,20 @@ export const PostDetail = () => {
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar />
-          <PostDetailMain />
+          <Stack
+            direction="column"
+            spacing={2}
+            bgcolor="background.default"
+            color="text.primary"
+            minHeight="100vh"
+            display="flex"
+            flex={4}
+            p={2}
+          >
+            <PostDetailMain />
+            <AddComment />
+            <PostComment />
+          </Stack>
           <Rightbar />
         </Stack>
       </Box>
