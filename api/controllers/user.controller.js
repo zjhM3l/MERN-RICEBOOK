@@ -20,7 +20,7 @@ export const likeComment = async (req, res) => {
     const hasLiked = comment.likes.includes(userId);
 
     if (hasLiked) {
-      // If already liked, unlike the comment
+      // If already liked, remove the like
       comment.likes.pull(userId);
     } else {
       // If not liked, add the user's like
@@ -40,32 +40,32 @@ export const likeComment = async (req, res) => {
   }
 };
 
-// 创建评论
+// Create a comment on a post
 export const createComment = async (req, res) => {
-  const { postId, content, author } = req.body; // 从请求体中获取 author
+  const { postId, content, author } = req.body; // Extract author from the request body
 
   try {
-    // 验证帖子是否存在
+    // Verify that the post exists
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // 验证用户是否存在
+    // Verify that the user exists
     const user = await User.findById(author);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // 创建并保存评论
+    // Create and save the new comment
     const newComment = new Comment({
-      author, // 使用传递过来的 author ID
+      author, // Use the passed author ID
       post: postId,
       content,
     });
     await newComment.save();
 
-    // 返回成功消息
+    // Return a success message
     res.status(201).json({ message: "Comment created successfully", comment: newComment });
   } catch (error) {
     console.error("Error creating comment:", error);
@@ -73,7 +73,7 @@ export const createComment = async (req, res) => {
   }
 };
 
-// Get the latest messages received by the current user where the user hasn't replied yet
+// Get the latest conversations where the user hasn't replied yet
 export const getLatestConversations = async (req, res) => {
   const { userId } = req.params;
 
@@ -84,10 +84,10 @@ export const getLatestConversations = async (req, res) => {
     })
     .populate('messages.sender', 'username profilePicture')  // Populate sender details
     .sort({ lastMessageAt: -1 })  // Sort by most recent message
-    .lean();  // Use lean() for better performance since we're not modifying the data
+    .lean();  // Use lean() for better performance since we aren't modifying the data
 
     const latestMessages = [];
-    let unrepliedMessagesCount = 0; // 未回复消息的计数
+    let unrepliedMessagesCount = 0; // Count of unreplied messages
 
     for (const chat of chats) {
       // Get the last message in the chat
@@ -96,15 +96,15 @@ export const getLatestConversations = async (req, res) => {
       // Only process if the last message was sent by someone other than the current user
       if (lastMessage.sender._id.toString() !== userId) {
         // Check if the user has replied after the last message
-        const userRepliedAfterLastMessage = chat.messages.slice(chat.messages.length - 1)
+        const userRepliedAfterLastMessage = chat.messages
+          .slice(chat.messages.length - 1)
           .some(message => message.sender._id.toString() === userId);
 
-        // If the user hasn't replied, include this conversation
+        // If the user hasn't replied, count the conversation
         if (!userRepliedAfterLastMessage) {
-          // Increase the unreplied message count regardless of the limit
           unrepliedMessagesCount++;
 
-          // Only push to latestMessages if we have less than 4 messages
+          // Only add to latestMessages if we have less than 4 messages
           if (latestMessages.length < 4) {
             latestMessages.push({ ...lastMessage, chatId: chat._id });  // Include chatId with the message
           }
@@ -114,7 +114,7 @@ export const getLatestConversations = async (req, res) => {
 
     res.status(200).json({
       latestMessages,
-      unrepliedMessagesCount
+      unrepliedMessagesCount,
     });
   } catch (error) {
     console.error("Failed to fetch latest conversations:", error);
@@ -154,7 +154,8 @@ export const getChatMessages = async (req, res) => {
   const { chatId } = req.params;
 
   try {
-    const chat = await Chat.findById(chatId).populate('messages.sender', 'username profilePicture'); // populate sender details
+    // Find the chat and populate the sender details in messages
+    const chat = await Chat.findById(chatId).populate('messages.sender', 'username profilePicture');
 
     if (!chat) {
       return res.status(404).json({ message: 'Chat not found' });
@@ -173,19 +174,21 @@ export const postMessageToChat = async (req, res) => {
   const { content, senderId } = req.body;
 
   try {
+    // Find the chat by ID
     const chat = await Chat.findById(chatId);
 
     if (!chat) {
       return res.status(404).json({ message: 'Chat not found' });
     }
 
+    // Create a new message object
     const newMessage = {
       sender: senderId,
       content,
       timestamp: new Date(),
     };
 
-    // Add the message to the chat
+    // Add the new message to the chat and update the last message timestamp
     chat.messages.push(newMessage);
     chat.lastMessageAt = new Date();
     await chat.save();
@@ -197,12 +200,12 @@ export const postMessageToChat = async (req, res) => {
   }
 };
 
-// 获取用户的好友列表
+// Get the list of friends (followers and followings) for a user
 export const getFriends = async (req, res) => {
-  const { userId } = req.params; // 从请求的参数中获取用户ID
+  const { userId } = req.params; // Extract userId from request parameters
 
   try {
-    // 查找当前用户
+    // Find the user and populate following and followers details
     const user = await User.findById(userId).populate("following followers");
 
     if (!user) {
@@ -212,25 +215,25 @@ export const getFriends = async (req, res) => {
     const followingSet = new Set(user.following.map((f) => f._id.toString()));
     const followersSet = new Set(user.followers.map((f) => f._id.toString()));
 
-    // 单向关注（我关注了对方，但对方没有关注我）
+    // Users followed by me but not following me back
     const oneWayFollowings = user.following.filter(
       (followedUser) => !followersSet.has(followedUser._id.toString())
     );
 
-    // 双向关注（互相关注）
+    // Mutual followers (both follow each other)
     const mutualFollowings = user.following.filter((followedUser) =>
       followersSet.has(followedUser._id.toString())
     );
 
-    // 被关注但未关注（对方关注了我，但我没有关注对方）
+    // Users who follow me but I don't follow back
     const followersNotFollowingBack = user.followers.filter(
       (followerUser) => !followingSet.has(followerUser._id.toString())
     );
 
     return res.status(200).json({
-      oneWayFollowings,          // 我关注了但对方没关注的
-      mutualFollowings,          // 互相关注的
-      followersNotFollowingBack, // 对方关注了我但我没关注的
+      oneWayFollowings,          // Followed by me but not following back
+      mutualFollowings,          // Mutual followings
+      followersNotFollowingBack, // Followed by them but not following back
     });
   } catch (error) {
     console.error(error);
@@ -238,10 +241,10 @@ export const getFriends = async (req, res) => {
   }
 };
 
-// 关注或取消关注用户
+// Follow or unfollow a user
 export const toggleFollow = async (req, res) => {
   try {
-    const { userId, targetId } = req.body; // 从请求体中获取用户和目标用户的ID
+    const { userId, targetId } = req.body; // Extract userId and targetId from request body
 
     if (!userId || !targetId) {
       return res
@@ -249,7 +252,7 @@ export const toggleFollow = async (req, res) => {
         .json({ message: "Both userId and targetId are required." });
     }
 
-    // 查找用户和目标用户
+    // Find the user and the target user
     const user = await User.findById(userId);
     const targetUser = await User.findById(targetId);
 
@@ -259,13 +262,13 @@ export const toggleFollow = async (req, res) => {
         .json({ message: "User or target user not found." });
     }
 
-    // 将 ObjectId 转换为字符串来进行比较
+    // Check if the user is already following the target user
     const isFollowing = user.following.some(
       (followingId) => followingId.toString() === targetId
     );
 
     if (isFollowing) {
-      // 如果已经关注了目标用户，则取消关注
+      // If already following, remove the follow
       user.following = user.following.filter(
         (followingId) => followingId.toString() !== targetId
       );
@@ -273,24 +276,24 @@ export const toggleFollow = async (req, res) => {
         (followerId) => followerId.toString() !== userId
       );
     } else {
-      // 如果没有关注目标用户，则进行关注
+      // If not following, add the follow
       user.following.push(targetId);
       targetUser.followers.push(userId);
     }
 
-    // 保存用户的更新
+    // Save the updated user and target user
     await user.save();
     await targetUser.save();
 
-    // 返回成功响应，确保 following 列表和 followers 列表包含最新的关注状态
+    // Return the updated following and followers lists
     return res.status(200).json({
       message: isFollowing
         ? "Unfollowed the user successfully."
         : "Followed the user successfully.",
-      following: user.following, // 更新后的 following 列表
-      followers: targetUser.followers, // 更新后的目标用户的 followers 列表
-      userId: user._id, // 当前用户的 ID
-      targetId: targetUser._id, // 目标用户的 ID
+      following: user.following, // Updated following list
+      followers: targetUser.followers, // Updated followers list
+      userId: user._id, // Current user ID
+      targetId: targetUser._id, // Target user ID
     });
   } catch (error) {
     console.error(error);
@@ -298,6 +301,7 @@ export const toggleFollow = async (req, res) => {
   }
 };
 
+// Update user's profile picture (avatar)
 export const updateAvatar = async (req, res) => {
   const { user, photoURL } = req.body;
   console.log("user", user);
@@ -318,27 +322,29 @@ export const updateAvatar = async (req, res) => {
   }
 };
 
+// Create a new post
 export const createPost = async (req, res) => {
-  const { title, content, author, cover } = req.body; // 从请求体中获取 title, content, author, 和 cover (URL)
+  const { title, content, author, cover } = req.body; // Extract title, content, author, and cover (URL) from request body
 
   try {
     const newPost = new Post({
       title,
       content,
-      cover: cover || null, // 将封面图片的 URL 存储到数据库，如果没有封面，设置为 null
+      cover: cover || null, // Store the cover URL, or null if no cover is provided
       author,
     });
 
     await newPost.save();
-    res.status(201).json(newPost); // 返回成功响应
+    res.status(201).json(newPost); // Return success response
   } catch (error) {
     if (error.type === "entity.too.large") {
-      return res.status(413).json({ message: "File is too large" }); // 捕获 413 错误
+      return res.status(413).json({ message: "File is too large" }); // Handle 413 error if file is too large
     }
     res.status(500).json({ message: "Failed to create post", error });
   }
 };
 
+// Update user profile information
 export const profile = async (req, res, next) => {
   const { email, username, phone, zipcode, password, confirm } = req.body;
 

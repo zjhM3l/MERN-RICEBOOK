@@ -4,30 +4,30 @@ const commentSchema = new mongoose.Schema(
   {
     content: {
       type: String,
-      required: true, // 评论内容是必填项
+      required: true, // The content of the comment is required
     },
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post", // 关联的帖子
+      ref: "Post", // Reference to the associated post
       required: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // 评论的作者
+      ref: "User", // The author of the comment
       required: true,
     },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // 存储点赞的用户ID
+        ref: "User", // Stores the user IDs of those who liked the comment
       },
     ],
     createdAt: {
       type: Date,
-      default: Date.now, // 创建时间
+      default: Date.now, // The creation time of the comment
     },
   },
-  { timestamps: true } // 添加 createdAt 和 updatedAt 字段
+  { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
 
 const Comment = mongoose.model("Comment", commentSchema);

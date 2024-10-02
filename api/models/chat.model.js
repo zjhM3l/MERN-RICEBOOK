@@ -4,19 +4,19 @@ const messageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // 发送者的用户ID，引用User表
+      ref: "User", // The user ID of the message sender, references the User collection
       required: true,
     },
     content: {
-      type: String, // 消息内容
+      type: String, // The content of the message
       required: true,
     },
     timestamp: {
-      type: Date, // 发送时间
-      default: Date.now, // 默认是当前时间
+      type: Date, // The time the message was sent
+      default: Date.now, // Default to the current time
     },
   },
-  { _id: false } // 不为每条消息生成独立的_id
+  { _id: false } // Disable generation of a unique _id for each message
 );
 
 const chatSchema = new mongoose.Schema(
@@ -24,21 +24,21 @@ const chatSchema = new mongoose.Schema(
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // 聊天参与者的用户ID
+        ref: "User", // The user ID of a chat participant, references the User collection
         required: true,
       },
     ],
-    messages: [messageSchema], // 存储消息的数组
+    messages: [messageSchema], // Array to store messages in the chat
     createdAt: {
       type: Date,
-      default: Date.now, // 聊天创建时间
+      default: Date.now, // The time the chat was created
     },
     lastMessageAt: {
-      type: Date, // 最后发送消息的时间
+      type: Date, // The time of the last message sent in the chat
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Automatically add `createdAt` and `updatedAt` timestamps
 );
 
 const Chat = mongoose.model("Chat", chatSchema);

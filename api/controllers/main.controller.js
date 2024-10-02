@@ -3,14 +3,16 @@ import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 
 export const getComments = async (req, res) => {
-  const { postId } = req.params; // 从 req.params 获取 postId
+  const { postId } = req.params; // Extract postId from req.params
 
   try {
-    const post = await Post.findById(postId); // 使用 postId 查找帖子
+    // Find the post by postId
+    const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    // Fetch all comments related to the post and populate the author and likes
     const comments = await Comment.find({ post: postId })
       .populate("author", "username profilePicture")
       .populate("likes", "username profilePicture");
@@ -24,24 +26,22 @@ export const getComments = async (req, res) => {
 
 export const getRecentPosts = async (req, res) => {
   try {
-    // 查找最近发布且带有封面的帖子，按创建时间倒序排列
-    const posts = await Post.find({ cover: { $ne: null } }) // 查询条件，确保 cover 不为 null
-      .sort({ createdAt: -1 }) // 按创建时间倒序排序
-      .limit(9); // 限制返回数量为 9 条
+    // Find recent posts with a cover image, sorted by creation time (descending)
+    const posts = await Post.find({ cover: { $ne: null } }) // Ensure cover is not null
+      .sort({ createdAt: -1 }) // Sort by creation time in descending order
+      .limit(9); // Limit the number of returned posts to 9
 
-    res.status(200).json(posts || []); // 返回帖子对象，确保返回数组
+    res.status(200).json(posts || []); // Return posts or an empty array
   } catch (error) {
-    console.error("Error fetching recent posts with covers:", error); // 打印详细错误
-    res
-      .status(500)
-      .json({ message: "Failed to fetch recent posts with covers", error });
+    console.error("Error fetching recent posts with covers:", error);
+    res.status(500).json({ message: "Failed to fetch recent posts with covers", error });
   }
 };
 
-// 获取所有帖子
+// Fetch all posts
 export const getPosts = async (req, res) => {
   try {
-    // 从数据库获取所有帖子并填充作者信息，按照 createdAt 升序排列
+    // Fetch all posts and populate author details, sorted by creation time (descending)
     const posts = await Post.find()
       .populate("author", "username profilePicture")
       .sort({ createdAt: -1 });
@@ -51,16 +51,16 @@ export const getPosts = async (req, res) => {
   }
 };
 
-// 获取单个帖子并增加浏览量
+// Fetch a single post by ID and increment its view count
 export const getPostById = async (req, res) => {
   const { postId } = req.params;
 
   try {
-    // 找到帖子并增加浏览量
+    // Find post by ID and increment view count by 1
     const post = await Post.findByIdAndUpdate(
       postId,
-      { $inc: { views: 1 } }, // 每次访问时增加浏览量
-      { new: true } // 返回更新后的帖子
+      { $inc: { views: 1 } }, // Increment view count
+      { new: true } // Return the updated post
     ).populate("author", "username profilePicture");
 
     if (!post) {
@@ -73,24 +73,25 @@ export const getPostById = async (req, res) => {
   }
 };
 
-// 点赞或取消点赞
+// Like or unlike a post
 export const toggleLikePost = async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req.body; // 假设通过body传递用户ID
+  const { userId } = req.body; // Assuming userId is passed through the body
 
   try {
+    // Find the post by ID
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // 检查用户是否已经点赞
+    // Check if the user has already liked the post
     const hasLiked = post.likes.includes(userId);
     if (hasLiked) {
-      // 如果已经点赞，取消点赞
+      // If liked, remove the like
       post.likes = post.likes.filter((id) => id.toString() !== userId);
     } else {
-      // 如果未点赞，添加点赞
+      // If not liked, add the like
       post.likes.push(userId);
     }
 

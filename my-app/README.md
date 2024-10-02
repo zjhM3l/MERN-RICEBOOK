@@ -170,3 +170,5 @@ fuck fire base 我用mongo了
 关于登出的各种报错，基本都是来自于currentUser 变为了 null，但是在 PostDetailMain 之类的各种组件的 useEffect 中和 handleLike 函数中，你仍然在尝试访问 currentUser._id，导致 TypeError: Cannot read properties of null (reading '_id') 错误。所以要添加检查，每个页面都是，只要用户能在这里登出就要检查。
 
 全是放屁，直接自己实现了不用firebase了。
+
+不改变内容，把里面的中文注释改成英文，调整注释使代码更清晰

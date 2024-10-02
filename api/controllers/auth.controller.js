@@ -29,7 +29,7 @@ const generateRandomPhone = () => {
   return `${areaCode}-${centralOfficeCode}-${lineNumber}`;
 };
 
-// Helper function to generate a random date of birth (at least 18 years old)
+// Helper function to generate a random date of birth (user must be at least 18 years old)
 const generateRandomDateOfBirth = () => {
   const start = new Date(1970, 0, 1);
   const end = new Date();
@@ -152,6 +152,7 @@ export const signin = async (req, res, next) => {
       });
     }
 
+    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
     // Remove password from user object
@@ -169,21 +170,21 @@ export const signin = async (req, res, next) => {
   }
 };
 
-// 登出用户
+// Log out user
 export const logoutUser = (req, res) => {
   try {
-    // 如果使用的是session，可以销毁会话
+    // If using sessions, destroy the session
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({ message: "Failed to log out" });
       }
-      // 清除客户端cookie
-      res.clearCookie("connect.sid"); // 如果使用express-session
+      // Clear the session cookie on the client side
+      res.clearCookie("connect.sid"); // If using express-session
 
       return res.status(200).json({ message: "Logged out successfully" });
     });
 
-    // 如果使用的是JWT，不需要销毁会话，只需要在客户端删除token
+    // If using JWT, no need to destroy the session, just remove the token on the client side
     // res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
     return res
@@ -197,6 +198,7 @@ export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
+      // User already exists, generate token and log them in
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password, ...rest } = user._doc;
       res
@@ -206,6 +208,7 @@ export const google = async (req, res, next) => {
         })
         .json(rest);
     } else {
+      // Generate random values for a new user
       const generatedPassword = generateRandomPassword();
       const generatedPhone = generateRandomPhone();
       const generatedDateOfBirth = generateRandomDateOfBirth();
@@ -213,8 +216,6 @@ export const google = async (req, res, next) => {
 
       // Hash the generated password
       const hashPassword = bcryptjs.hashSync(generatedPassword, 10);
-
-      console.log(generateValidUsername(name));
 
       // Create new user with generated values
       const newUser = new User({

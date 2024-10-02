@@ -74,18 +74,17 @@ const userSchema = new mongoose.Schema(
     following: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "User", // List of users this user is following
       },
     ],
-    // 新增 followers 字段，存储关注该用户的粉丝
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "User", // List of users who are following this user
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true } // Automatically manage createdAt and updatedAt fields
 );
 
 const User = mongoose.model("User", userSchema);
