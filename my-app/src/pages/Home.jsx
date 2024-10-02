@@ -9,11 +9,11 @@ import { useSelector } from "react-redux";
 
 export const Home = () => {
   const mode = useSelector((state) => state.theme.mode);
-  const [feedKey, setFeedKey] = useState(0); // 用于强制刷新 Feed
+  const [feedKey, setFeedKey] = useState(0); // Used to force Feed to refresh
 
-  // 定义刷新 Feed 的函数
+  // Define a function to refresh the Feed
   const refreshFeed = () => {
-    setFeedKey((prevKey) => prevKey + 1); // 通过更新 key 强制 Feed 重新加载
+    setFeedKey((prevKey) => prevKey + 1); // Increment key to force Feed to reload
   };
 
   const darkTheme = createTheme({
@@ -28,10 +28,10 @@ export const Home = () => {
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar />
-          <Feed key={feedKey} /> {/* 根据 key 刷新 Feed */}
+          <Feed key={feedKey} /> {/* Feed will refresh based on the key */}
           <Rightbar />
         </Stack>
-        <Add onPostSuccess={refreshFeed} /> {/* 将刷新函数传递给 Add */}
+        <Add onPostSuccess={refreshFeed} /> {/* Pass refresh function to Add */}
       </Box>
     </ThemeProvider>
   );

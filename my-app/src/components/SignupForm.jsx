@@ -22,7 +22,7 @@ export const SignupForm = () => {
       });
       const data = await res.json();
       if (!res.ok) {
-        // 假设后端返回的错误信息是一个字符串，包含多个错误消息
+        // Assuming the backend returns an error message string containing multiple errors
         const errorMessages = data.message.split(", ");
         const newErrors = {};
 

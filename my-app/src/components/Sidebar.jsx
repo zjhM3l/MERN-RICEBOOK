@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom"; // 引入 useLocation
+import { useLocation, Link } from "react-router-dom"; // Import useLocation and Link
 import { ExpandLess, ExpandMore, Home } from "@mui/icons-material";
 import {
   Box,
@@ -26,11 +26,11 @@ import { toggleMode } from "../redux/theme/themeSlice";
 
 export const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
-  const { currentUser } = useSelector((state) => state.user); // 从 Redux 获取当前用户状态
+  const { currentUser } = useSelector((state) => state.user); // Get the current user state from Redux
   const dispatch = useDispatch();
   const mode = useSelector((state) => state.theme.mode);
 
-  // 获取当前页面路径
+  // Get the current page path
   const location = useLocation();
 
   const handleClick = () => {
@@ -44,7 +44,7 @@ export const Sidebar = () => {
           <ListItem disablePadding>
             <ListItemButton component={Link} to="/home">
               {" "}
-              {/* Use Link component */}
+              {/* Use Link component for navigation */}
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -54,7 +54,7 @@ export const Sidebar = () => {
           <ListItem disablePadding>
             <ListItemButton component={Link} to="/pages">
               {" "}
-              {/* Use Link component */}
+              {/* Use Link component for navigation */}
               <ListItemIcon>
                 <Article />
               </ListItemIcon>
@@ -62,13 +62,13 @@ export const Sidebar = () => {
             </ListItemButton>
           </ListItem>
 
-          {/* 如果用户存在，才显示 Groups, Friends, Filters, Profile */}
+          {/* Only display Groups, Friends, Filters, and Profile if the user is logged in */}
           {currentUser && (
             <>
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/groups">
                   {" "}
-                  {/* Use Link component */}
+                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <People />
                   </ListItemIcon>
@@ -78,7 +78,7 @@ export const Sidebar = () => {
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/friend">
                   {" "}
-                  {/* Use Link component */}
+                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
@@ -86,7 +86,7 @@ export const Sidebar = () => {
                 </ListItemButton>
               </ListItem>
 
-              {/* 只在非 PostDetail 页面显示 Filters */}
+              {/* Only display Filters if the current page is not a PostDetail page */}
               {!location.pathname.startsWith("/post/") && (
                 <>
                   <ListItem disablePadding>
@@ -107,7 +107,7 @@ export const Sidebar = () => {
                           to="/liked"
                         >
                           {" "}
-                          {/* Use Link component */}
+                          {/* Use Link component for navigation */}
                           <ListItemIcon>
                             <Favorite />
                           </ListItemIcon>
@@ -121,7 +121,7 @@ export const Sidebar = () => {
                           to="/moments"
                         >
                           {" "}
-                          {/* Use Link component */}
+                          {/* Use Link component for navigation */}
                           <ListItemIcon>
                             <Camera />
                           </ListItemIcon>
@@ -135,7 +135,7 @@ export const Sidebar = () => {
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/profile">
                   {" "}
-                  {/* Use Link component */}
+                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <AccountBox />
                   </ListItemIcon>
@@ -148,7 +148,7 @@ export const Sidebar = () => {
           <ListItem disablePadding>
             <ListItemButton component={Link} to="/settings">
               {" "}
-              {/* Use Link component */}
+              {/* Use Link component for navigation */}
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
@@ -162,7 +162,7 @@ export const Sidebar = () => {
               </ListItemIcon>
               <Switch
                 checked={mode === "dark"}
-                onChange={() => dispatch(toggleMode())}
+                onChange={() => dispatch(toggleMode())} // Toggle between dark and light mode
               />
             </ListItemButton>
           </ListItem>

@@ -7,7 +7,7 @@ import { Rightbar } from "../components/Rightbar";
 import { PostDetailMain } from "../components/PostDetailMain";
 import { PostComment } from "../components/PostComment";
 import { AddComment } from "../components/AddComment";
-import { useParams } from "react-router-dom"; // 用于获取路由中的 postId
+import { useParams } from "react-router-dom"; // Used to retrieve postId from the route
 
 export const PostDetail = () => {
   const mode = useSelector((state) => state.theme.mode);
@@ -17,12 +17,12 @@ export const PostDetail = () => {
     },
   });
 
-  const { postId } = useParams(); // 从路由中获取 postId
+  const { postId } = useParams(); // Retrieve postId from the route
   const [refreshComments, setRefreshComments] = useState(false);
 
-  // 评论成功后的回调函数，用于刷新评论区
+  // Callback function after a successful comment, used to refresh the comment section
   const handleCommentSuccess = () => {
-    setRefreshComments(!refreshComments); // 触发刷新
+    setRefreshComments(!refreshComments); // Trigger refresh
   };
 
   return (
@@ -41,9 +41,9 @@ export const PostDetail = () => {
             flex={4}
             p={2}
           >
-            <PostDetailMain postId={postId} /> {/* 传递 postId */}
-            <AddComment postId={postId} onCommentSuccess={handleCommentSuccess} /> {/* 传递 postId 和回调函数 */}
-            <PostComment postId={postId} refresh={refreshComments} /> {/* 传递 postId 和刷新状态 */}
+            <PostDetailMain postId={postId} /> {/* Pass postId */}
+            <AddComment postId={postId} onCommentSuccess={handleCommentSuccess} /> {/* Pass postId and callback function */}
+            <PostComment postId={postId} refresh={refreshComments} /> {/* Pass postId and refresh state */}
           </Stack>
           <Rightbar />
         </Stack>

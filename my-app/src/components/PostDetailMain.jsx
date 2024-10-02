@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // 用于获取路由中的 postId 参数
+import { useParams } from "react-router-dom"; // Used to retrieve the postId parameter from the route
 import {
   Avatar,
   Card,
@@ -21,13 +21,13 @@ import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-// 自定义样式的 Badge，带有瞬间动画的 ripple 效果
+// Custom styled Badge with ripple animation effect
 const StyledBadge = styled(Badge)(({ theme, triggerAnimation }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
     color: "#fff",
     boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    animation: triggerAnimation ? "ripple 0.8s ease-in-out" : "none", // 只在触发时播放动画
+    animation: triggerAnimation ? "ripple 0.8s ease-in-out" : "none", // Animation triggered when needed
     "&::after": {
       position: "absolute",
       top: 0,
@@ -35,7 +35,6 @@ const StyledBadge = styled(Badge)(({ theme, triggerAnimation }) => ({
       width: "100%",
       height: "100%",
       borderRadius: "50%",
-      // border: '1px solid currentColor',
       content: '""',
     },
   },
@@ -52,13 +51,13 @@ const StyledBadge = styled(Badge)(({ theme, triggerAnimation }) => ({
 }));
 
 export const PostDetailMain = () => {
-  const { postId } = useParams(); // 获取 postId 参数
-  const [post, setPost] = useState(null); // 保存帖子数据
-  const [loading, setLoading] = useState(true); // 控制加载状态
-  const [error, setError] = useState(null); // 保存错误信息
-  const [isLiked, setIsLiked] = useState(false); // 控制点赞状态
-  const [triggerAnimation, setTriggerAnimation] = useState(false); // 控制动画的状态
-  const currentUser = useSelector((state) => state.user.currentUser); // 当前用户
+  const { postId } = useParams(); // Retrieve postId from the URL parameters
+  const [post, setPost] = useState(null); // Store post data
+  const [loading, setLoading] = useState(true); // Control loading state
+  const [error, setError] = useState(null); // Store error messages
+  const [isLiked, setIsLiked] = useState(false); // Track like status
+  const [triggerAnimation, setTriggerAnimation] = useState(false); // Control like animation state
+  const currentUser = useSelector((state) => state.user.currentUser); // Get the current user
 
   useEffect(() => {
     if (currentUser) {
@@ -69,7 +68,7 @@ export const PostDetailMain = () => {
           );
           const data = await response.json();
           setPost(data);
-          setIsLiked(data.likes.includes(currentUser._id)); // 检查用户是否已经点赞
+          setIsLiked(data.likes.includes(currentUser._id)); // Check if the current user has liked the post
           setLoading(false);
         } catch (err) {
           setError(err.message);
@@ -79,8 +78,8 @@ export const PostDetailMain = () => {
   
       fetchPost();
     } else {
-      setIsLiked(false); // 如果用户未登录，设为未点赞
-      setLoading(false); // 停止加载
+      setIsLiked(false); // Set like status to false if the user is not logged in
+      setLoading(false); // Stop loading
     }
   }, [postId, currentUser]);  
 
@@ -94,14 +93,15 @@ export const PostDetailMain = () => {
         body: JSON.stringify({ userId: currentUser._id }),
       });
 
-      setIsLiked(!isLiked); // 切换点赞状态
-      setTriggerAnimation(true); // 触发动画
+      setIsLiked(!isLiked); // Toggle like status
+      setTriggerAnimation(true); // Trigger the ripple animation
 
-      // 短暂显示动画后停止
+      // Stop the animation after a short delay
       setTimeout(() => {
         setTriggerAnimation(false);
       }, 800);
 
+      // Update the post's likes in the UI
       setPost((prev) => ({
         ...prev,
         likes: isLiked
@@ -114,8 +114,8 @@ export const PostDetailMain = () => {
   };
 
   if (loading)
-    return <CircularProgress sx={{ display: "block", margin: "auto" }} />; // 显示加载中状态
-  if (error) return <Typography color="error">Error: {error}</Typography>; // 显示错误信息
+    return <CircularProgress sx={{ display: "block", margin: "auto" }} />; // Display loading spinner
+  if (error) return <Typography color="error">Error: {error}</Typography>; // Display error message
 
   return (
     <Box
@@ -139,9 +139,9 @@ export const PostDetailMain = () => {
             </Avatar>
           }
           title={post.author.username}
-          subheader={new Date(post.createdAt).toLocaleDateString()} // 显示发布日期
+          subheader={new Date(post.createdAt).toLocaleDateString()} // Display the post creation date
         />
-        {/* 如果有封面图片则显示 */}
+        {/* Display cover image if available */}
         {post.cover && (
           <CardMedia
             component="img"
@@ -150,8 +150,8 @@ export const PostDetailMain = () => {
             alt={post.title}
             sx={{
               width: "100%",
-              maxWidth: "100%", // 控制封面图片宽度不超出页面
-              objectFit: "contain", // 保持图片比例
+              maxWidth: "100%", // Ensure the image doesn't exceed the page width
+              objectFit: "contain", // Maintain the image's aspect ratio
               marginBottom: 2,
             }}
           />
@@ -160,7 +160,7 @@ export const PostDetailMain = () => {
           <Typography variant="h5" component="div" gutterBottom>
             {post.title}
           </Typography>
-          {/* 帖子内容 */}
+          {/* Post content */}
           <Typography
             variant="body1"
             color="text.secondary"
@@ -168,36 +168,36 @@ export const PostDetailMain = () => {
             sx={{
               mb: 2,
               "& img": {
-                maxWidth: "100%", // 确保 Quill 内容中的图片不会超出页面宽度
-                height: "auto", // 保持图片原始比例
-                display: "block", // 确保图片独占一行
-                margin: "10px 0", // 给图片增加上下间距
+                maxWidth: "100%", // Ensure images in the Quill content don't exceed the page width
+                height: "auto", // Maintain original image aspect ratio
+                display: "block", // Ensure the image takes up its own line
+                margin: "10px 0", // Add margin around images
               },
             }}
           />
-          {/* 其他信息：浏览次数、点赞次数 */}
+          {/* Additional info: views and likes */}
           <Stack
             direction="row"
             spacing={4}
             justifyContent="space-between"
             alignItems="center"
           >
-            {/* 浏览次数 */}
+            {/* View count */}
             <IconButton>
               <StyledBadge
-                badgeContent={post.views || 0} // 显示浏览次数
+                badgeContent={post.views || 0} // Display view count
                 color="primary"
               >
                 <RemoveRedEyeIcon />
               </StyledBadge>
             </IconButton>
 
-            {/* 点赞次数 */}
+            {/* Like count */}
             <IconButton onClick={handleLike}>
               <StyledBadge
-                badgeContent={post.likes.length} // 显示点赞次数
+                badgeContent={post.likes.length} // Display like count
                 color="secondary"
-                triggerAnimation={triggerAnimation} // 动画触发状态
+                triggerAnimation={triggerAnimation} // Control like animation
               >
                 {isLiked ? (
                   <FavoriteIcon color="error" />

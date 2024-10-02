@@ -28,7 +28,7 @@ export const Signin = () => {
             p={2}
             sx={{ flexDirection: { xs: "column", sm: "row" } }}
             justifyContent="center"
-            alignItems="center" // 确保竖直方向居中
+            alignItems="center"
           >
             <Logo />
             <SigninForm />
