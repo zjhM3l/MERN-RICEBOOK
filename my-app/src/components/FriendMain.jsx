@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import SwipeRightAltIcon from '@mui/icons-material/SwipeRightAlt';
 import SwipeLeftAltIcon from '@mui/icons-material/SwipeLeftAlt';
-import SendIcon from '@mui/icons-material/Send';  // 导入发送按钮
-import { useNavigate } from 'react-router-dom';  // 导入 useNavigate
+import SendIcon from '@mui/icons-material/Send';  // Import the send button
+import { useNavigate } from 'react-router-dom';  // Import useNavigate for navigation
 import { updateFollowingSuccess } from '../redux/user/userSlice.js';
 
 // FriendListItem component
@@ -48,7 +48,7 @@ const FriendListItem = ({ friend, icon, onFollowToggle, onChatClick }) => {
         <ListItemText primary={friend.username} secondary={`${new Date(friend.dateOfBirth).toLocaleDateString()}`} />
         <ListItemIcon>{icon}</ListItemIcon>
 
-        {/* 添加聊天按钮 */}
+        {/* Add chat button */}
         <IconButton onClick={() => onChatClick(friend._id)}>
           <SendIcon color="primary" />
         </IconButton>
@@ -67,7 +67,7 @@ export const FriendMain = () => {
 
   const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
-  const navigate = useNavigate();  // 用于跳转
+  const navigate = useNavigate();  // Used for navigation
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -111,7 +111,7 @@ export const FriendMain = () => {
       });
 
       const chat = await response.json();
-      // 跳转到聊天界面
+      // Navigate to the chat interface
       navigate(`/chat/${chat._id}`);
     } catch (error) {
       console.error("Error entering chat room:", error);
@@ -127,7 +127,7 @@ export const FriendMain = () => {
             friend={friend}
             icon={<SyncAltIcon color="primary" />}
             onFollowToggle={handleFollowToggle}
-            onChatClick={handleChatClick}  // 点击聊天按钮时执行
+            onChatClick={handleChatClick}  // Executes when the chat button is clicked
           />
         ))}
         {friends.oneWayFollowings.length > 0 && friends.oneWayFollowings.map((friend) => (

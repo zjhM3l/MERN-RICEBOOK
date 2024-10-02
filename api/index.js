@@ -8,6 +8,7 @@ import mainRoutes from "./routes/main.route.js";
 
 dotenv.config();
 
+// Connect to MongoDB using credentials from the environment variable
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
@@ -19,18 +20,20 @@ mongoose
 
 const app = express();
 
-// 设置最大文件大小限制 (如 5MB)
+// Set the maximum file size limit for incoming requests (e.g., 5MB)
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 app.use(cors());
 
+// Middleware to parse JSON request bodies
 app.use(express.json());
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
 
+// Define routes for user, authentication, and main operations
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/main", mainRoutes);
@@ -38,10 +41,12 @@ app.use("/api/main", mainRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   if (err.type === "entity.too.large") {
+    // Handle requests that exceed the file size limit
     res.status(413).json({ message: "Payload Too Large. File is too big." });
   } else {
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+    // Generic error handler for other types of errors
     res.status(statusCode).json({
       success: false,
       statusCode,

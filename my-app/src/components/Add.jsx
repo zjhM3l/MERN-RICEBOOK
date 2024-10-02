@@ -11,7 +11,7 @@ import {
   Typography,
   TextField,
   Alert,
-} from "@mui/material"; // 引入 Alert 组件
+} from "@mui/material"; // Importing Alert component
 import AddIcon from "@mui/icons-material/Add";
 import CropFree from "@mui/icons-material/CropFree";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -26,12 +26,14 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 
+// Styled modal for the post creation form
 const StyledModal = styled(Modal)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
 });
 
+// Box that displays the current user information
 const UserBox = styled(Box)({
   display: "flex",
   alignItems: "center",
@@ -39,41 +41,45 @@ const UserBox = styled(Box)({
   marginBottom: "20px",
 });
 
+// Hidden file input for the cover image upload
 const VisuallyHiddenInput = styled("input")({
   display: "none",
 });
 
 export const Add = ({ onPostSuccess }) => {
-  // 接受 onPostSuccess 回调
   const [open, setOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [cover, setCover] = useState(null); // 保存封面图片文件
-  const [uploading, setUploading] = useState(false); // 上传状态
-  const [error, setError] = useState(null); // 用于保存错误消息
-  const { currentUser } = useSelector((state) => state.user); // 获取当前用户
+  const [cover, setCover] = useState(null); // State to store cover image file
+  const [uploading, setUploading] = useState(false); // Upload status
+  const [error, setError] = useState(null); // State to store error messages
+  const { currentUser } = useSelector((state) => state.user); // Get the current user
 
+  // Toggles between expanded and normal view
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Handle changes in the text editor content
   const handleContentChange = (value) => {
     setContent(value);
   };
 
+  // Handle file selection for cover image
   const handleFileChange = (e) => {
-    setCover(e.target.files[0]); // 获取文件
+    setCover(e.target.files[0]); // Save the selected file
   };
 
+  // Handle post creation logic
   const handlePost = async () => {
-    if (!currentUser || !title || !content) return; // 检查 title 和 content 是否有值
+    if (!currentUser || !title || !content) return; // Ensure title and content are filled
 
     let coverUrl = null;
 
-    // 如果封面存在，则上传到 Firebase Storage
+    // If a cover image is selected, upload it to Firebase Storage
     if (cover) {
-      setUploading(true); // 设置上传状态为 true
+      setUploading(true); // Set uploading state to true
 
       const storage = getStorage(app);
       const storageRef = ref(storage, `covers/${cover.name}-${Date.now()}`);
@@ -82,30 +88,31 @@ export const Add = ({ onPostSuccess }) => {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // 可以根据需要添加进度条逻辑
+          // Optionally add progress logic here
         },
         (error) => {
           console.error("Error uploading cover:", error);
-          setUploading(false); // 上传失败
+          setUploading(false); // Set uploading state to false on failure
           setError("Failed to upload cover image.");
         },
         async () => {
-          coverUrl = await getDownloadURL(uploadTask.snapshot.ref); // 获取封面图片的下载 URL
-          setUploading(false); // 上传成功，设置上传状态为 false
-          createPostRequest(coverUrl); // 上传成功后调用创建帖子逻辑
+          coverUrl = await getDownloadURL(uploadTask.snapshot.ref); // Get the download URL for the cover image
+          setUploading(false); // Set uploading state to false on success
+          createPostRequest(coverUrl); // Call the post creation logic with the uploaded cover URL
         }
       );
     } else {
-      createPostRequest(null); // 没有封面时调用创建帖子逻辑
+      createPostRequest(null); // If no cover image, proceed with post creation without cover URL
     }
   };
 
+  // Sends a request to create a post
   const createPostRequest = async (coverUrl) => {
     const postData = {
       title,
       content,
-      author: currentUser._id, // 当前用户 ID
-      cover: coverUrl, // 包含封面图片的 URL 或者 null
+      author: currentUser._id, // Use current user's ID as the author
+      cover: coverUrl, // Include cover URL if it exists
     };
 
     try {
@@ -114,28 +121,28 @@ export const Add = ({ onPostSuccess }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(postData), // 将帖子数据发送到后端
+        body: JSON.stringify(postData), // Send post data to the backend
       });
 
       if (!res.ok) {
         if (res.status === 413) {
-          throw new Error("File too large. Please select a smaller file."); // 捕获 413 错误
+          throw new Error("File too large. Please select a smaller file."); // Catch 413 file size error
         }
         throw new Error("Failed to create post");
       }
 
       const data = await res.json();
       console.log("Post created:", data);
-      setOpen(false); // 关闭 Modal
-      setTitle(""); // 清空标题
-      setContent(""); // 清空内容
-      setCover(null); // 清空封面
-      setError(null); // 清空错误消息
+      setOpen(false); // Close the modal
+      setTitle(""); // Clear title input
+      setContent(""); // Clear content input
+      setCover(null); // Clear cover image
+      setError(null); // Clear error message
 
-      onPostSuccess(); // 调用回调函数刷新 Feed
+      onPostSuccess(); // Call callback to refresh the feed
     } catch (error) {
       console.error("Failed to create post:", error);
-      setError(error.message); // 显示错误消息
+      setError(error.message); // Display error message
     }
   };
 
@@ -164,13 +171,13 @@ export const Add = ({ onPostSuccess }) => {
           width={isExpanded ? "80vw" : "400px"}
           maxWidth="90vw"
           maxHeight="90vh"
-          height={isExpanded ? "80vh" : "auto"} // 动态高度
+          height={isExpanded ? "80vh" : "auto"} // Dynamic height based on expanded state
           bgcolor={"background.default"}
           color={"text.primary"}
           p={3}
           borderRadius={5}
           sx={{
-            overflowY: "auto", // 当内容超出时启用滚动条
+            overflowY: "auto", // Enable scrolling if content overflows
             transition: "transform 0.4s ease, opacity 0.4s ease",
             transform: isExpanded ? "scale(1.05)" : "scale(1)",
             opacity: isExpanded ? 1 : 0.9,
@@ -187,7 +194,7 @@ export const Add = ({ onPostSuccess }) => {
               {error}
             </Alert>
           )}{" "}
-          {/* 错误提示框 */}
+          {/* Error alert box */}
           <UserBox>
             <Avatar
               src={
@@ -211,8 +218,8 @@ export const Add = ({ onPostSuccess }) => {
           />
           <Box
             sx={{
-              maxHeight: isExpanded ? "65vh" : "200px", // 设置文本框的最大高度
-              overflowY: "auto", // 启用文本框内部滚动
+              maxHeight: isExpanded ? "65vh" : "200px", // Set max height of text editor
+              overflowY: "auto", // Enable scrolling within the text editor
               marginBottom: "10px",
             }}
           >
@@ -263,7 +270,7 @@ export const Add = ({ onPostSuccess }) => {
               variant="contained"
               startIcon={<CloudUploadIcon />}
               sx={{ flex: 1 }}
-              disabled={uploading} // 禁用按钮如果正在上传
+              disabled={uploading} // Disable button while uploading
             >
               Cover
               <VisuallyHiddenInput

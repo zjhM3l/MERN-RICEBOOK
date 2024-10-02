@@ -9,12 +9,14 @@ export const AddComment = ({ postId, onCommentSuccess }) => {
   const [fontWeight, setFontWeight] = useState('normal');
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const { currentUser } = useSelector((state) => state.user); // 获取当前用户信息
+  const { currentUser } = useSelector((state) => state.user); // Get the current user from the Redux store
 
+  // Handle the change in comment input
   const handleCommentChange = (event) => {
     setComment(event.target.value);
   };
 
+  // Handle the submission of the comment
   const handleSendComment = async () => {
     if (!comment.trim()) {
       alert("Comment cannot be empty");
@@ -33,16 +35,16 @@ export const AddComment = ({ postId, onCommentSuccess }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          postId,  // 使用从父组件传递的 postId
+          postId,  // Use the postId passed from the parent component
           content: comment,
-          author: currentUser._id // 传递当前用户ID作为评论作者
+          author: currentUser._id // Pass the current user ID as the comment author
         }),
       });
       const data = await res.json();
       if (res.ok) {
         alert("Comment added successfully");
-        setComment(""); // 清空评论输入框
-        if (onCommentSuccess) onCommentSuccess(); // 成功后的回调函数，刷新评论区
+        setComment(""); // Clear the comment input field
+        if (onCommentSuccess) onCommentSuccess(); // Call the success callback to refresh the comment section
       } else {
         console.error("Error adding comment:", data.message);
       }

@@ -6,11 +6,12 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 export const Chat = ({ chatId }) => {
-  const [messages, setMessages] = useState([]); // Ensure messages is initialized as an array
+  const [messages, setMessages] = useState([]); // Initialize messages as an empty array
   const [newMessage, setNewMessage] = useState("");
-  const currentUser = useSelector((state) => state.user.currentUser);
-  const messagesEndRef = useRef(null); // Create a reference for auto-scroll
+  const currentUser = useSelector((state) => state.user.currentUser); // Get the current user from the Redux store
+  const messagesEndRef = useRef(null); // Reference for auto-scrolling to the bottom
 
+  // Fetch chat messages when chatId or currentUser changes
   useEffect(() => {
     if (!currentUser) return;
 
@@ -19,15 +20,15 @@ export const Chat = ({ chatId }) => {
         const response = await fetch(`http://localhost:3000/api/user/chat/${chatId}/messages`);
         const data = await response.json();
 
-        // Check if data is an array before setting it to messages
+        // Ensure data is an array before setting the messages
         if (Array.isArray(data)) {
           setMessages(data);
         } else {
-          setMessages([]); // Default to an empty array if not
+          setMessages([]); // Set to an empty array if the response is not an array
         }
       } catch (error) {
         console.error("Failed to fetch messages:", error);
-        setMessages([]); // Set empty array on error
+        setMessages([]); // Set empty array in case of an error
       }
     };
 
@@ -36,6 +37,7 @@ export const Chat = ({ chatId }) => {
     }
   }, [chatId, currentUser]);
 
+  // Automatically scroll to the bottom of the chat after new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -44,6 +46,7 @@ export const Chat = ({ chatId }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Handle sending a new message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentUser) return;
 
@@ -59,14 +62,15 @@ export const Chat = ({ chatId }) => {
       // Manually set the sender to the current user
       message.sender = currentUser;
 
-      // Append the new message to the list
+      // Add the new message to the message list
       setMessages([...messages, message]);
-      setNewMessage("");
+      setNewMessage(""); // Clear the message input
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
+  // Handle input change in ReactQuill
   const handleQuillChange = (value) => {
     setNewMessage(value);
   };
@@ -119,7 +123,7 @@ export const Chat = ({ chatId }) => {
         ) : (
           <Typography>No messages yet</Typography>
         )}
-        <div ref={messagesEndRef} /> {/* Auto-scroll to this div */}
+        <div ref={messagesEndRef} /> {/* Auto-scroll reference */}
       </Box>
 
       {/* Input and send button area with ReactQuill */}

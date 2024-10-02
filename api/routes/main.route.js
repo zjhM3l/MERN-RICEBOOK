@@ -13,6 +13,6 @@ router.get("/recent-posts", getRecentPosts);
 router.get("/posts", getPosts);
 router.get("/:postId", getPostById);
 router.post("/:postId/like", toggleLikePost);
-router.get("/getcomments/:postId", getComments); // 改为路径参数
+router.get("/getcomments/:postId", getComments);
 
 export default router;

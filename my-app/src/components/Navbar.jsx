@@ -51,7 +51,7 @@ const UserBox = styled(Box)(({ theme }) => ({
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // 未回复消息的数量
+  const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // Count of unreplied messages
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ export const Navbar = () => {
 
     fetch("http://localhost:3000/api/auth/logout", {
       method: "POST",
-      credentials: "include", // 以便清除session
+      credentials: "include", // Include credentials for session clearance
     })
       .then((response) => {
         if (!response.ok) {
@@ -76,7 +76,7 @@ export const Navbar = () => {
       });
   };
 
-  // Fetch unreplied messages count from the backend
+  // Fetch the count of unreplied messages from the backend
   useEffect(() => {
     const fetchUnrepliedMessagesCount = async () => {
       if (currentUser) {
@@ -88,7 +88,7 @@ export const Navbar = () => {
           }
 
           const data = await response.json();
-          setUnrepliedMessagesCount(data.unrepliedMessagesCount); // 更新未回复消息的数量
+          setUnrepliedMessagesCount(data.unrepliedMessagesCount); // Update the count of unreplied messages
         } catch (error) {
           console.error("Error fetching unreplied messages count:", error);
         }
@@ -96,7 +96,7 @@ export const Navbar = () => {
     };
 
     fetchUnrepliedMessagesCount();
-  }, [currentUser]); // 当 currentUser 改变时重新获取消息数量
+  }, [currentUser]); // Re-fetch message count when currentUser changes
 
   useEffect(() => {
     if (
@@ -129,7 +129,7 @@ export const Navbar = () => {
           {currentUser && (
             <>
               <IconButton aria-label="mail" sx={{ color: "white" }}>
-                <Badge badgeContent={unrepliedMessagesCount} color="error"> {/* 使用未读消息数量 */}
+                <Badge badgeContent={unrepliedMessagesCount} color="error"> {/* Display unreplied message count */}
                   <MailIcon />
                 </Badge>
               </IconButton>

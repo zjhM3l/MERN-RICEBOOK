@@ -20,8 +20,8 @@ import CropFree from "@mui/icons-material/CropFree";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
-import { updateFollowingSuccess } from "../redux/user/userSlice.js"; // 导入新的 action
-import { useNavigate } from "react-router-dom"; // 导入 useNavigate 进行导航
+import { updateFollowingSuccess } from "../redux/user/userSlice.js"; // Import the action to update following status
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -65,19 +65,19 @@ const ExpandMore = styled((props) => {
 
 export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [expanded, setExpanded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // 控制卡片放大动画
-  const [isFollowAction, setIsFollowAction] = useState(false); // 新增：用于标记是否是关注操作
-  const currentUser = useSelector((state) => state.user.currentUser); // 获取当前用户
+  const [isHovered, setIsHovered] = useState(false); // Controls card hover animation
+  const [isFollowAction, setIsFollowAction] = useState(false); // New: To track if it’s a follow action
+  const currentUser = useSelector((state) => state.user.currentUser); // Retrieve the current user
   const [isLiked, setIsLiked] = useState(
-    currentUser && post.likes.includes(currentUser._id) // 添加 null 检查
-  ); // 通过后端获取的点赞状态
-  const [likeCount, setLikeCount] = useState(post.likes.length); // 用于存储点赞次数
-  const dispatch = useDispatch(); // 获取 dispatch 用于更新 Redux 状态
-  const pressTimer = useRef(null); // 长按计时器
-  const restoreTimer = useRef(null); // 动画恢复计时器
-  const [isFollowing, setIsFollowing] = useState(false); // 用于存储当前的关注状态
-  const [isPressed, setIsPressed] = useState(false); // 用于存储按住状态以触发动画
-  const navigate = useNavigate(); // 导航到详情页面
+    currentUser && post.likes.includes(currentUser._id) // Add null check
+  ); // Track like status from backend
+  const [likeCount, setLikeCount] = useState(post.likes.length); // Store like count
+  const dispatch = useDispatch(); // Get dispatch for updating Redux state
+  const pressTimer = useRef(null); // Timer for long press
+  const restoreTimer = useRef(null); // Timer for restoring animation
+  const [isFollowing, setIsFollowing] = useState(false); // Store current following status
+  const [isPressed, setIsPressed] = useState(false); // Track press state to trigger animation
+  const navigate = useNavigate(); // Navigate to the post detail page
 
   useEffect(() => {
     if (currentUser && currentUser.following) {
@@ -91,43 +91,43 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   }, [currentUser, post.author._id]);
 
   const handleExpandClick = (event) => {
-    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+    event.stopPropagation(); // Prevent event bubbling to stop card click
     setExpanded(!expanded);
   };
 
   const handleMouseDown = (event) => {
-    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
-    setIsPressed(true); // 开始动画，触发头像变大
+    event.stopPropagation(); // Prevent event bubbling to stop card click
+    setIsPressed(true); // Start animation, trigger avatar enlargement
 
     pressTimer.current = setTimeout(() => {
-      handleFollowToggle(event); // 执行关注/取消关注
-    }, 800); // 800毫秒定义为长按
+      handleFollowToggle(event); // Perform follow/unfollow action
+    }, 800); // 800 milliseconds defines long press
 
     restoreTimer.current = setTimeout(() => {
-      setIsPressed(false); // 在800毫秒后触发恢复到原始大小
-    }, 800); // 动画恢复计时
+      setIsPressed(false); // Revert to original size after 800ms
+    }, 800); // Timer for restoring animation
   };
 
   const handleMouseUp = (event) => {
-    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
-    setIsPressed(false); // 停止动画，恢复头像大小
+    event.stopPropagation(); // Prevent event bubbling to stop card click
+    setIsPressed(false); // Stop animation, revert avatar size
 
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
     }
 
     if (restoreTimer.current) {
-      clearTimeout(restoreTimer.current); // 如果用户提前松开鼠标，停止动画恢复
+      clearTimeout(restoreTimer.current); // Stop restore timer if mouse is released early
     }
   };
 
   const handleFollowToggle = async (event) => {
-    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+    event.stopPropagation(); // Prevent event bubbling to stop card click
   
-    // 添加检查，确保用户已登录
+    // Add check to ensure user is logged in
     if (!currentUser || currentUser._id === post.author._id) {
       console.log("You cannot follow yourself."); // Log or alert for trying to follow self
-      setIsFollowAction(true); // 防止跳转，和关注别人一样
+      setIsFollowAction(true); // Prevent navigation, handle like a follow action
       return;
     }
   
@@ -152,28 +152,28 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   
       const data = await response.json();
   
-      // 更新 Redux 中的 currentUser.following
+      // Update currentUser.following in Redux
       dispatch(
         updateFollowingSuccess({
-          following: data.following, // 将新的 following 列表传递给 Redux
+          following: data.following, // Pass the updated following list to Redux
         })
       );
   
-      // 更新目标用户的粉丝数或状态（如果需要）
+      // Update the following state of the target user (if necessary)
       setIsFollowing(
         data.following.some((f) => f.toString() === post.author._id.toString())
       );
   
-      setIsFollowAction(true); // 关注操作完成后设置为true，防止跳转
+      setIsFollowAction(true); // Set to true after follow action completes to prevent navigation
     } catch (error) {
       console.error("Error during follow/unfollow:", error);
     }
   };  
 
   const handleLikeToggle = async (event) => {
-    event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
+    event.stopPropagation(); // Prevent event bubbling to stop card click
 
-    // 添加检查，确保用户已登录
+    // Add check to ensure user is logged in
     if (!currentUser) {
       console.log("You must be logged in to like a post.");
       return;
@@ -212,24 +212,24 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   };
 
   const handleCardClick = () => {
-    // 点击卡片时导航到详情页，只有当 isFollowAction 为 false 时才跳转
+    // Navigate to the detail page when the card is clicked, unless it's a follow action
     if (!isFollowAction) {
       navigate(`/post/${post._id}`);
     } else {
-      setIsFollowAction(false); // 重置关注操作状态
+      setIsFollowAction(false); // Reset follow action status
     }
   };
 
   return (
     <Card
-      onClick={handleCardClick} // 添加点击事件
-      onMouseEnter={() => setIsHovered(true)} // 鼠标悬停时放大
-      onMouseLeave={() => setIsHovered(false)} // 鼠标离开时缩小
+      onClick={handleCardClick} // Add click event
+      onMouseEnter={() => setIsHovered(true)} // Enlarge on hover
+      onMouseLeave={() => setIsHovered(false)} // Shrink on mouse leave
       sx={{
         margin: 5,
-        cursor: "pointer", // 鼠标变成手型
+        cursor: "pointer", // Change cursor to pointer
         transition: "transform 0.3s ease, opacity 0.4s ease",
-        transform: isHovered ? "scale(1.02)" : "scale(1)", // 控制放大动画
+        transform: isHovered ? "scale(1.02)" : "scale(1)", // Control enlarge animation
         opacity: isHovered ? 1 : 0.9,
         width: isExpanded ? "80vw" : "auto",
         height: isExpanded ? "auto" : "fit-content",
@@ -252,14 +252,14 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
             <Avatar
               sx={{
                 bgcolor: red[500],
-                transform: isPressed ? "scale(1.2)" : "scale(1)", // 头像的动画效果
-                transition: "transform 0.3s ease-in-out", // 平滑的动画
+                transform: isPressed ? "scale(1.2)" : "scale(1)", // Avatar animation
+                transition: "transform 0.3s ease-in-out", // Smooth animation
               }}
               aria-label="recipe"
               src={post.author?.profilePicture || ""}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp} // 防止用户在长按前移开鼠标
+              onMouseLeave={handleMouseUp} // Prevent early mouse leave before long press
             >
               {post.author?.username ? post.author.username[0] : "U"}
             </Avatar>
@@ -270,7 +270,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
             <IconButton
               aria-label="close"
               onClick={(event) => {
-                event.stopPropagation(); // 阻止事件冒泡
+                event.stopPropagation(); // Prevent event bubbling
                 onCollapse();
               }}
             >
@@ -280,7 +280,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
             <IconButton
               aria-label="settings"
               onClick={(event) => {
-                event.stopPropagation(); // 阻止事件冒泡
+                event.stopPropagation(); // Prevent event bubbling
                 onExpand();
               }}
             >
@@ -305,10 +305,10 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
           sx={{
             color: "text.secondary",
             "& img": {
-              maxWidth: "100%", // 设置图片最大宽度为100%，不会超出容器
-              height: "auto", // 保持图片的原始比例
-              display: "block", // 确保图片占据单独一行
-              margin: "10px 0", // 给图片加一点上下边距
+              maxWidth: "100%", // Ensure image max width is 100% without exceeding container
+              height: "auto", // Maintain original aspect ratio
+              display: "block", // Ensure image is in a block format
+              margin: "10px 0", // Add some margin around the image
             },
           }}
           dangerouslySetInnerHTML={{
@@ -320,8 +320,8 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         <IconButton
           aria-label="add to favorites"
           onClick={(event) => {
-            event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
-            handleLikeToggle(event); // 传递事件对象
+            event.stopPropagation(); // Prevent event bubbling to stop card click
+            handleLikeToggle(event); // Pass event object
           }}
         >
           <Checkbox
@@ -329,7 +329,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
               <Badge
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 color="error"
-                badgeContent={likeCount} // 实时显示点赞数量
+                badgeContent={likeCount} // Show like count in real time
               >
                 <FavoriteBorder />
               </Badge>
@@ -338,20 +338,20 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
               <Badge
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 color="error"
-                badgeContent={likeCount} // 实时显示点赞数量
+                badgeContent={likeCount} // Show like count in real time
               >
                 <Favorite sx={{ color: "red" }} />
               </Badge>
             }
-            checked={isLiked} // 控制是否已点赞
+            checked={isLiked} // Control whether the post is liked
           />
         </IconButton>
 
         <IconButton
           aria-label="share"
           onClick={(event) => {
-            event.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击
-            // 处理分享功能的逻辑
+            event.stopPropagation(); // Prevent event bubbling to stop card click
+            // Handle share logic here
           }}
         >
           <Share />

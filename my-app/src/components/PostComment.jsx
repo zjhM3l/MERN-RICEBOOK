@@ -5,36 +5,36 @@ import Favorite from "@mui/icons-material/Favorite";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import { useSelector } from "react-redux";
 
-// 提取 fetchComments 方法
+// Helper function to fetch comments
 const fetchComments = async (postId, currentUser, setComments, setLikeStates) => {
   try {
     const res = await fetch(`http://localhost:3000/api/main/getcomments/${postId}`);
     const data = await res.json();
     
-    // 初始化每个评论的点赞状态
+    // Initialize the like state for each comment
     const initialLikeStates = {};
     data.comments.forEach((comment) => {
       initialLikeStates[comment._id] = {
         likeCount: comment.likes.length,
-        isLiked: comment.likes.some((like) => like._id === currentUser?._id) // 检查点赞者是否是当前用户
+        isLiked: comment.likes.some((like) => like._id === currentUser?._id) // Check if the current user has liked the comment
       };
     });
     setLikeStates(initialLikeStates);
-    setComments(data.comments || []); // 确保即使没有评论，也返回空数组
+    setComments(data.comments || []); // Ensure an empty array is returned even if there are no comments
   } catch (error) {
     console.error("Error fetching comments:", error);
   }
 };
 
 export const PostComment = ({ postId, refresh }) => {
-  const [comments, setComments] = useState([]); // 初始化为空数组
-  const [likeStates, setLikeStates] = useState({}); // 保存每个评论的点赞状态
-  const { currentUser } = useSelector((state) => state.user); // 获取当前用户
+  const [comments, setComments] = useState([]); // Initialize comments as an empty array
+  const [likeStates, setLikeStates] = useState({}); // Store the like state of each comment
+  const { currentUser } = useSelector((state) => state.user); // Get the current user from Redux
 
-  // 初始化时获取评论
+  // Fetch comments when the component is mounted or postId/refresh/currentUser changes
   useEffect(() => {
     fetchComments(postId, currentUser, setComments, setLikeStates);
-  }, [postId, refresh, currentUser]); // 当 postId 或 refresh 变化时重新获取评论
+  }, [postId, refresh, currentUser]); // Re-fetch comments when postId or refresh changes
 
   const handleLikeToggle = async (commentId) => {
     // Check if the user is logged in
@@ -58,7 +58,7 @@ export const PostComment = ({ postId, refresh }) => {
 
       const data = await response.json();
 
-      // 更新点赞状态后重新获取评论以确保显示最新状态
+      // Re-fetch comments after updating the like state to ensure the UI reflects the latest state
       fetchComments(postId, currentUser, setComments, setLikeStates);
     } catch (error) {
       console.error("Error while liking/unliking the comment:", error);
@@ -77,7 +77,7 @@ export const PostComment = ({ postId, refresh }) => {
               display: "flex",
               flexDirection: "column",
               mb: 2,
-              p: 1,  // 调整整体 padding
+              p: 1,  // Adjust overall padding
               boxShadow: 1,
               borderRadius: 2,
             }}
@@ -86,14 +86,14 @@ export const PostComment = ({ postId, refresh }) => {
               <Avatar src={comment.author.profilePicture} />
               <Typography variant="body1">{comment.author.username}</Typography>
             </Stack>
-            <CardContent sx={{ paddingBottom: "8px", paddingTop: "4px" }}> {/* 减少上下 padding */}
+            <CardContent sx={{ paddingBottom: "8px", paddingTop: "4px" }}> {/* Reduce top and bottom padding */}
               <Typography variant="body2">{comment.content}</Typography>
             </CardContent>
-            <CardActions sx={{ display: "flex", justifyContent: "space-between", padding: "4px 8px" }}> {/* 调整左右 padding */}
+            <CardActions sx={{ display: "flex", justifyContent: "space-between", padding: "4px 8px" }}> {/* Adjust side padding */}
               <IconButton
                 aria-label="like comment"
                 onClick={() => handleLikeToggle(comment._id)}
-                size="small"  // 调整按钮大小
+                size="small"  // Adjust button size
               >
                 <Checkbox
                   icon={
@@ -114,7 +114,7 @@ export const PostComment = ({ postId, refresh }) => {
                       <Favorite sx={{ color: "red" }} />
                     </Badge>
                   }
-                  checked={likeStates[comment._id]?.isLiked || false} // 确保点赞状态被正确设置
+                  checked={likeStates[comment._id]?.isLiked || false} // Ensure the like state is correctly set
                 />
               </IconButton>
               <AvatarGroup max={4} spacing="small">
@@ -126,7 +126,7 @@ export const PostComment = ({ postId, refresh }) => {
           </Card>
         ))
       ) : (
-        <Typography>No comments available.</Typography> // 没有评论时显示消息
+        <Typography>No comments available.</Typography> // Message displayed when no comments exist
       )}
     </Box>
   );
