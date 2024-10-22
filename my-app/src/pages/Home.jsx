@@ -10,10 +10,15 @@ import { useSelector } from "react-redux";
 export const Home = () => {
   const mode = useSelector((state) => state.theme.mode);
   const [feedKey, setFeedKey] = useState(0); // Used to force Feed to refresh
+  const [showLikedPosts, setShowLikedPosts] = useState(false); // Track whether to show liked posts
 
   // Define a function to refresh the Feed
   const refreshFeed = () => {
     setFeedKey((prevKey) => prevKey + 1); // Increment key to force Feed to reload
+  };
+
+  const handleShowLikedPosts = (showLiked) => {
+    setShowLikedPosts(showLiked); // Update the state to show liked posts
   };
 
   const darkTheme = createTheme({
@@ -27,8 +32,8 @@ export const Home = () => {
       <Box bgcolor={"background.default"} color={"text.primary"}>
         <Navbar />
         <Stack direction="row" spacing={2} justifyContent="space-between">
-          <Sidebar />
-          <Feed key={feedKey} /> {/* Feed will refresh based on the key */}
+          <Sidebar setFeedToLiked={handleShowLikedPosts} />
+          <Feed key={feedKey} showLikedPosts={showLikedPosts} /> {/* Feed will refresh based on the key */}
           <Rightbar />
         </Stack>
         <Add onPostSuccess={refreshFeed} /> {/* Pass refresh function to Add */}

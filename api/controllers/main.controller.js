@@ -51,6 +51,23 @@ export const getPosts = async (req, res) => {
   }
 };
 
+// Fetch liked posts for the current user
+export const getLikedPosts = async (req, res) => {
+  try {
+    const userId = req.query.userId; // Get userId from the query parameters
+
+    // Fetch posts that have the current user's ID in the `likes` array
+    const likedPosts = await Post.find({ likes: userId })
+      .populate("author", "username profilePicture") // Populate author details
+      .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
+
+    res.status(200).json(likedPosts); // Send the liked posts as response
+  } catch (error) {
+    console.error("Failed to fetch liked posts:", error);
+    res.status(500).json({ message: "Failed to fetch liked posts", error });
+  }
+};
+
 // Fetch a single post by ID and increment its view count
 export const getPostById = async (req, res) => {
   const { postId } = req.params;

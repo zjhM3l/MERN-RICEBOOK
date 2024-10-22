@@ -24,7 +24,7 @@ import NightsStay from "@mui/icons-material/NightsStay";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMode } from "../redux/theme/themeSlice";
 
-export const Sidebar = () => {
+export const Sidebar = ({ setFeedToLiked }) => {
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useSelector((state) => state.user); // Get the current user state from Redux
   const dispatch = useDispatch();
@@ -103,11 +103,8 @@ export const Sidebar = () => {
                       <ListItem disablePadding>
                         <ListItemButton
                           sx={{ pl: 4 }}
-                          component={Link}
-                          to="/liked"
+                          onClick={() => setFeedToLiked(true)} // Trigger showing liked posts
                         >
-                          {" "}
-                          {/* Use Link component for navigation */}
                           <ListItemIcon>
                             <Favorite />
                           </ListItemIcon>
