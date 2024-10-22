@@ -24,7 +24,7 @@ import NightsStay from "@mui/icons-material/NightsStay";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMode } from "../redux/theme/themeSlice";
 
-export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
+export const Sidebar = ({ setFeedToLiked, setFeedToMoments, setFeedToDefault }) => {
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useSelector((state) => state.user); // Get the current user state from Redux
   const dispatch = useDispatch();
@@ -37,38 +37,36 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
     setOpen(!open);
   };
 
+  // Determine if we are on the Home page
+  const isHomePage = location.pathname === "/";
+
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed">
         <List>
+          {/* Homepage button - resets the feed to show all posts if on home, else navigates to home */}
           <ListItem disablePadding>
-            <ListItemButton component={Link} to="/home">
-              {" "}
-              {/* Use Link component for navigation */}
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary="Homepage" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton component={Link} to="/pages">
-              {" "}
-              {/* Use Link component for navigation */}
-              <ListItemIcon>
-                <Article />
-              </ListItemIcon>
-              <ListItemText primary="Pages" />
-            </ListItemButton>
+            {isHomePage ? (
+              <ListItemButton onClick={() => setFeedToDefault && setFeedToDefault()}>
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Homepage" />
+              </ListItemButton>
+            ) : (
+              <ListItemButton component={Link} to="/">
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Homepage" />
+              </ListItemButton>
+            )}
           </ListItem>
 
-          {/* Only display Groups, Friends, Filters, and Profile if the user is logged in */}
           {currentUser && (
             <>
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/groups">
-                  {" "}
-                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <People />
                   </ListItemIcon>
@@ -77,17 +75,14 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
               </ListItem>
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/friend">
-                  {" "}
-                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
                   <ListItemText primary="Friends" />
                 </ListItemButton>
               </ListItem>
-
-              {/* Only display Filters if the current page is not a PostDetail page */}
-              {!location.pathname.startsWith("/post/") && (
+              {/* Conditionally render filters only if on the Home page */}
+              {!location.pathname.startsWith("/post/") && isHomePage && currentUser && (
                 <>
                   <ListItem disablePadding>
                     <ListItemButton onClick={handleClick}>
@@ -101,10 +96,7 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
                   <Collapse in={open} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       <ListItem disablePadding>
-                        <ListItemButton
-                          sx={{ pl: 4 }}
-                          onClick={() => setFeedToLiked(true)} // Trigger showing liked posts
-                        >
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => setFeedToLiked(true)}> {/* Show liked posts */}
                           <ListItemIcon>
                             <Favorite />
                           </ListItemIcon>
@@ -112,10 +104,7 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
                         </ListItemButton>
                       </ListItem>
                       <ListItem disablePadding>
-                        <ListItemButton
-                          sx={{ pl: 4 }}
-                          onClick={() => setFeedToMoments(true)} // Show moments (posts by followed users)
-                        >
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => setFeedToMoments(true)}> {/* Show moments */}
                           <ListItemIcon>
                             <Camera />
                           </ListItemIcon>
@@ -128,8 +117,6 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
               )}
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/profile">
-                  {" "}
-                  {/* Use Link component for navigation */}
                   <ListItemIcon>
                     <AccountBox />
                   </ListItemIcon>
@@ -141,8 +128,6 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
 
           <ListItem disablePadding>
             <ListItemButton component={Link} to="/settings">
-              {" "}
-              {/* Use Link component for navigation */}
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
