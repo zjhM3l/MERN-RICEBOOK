@@ -16,9 +16,8 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import MailIcon from "@mui/icons-material/Mail";
 import Notifications from "@mui/icons-material/Notifications";
 import { useSelector, useDispatch } from "react-redux";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice.js";
-import { useLocation } from "react-router-dom";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -56,6 +55,9 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Check if the current page is Home
+  const isHomePage = location.pathname === "/home" || location.pathname === "/";
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value); // Update search query as the user types
@@ -127,22 +129,18 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
             type="search"
             variant="filled"
             onChange={handleSearchChange} // Call the search handler on input change
-            disabled={!currentUser}
+            disabled={!currentUser || !isHomePage} // Disable the input if not on Home page
           />
         </Search>
         <Icons>
           {currentUser && (
             <>
               <IconButton aria-label="mail" sx={{ color: "white" }}>
-                <Badge badgeContent={unrepliedMessagesCount} color="error"> {/* Display unreplied message count */}
+                <Badge badgeContent={unrepliedMessagesCount} color="error">
+                  {/* Display unreplied message count */}
                   <MailIcon />
                 </Badge>
               </IconButton>
-              {/* <IconButton aria-label="note" sx={{ color: "white" }}>
-                <Badge badgeContent={unrepliedMessagesCount} color="error">
-                  <Notifications />
-                </Badge>
-              </IconButton> */}
             </>
           )}
           <Avatar
