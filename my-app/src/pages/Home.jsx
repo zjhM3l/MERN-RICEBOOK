@@ -12,6 +12,7 @@ export const Home = () => {
   const [feedKey, setFeedKey] = useState(0); // Used to force Feed to refresh
   const [showLikedPosts, setShowLikedPosts] = useState(false); // Track whether to show liked posts
   const [showMoments, setShowMoments] = useState(false); // Track whether to show moments
+  const [searchQuery, setSearchQuery] = useState(""); // State for managing search input
 
   // Define a function to refresh the Feed
   const refreshFeed = () => {
@@ -42,14 +43,14 @@ export const Home = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
-        <Navbar />
+        <Navbar setSearchQuery={setSearchQuery} />
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar
             setFeedToLiked={handleShowLikedPosts}
             setFeedToMoments={handleShowMoments}
             setFeedToDefault={handleShowDefaultFeed} // Reset feed to default on homepage click
           />
-          <Feed key={feedKey} showLikedPosts={showLikedPosts} showMoments={showMoments} /> {/* Feed will refresh based on the key */}
+          <Feed key={feedKey} searchQuery={searchQuery} showLikedPosts={showLikedPosts} showMoments={showMoments} /> {/* Feed will refresh based on the key */}
           <Rightbar />
         </Stack>
         <Add onPostSuccess={refreshFeed} /> {/* Pass refresh function to Add */}

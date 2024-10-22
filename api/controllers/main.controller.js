@@ -38,23 +38,40 @@ export const getRecentPosts = async (req, res) => {
   }
 };
 
-// Fetch all posts
+// Fetch posts with optional search query
 export const getPosts = async (req, res) => {
   try {
-    // Fetch all posts and populate author details, sorted by creation time (descending)
-    const posts = await Post.find()
+    const { search } = req.query; // Get search query from URL parameters
+    console.log("Search query:", search); // Log the search query
+
+    let query = {};
+
+    if (search) {
+      // If there's a search query, look for posts that match the title or content
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
+          { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
+        ],
+      };
+    }
+
+    // Fetch posts based on the query and populate author details, sorted by creation time (descending)
+    const posts = await Post.find(query)
       .populate("author", "username profilePicture")
       .sort({ createdAt: -1 });
+
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch posts", error });
   }
 };
 
-// Fetch posts from users the current user follows
+// Fetch posts from users the current user follows with optional search query
 export const getFollowedUsersPosts = async (req, res) => {
   try {
     const userId = req.query.userId; // Get userId from the query parameters
+    const { search } = req.query; // Get search query from URL parameters
 
     // Find the current user to get the list of users they are following
     const currentUser = await User.findById(userId).select('following');
@@ -63,10 +80,20 @@ export const getFollowedUsersPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Fetch posts where the author is one of the users the current user is following
-    const followedPosts = await Post.find({
+    let query = {
       author: { $in: currentUser.following },
-    })
+    };
+
+    // If there's a search query, add conditions to search within the title or content
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
+        { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
+      ];
+    }
+
+    // Fetch posts where the author is one of the users the current user is following
+    const followedPosts = await Post.find(query)
       .populate("author", "username profilePicture") // Populate author details
       .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
 
@@ -77,13 +104,24 @@ export const getFollowedUsersPosts = async (req, res) => {
   }
 };
 
-// Fetch liked posts for the current user
+// Fetch liked posts for the current user with optional search query
 export const getLikedPosts = async (req, res) => {
   try {
     const userId = req.query.userId; // Get userId from the query parameters
+    const { search } = req.query; // Get search query from URL parameters
+
+    let query = { likes: userId };
+
+    // If there's a search query, add conditions to search within the title or content
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
+        { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
+      ];
+    }
 
     // Fetch posts that have the current user's ID in the `likes` array
-    const likedPosts = await Post.find({ likes: userId })
+    const likedPosts = await Post.find(query)
       .populate("author", "username profilePicture") // Populate author details
       .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
 

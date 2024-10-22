@@ -49,13 +49,17 @@ const UserBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const Navbar = () => {
+export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery function as a prop
   const [open, setOpen] = useState(false);
   const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // Count of unreplied messages
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value); // Update search query as the user types
+  };
 
   const handleLogout = () => {
     dispatch(signOutSuccess());
@@ -122,6 +126,7 @@ export const Navbar = () => {
             label="Search..."
             type="search"
             variant="filled"
+            onChange={handleSearchChange} // Call the search handler on input change
             disabled={!currentUser}
           />
         </Search>

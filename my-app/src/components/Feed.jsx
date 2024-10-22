@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { Post } from "./Post";
-import { useSelector } from "react-redux"; // Import useSelector to get the current user
+import { useSelector } from "react-redux";
 
-export const Feed = ({ showLikedPosts, showMoments }) => {
+export const Feed = ({ showLikedPosts, showMoments, searchQuery }) => {
   const [expandedPost, setExpandedPost] = useState(null);
   const [posts, setPosts] = useState([]); // Store posts fetched from the database
   const currentUser = useSelector((state) => state.user.currentUser); // Retrieve the current user
@@ -15,14 +15,19 @@ export const Feed = ({ showLikedPosts, showMoments }) => {
         let endpoint;
 
         if (showLikedPosts) {
-          endpoint = `http://localhost:3000/api/main/posts/liked?userId=${currentUser._id}`; // Pass userId as a query parameter
+          endpoint = `http://localhost:3000/api/main/posts/liked?userId=${currentUser._id}`;
         } else if (showMoments) {
-          endpoint = `http://localhost:3000/api/main/posts/followed?userId=${currentUser._id}`; // Moments (followed users' posts)
+          endpoint = `http://localhost:3000/api/main/posts/followed?userId=${currentUser._id}`;
         } else {
-          endpoint = "http://localhost:3000/api/main/posts"; // General feed
+          endpoint = "http://localhost:3000/api/main/posts"; // Base endpoint for home feed
         }
 
-        // No request body needed for GET requests
+        // Check if there's already a query parameter (e.g., `?userId=`) before appending the search
+        if (searchQuery) {
+          endpoint += endpoint.includes("?") ? `&search=${searchQuery}` : `?search=${searchQuery}`; // Append `search` query properly
+        }
+
+        // Fetch the posts data
         const res = await fetch(endpoint);
         const data = await res.json();
         setPosts(data); // Set the posts data
@@ -32,9 +37,9 @@ export const Feed = ({ showLikedPosts, showMoments }) => {
     };
 
     if (currentUser) {
-      fetchPosts(); // Fetch posts when the component loads or when showLikedPosts changes
+      fetchPosts(); // Fetch posts when the component loads or when showLikedPosts, showMoments, or searchQuery changes
     }
-  }, [showLikedPosts, showMoments, currentUser]);
+  }, [showLikedPosts, showMoments, searchQuery, currentUser]); // Added searchQuery to dependencies
 
   // Handle expanding a post
   const handleExpand = (index) => {
