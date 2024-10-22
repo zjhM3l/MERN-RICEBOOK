@@ -51,6 +51,32 @@ export const getPosts = async (req, res) => {
   }
 };
 
+// Fetch posts from users the current user follows
+export const getFollowedUsersPosts = async (req, res) => {
+  try {
+    const userId = req.query.userId; // Get userId from the query parameters
+
+    // Find the current user to get the list of users they are following
+    const currentUser = await User.findById(userId).select('following');
+
+    if (!currentUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch posts where the author is one of the users the current user is following
+    const followedPosts = await Post.find({
+      author: { $in: currentUser.following },
+    })
+      .populate("author", "username profilePicture") // Populate author details
+      .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
+
+    res.status(200).json(followedPosts); // Send the followed users' posts as response
+  } catch (error) {
+    console.error("Failed to fetch followed users' posts:", error);
+    res.status(500).json({ message: "Failed to fetch followed users' posts", error });
+  }
+};
+
 // Fetch liked posts for the current user
 export const getLikedPosts = async (req, res) => {
   try {

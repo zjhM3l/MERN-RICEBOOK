@@ -24,7 +24,7 @@ import NightsStay from "@mui/icons-material/NightsStay";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMode } from "../redux/theme/themeSlice";
 
-export const Sidebar = ({ setFeedToLiked }) => {
+export const Sidebar = ({ setFeedToLiked, setFeedToMoments }) => {
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useSelector((state) => state.user); // Get the current user state from Redux
   const dispatch = useDispatch();
@@ -114,15 +114,12 @@ export const Sidebar = ({ setFeedToLiked }) => {
                       <ListItem disablePadding>
                         <ListItemButton
                           sx={{ pl: 4 }}
-                          component={Link}
-                          to="/moments"
+                          onClick={() => setFeedToMoments(true)} // Show moments (posts by followed users)
                         >
-                          {" "}
-                          {/* Use Link component for navigation */}
                           <ListItemIcon>
                             <Camera />
                           </ListItemIcon>
-                          <ListItemText primary="Moment" />
+                          <ListItemText primary="Moments" />
                         </ListItemButton>
                       </ListItem>
                     </List>

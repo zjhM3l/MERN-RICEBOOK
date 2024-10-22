@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Post } from "./Post";
 import { useSelector } from "react-redux"; // Import useSelector to get the current user
 
-export const Feed = ({ showLikedPosts }) => {
+export const Feed = ({ showLikedPosts, showMoments }) => {
   const [expandedPost, setExpandedPost] = useState(null);
   const [posts, setPosts] = useState([]); // Store posts fetched from the database
   const currentUser = useSelector((state) => state.user.currentUser); // Retrieve the current user
@@ -12,10 +12,16 @@ export const Feed = ({ showLikedPosts }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const endpoint = showLikedPosts
-          ? `http://localhost:3000/api/main/posts/liked?userId=${currentUser._id}` // Pass userId as a query parameter
-          : "http://localhost:3000/api/main/posts";
-    
+        let endpoint;
+
+        if (showLikedPosts) {
+          endpoint = `http://localhost:3000/api/main/posts/liked?userId=${currentUser._id}`; // Pass userId as a query parameter
+        } else if (showMoments) {
+          endpoint = `http://localhost:3000/api/main/posts/followed?userId=${currentUser._id}`; // Moments (followed users' posts)
+        } else {
+          endpoint = "http://localhost:3000/api/main/posts"; // General feed
+        }
+
         // No request body needed for GET requests
         const res = await fetch(endpoint);
         const data = await res.json();
@@ -28,7 +34,7 @@ export const Feed = ({ showLikedPosts }) => {
     if (currentUser) {
       fetchPosts(); // Fetch posts when the component loads or when showLikedPosts changes
     }
-  }, [showLikedPosts, currentUser]);
+  }, [showLikedPosts, showMoments, currentUser]);
 
   // Handle expanding a post
   const handleExpand = (index) => {
