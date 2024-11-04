@@ -172,3 +172,185 @@ fuck fire base 我用mongo了
 全是放屁，直接自己实现了不用firebase了。
 
 不改变内容，把里面的中文注释改成英文，调整注释使代码更清晰
+
+
+
+
+
+
+
+用jest实现unit test
+hw5实现了，这里没有，可以加上？
+Remember that when tackling any large task our best approach is to divide and conquer. For this assignment there are two major portions:
+Writing unit tests of the desired functionality.
+Implementing logic for our site to eventually connect to the backend server.
+
+Test Driven Development
+We will exercise test driven development instead of writing the implementation of our web app first and testing later. Therefore before we implement anything we will first write tests for our functionality. In this way the desired behavior will drive our implementation and design. Start by writing unit tests for the desired behavior and execute the test suite as we develop.
+
+Unit Tests
+Every user interaction point should be validated. For your final web app, most user interactions will actually involve making an AJAX call to the server to update data. In our test environment we will continue to use the dummy data from the JSON Placeholder Server and load it into your application. Because there's no real backend server yet, any persistent data added must be stored using either cookies or localStorage.
+
+Behavior Implementation
+After you have implemented all of the tests listed below, we need to implement the desired functionality so that the tests pass. In this way we are assured that all of the code we write is covered by our test cases. I.e., we should get high marks for code coverage with no extra effort and no need to later refactor our code so that it will be testable -- this again is a benefit of test driven development. The list of functionality is provided below.
+
+Unit Tests
+If you're using React, I'd recommend Jest. Note that in principle we only test "our" code and not "framework" code. We want to test our specific business logic that we wrote.
+
+To set up Jest testing for your project, follow these steps:
+
+Step 1: Install Jest and React Testing Library
+First, install Jest along with the React Testing Library, which will help you test React components:
+
+bash
+复制代码
+cd myapp
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+If you’re using create-react-app, Jest is already pre-installed, so you only need to install @testing-library/react and @testing-library/jest-dom.
+
+Step 2: Configure Jest (if not using create-react-app)
+If you’re using create-react-app, Jest is already configured out of the box, so you can skip this step. However, if you need to configure Jest manually, you can add a Jest configuration to your package.json file:
+
+json
+复制代码
+{
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"]
+  }
+}
+In the configuration above:
+
+"testEnvironment": "jsdom" tells Jest to simulate a browser environment.
+"setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"] specifies the setup file for additional configurations.
+Step 3: Create a setupTests.js file (Optional)
+This file will initialize certain configurations for your tests, like custom matchers for assertions. In src, create a setupTests.js file:
+
+js
+复制代码
+// src/setupTests.js
+import '@testing-library/jest-dom';
+This will load jest-dom, which provides helpful matchers for testing DOM elements.
+
+Step 4: Create Test Files
+Jest looks for test files with .test.js or .spec.js suffixes. Place these test files alongside the components or pages they are testing or in a __tests__ directory within each folder.
+
+For example, if you want to test a component called LoginPage.js, you can create a test file called LoginPage.test.js in the same folder.
+
+Step 5: Write Example Tests Based on the Assignment Requirements
+Here’s how to structure a few example tests based on the requirements you’ve outlined.
+
+Example 1: Test Login Validation
+This test checks that a JSON placeholder user can log in if the correct credentials are provided.
+
+js
+复制代码
+// src/pages/LoginPage.test.js
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import LoginPage from './LoginPage';
+import '@testing-library/jest-dom';
+
+describe('Validate Authentication', () => {
+  it('should log in a previously registered user', () => {
+    render(<LoginPage />);
+    
+    // Mock input fields
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'Bret' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'Kulas Light' } });
+
+    // Mock login button click
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Expect the main page to load (add assertion based on your implementation)
+    expect(screen.getByText(/welcome, Bret/i)).toBeInTheDocument();
+  });
+
+  it('should not log in an invalid user', () => {
+    render(<LoginPage />);
+    
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'InvalidUser' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'WrongPassword' } });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    
+    expect(screen.getByText(/incorrect login/i)).toBeInTheDocument();
+  });
+});
+Example 2: Test Article Fetching
+This test checks if the articles are fetched and displayed when a user logs in.
+
+js
+复制代码
+// src/pages/MainPage.test.js
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import MainPage from './MainPage';
+import '@testing-library/jest-dom';
+
+describe('Validate Article Actions', () => {
+  it('should fetch all articles for the current logged-in user', async () => {
+    render(<MainPage />);
+    
+    // Assuming articles are fetched and displayed
+    expect(await screen.findByText(/post title 1/i)).toBeInTheDocument();
+    expect(await screen.findByText(/post title 2/i)).toBeInTheDocument();
+  });
+
+  it('should filter articles based on search keyword', async () => {
+    render(<MainPage />);
+    
+    // Mock search input
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'keyword' } });
+    
+    // Only articles containing the keyword should be displayed
+    expect(await screen.findByText(/keyword in post title/i)).toBeInTheDocument();
+    expect(screen.queryByText(/some other title/i)).not.toBeInTheDocument();
+  });
+});
+Example 3: Test Profile Update
+This test checks if the user can update their profile and the headline is updated on the main page.
+
+js
+复制代码
+// src/pages/ProfilePage.test.js
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import ProfilePage from './ProfilePage';
+import '@testing-library/jest-dom';
+
+describe('Validate Profile Actions', () => {
+  it('should update the user headline and reflect on the main page', () => {
+    render(<ProfilePage />);
+    
+    // Mock headline input and submission
+    fireEvent.change(screen.getByLabelText(/headline/i), { target: { value: 'New Headline' } });
+    fireEvent.click(screen.getByRole('button', { name: /update headline/i }));
+
+    // Verify headline is updated on the main page
+    expect(screen.getByText(/new headline/i)).toBeInTheDocument();
+  });
+});
+Step 6: Run the Tests
+You can run the tests using the following command:
+
+bash
+复制代码
+npm test
+This will start Jest and run all test files it finds. You should see output that indicates whether each test passed or failed.
+
+Step 7: Implementing Test-Driven Development
+As per your assignment requirements, use TDD by writing tests for all your required functionalities before you actually implement them. For instance:
+
+Write the tests as shown above for each functionality.
+Run the tests to see them fail (since the features aren’t implemented yet).
+Implement the feature in your components and functions.
+Run the tests again to check if they pass with the new implementation.
+Repeat the cycle until all tests pass.
+Additional Tips
+For components with asynchronous actions like API calls, use async/await in your tests with findBy queries from @testing-library/react.
+Mock any backend responses or local storage actions if needed to isolate your frontend logic in the tests.
+Keep your tests specific to functionality, and try to avoid testing implementation details (like exact CSS styling).
+This approach will help ensure that your code remains modular and testable, following TDD principles. Let me know if you need any further assistance!
