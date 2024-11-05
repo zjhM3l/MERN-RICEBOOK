@@ -354,3 +354,29 @@ For components with asynchronous actions like API calls, use async/await in your
 Mock any backend responses or local storage actions if needed to isolate your frontend logic in the tests.
 Keep your tests specific to functionality, and try to avoid testing implementation details (like exact CSS styling).
 This approach will help ensure that your code remains modular and testable, following TDD principles. Let me know if you need any further assistance!
+
+
+jest测试也可以写上，工业开发流程，单元测试，面向测试开发，覆盖率多少，等等
+In this assignment you will partially implement and test the frontend of your web application. We start with our draft frontend application that contains three views integrated into a single page application (SPA)
+
+landing page with registration and login
+main page with articles, followers, and headline message
+profile page for a user to upload a new profile picture and edit their user data
+Remember that when tackling any large task our best approach is to divide and conquer. For this assignment there are two major portions:
+Writing unit tests of the desired functionality.
+Implementing logic for our site to eventually connect to the backend server.
+Test Driven Development
+We will exercise test driven development instead of writing the implementation of our web app first and testing later. Therefore before we implement anything we will first write tests for our functionality. In this way the desired behavior will drive our implementation and design. Start by writing unit tests for the desired behavior and execute the test suite as we develop.
+
+Unit Tests
+Every user interaction point should be validated. For your final web app, most user interactions will actually involve making an AJAX call to the server to update data. In our test environment we will continue to use the dummy data from the JSON Placeholder Server and load it into your application. Because there's no real backend server yet, any persistent data added must be stored using either cookies or localStorage.
+
+Behavior Implementation
+After you have implemented all of the tests listed below, we need to implement the desired functionality so that the tests pass. In this way we are assured that all of the code we write is covered by our test cases. I.e., we should get high marks for code coverage with no extra effort and no need to later refactor our code so that it will be testable -- this again is a benefit of test driven development. The list of functionality is provided below.
+
+Requirements
+Use Chrome as your standard supported browser. Whereas you can use any browser you like for development, your assignment will be accessed using Chrome by the grading staff and therefore it behooves you that it works.
+
+Host your submission on Surge. Include the URL in a README.md file as before. The deployed version of your code on Surge may be used during grading. Therefore after you make your submission, please do not re-deploy to the same Surge domain until the next assignment.
+
+Remember separation of concerns and write DRY (don't repeat yourself) modularized code.
