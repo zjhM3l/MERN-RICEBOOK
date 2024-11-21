@@ -168,12 +168,11 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 ### Running the Application
 1. **Backend**:
    ```bash
-   cd backend
    npm start
 
 2. **Frontend**:
    ```bash
-   cd frontend
+   cd my-app
    npm start
 
 3. **Access the app**:
