@@ -157,6 +157,8 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 2. **Install dependencies**：
    ```bash
    npm install
+   cd my-app
+   npm install
    
 4. **Set up environment variables**：
    Create a .env file in the root directory with the following:
@@ -168,12 +170,13 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 ### Running the Application
 1. **Backend**:
    ```bash
-   npm start
+   npm run dev
 
 2. **Frontend**:
    ```bash
    cd my-app
    npm start
+   y
 
 3. **Access the app**:
    Open http://localhost:3000 in your browser to see Ricebook in action.
