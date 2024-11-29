@@ -356,7 +356,7 @@ Keep your tests specific to functionality, and try to avoid testing implementati
 This approach will help ensure that your code remains modular and testable, following TDD principles. Let me know if you need any further assistance!
 
 
-jest测试也可以写上，工业开发流程，单元测试，面向测试开发，覆盖率多少，等等
+jest测试也可以写上，工业开发流程，单元测试，面向测试开发，覆盖率多少，等等，还可以说单元测试覆盖率提升到了xxxx之类的,尽可能测试全部分支一般80+就是较高覆盖率
 In this assignment you will partially implement and test the frontend of your web application. We start with our draft frontend application that contains three views integrated into a single page application (SPA)
 
 landing page with registration and login
