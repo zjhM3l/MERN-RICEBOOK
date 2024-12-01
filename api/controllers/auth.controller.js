@@ -153,7 +153,7 @@ export const signin = async (req, res, next) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, 'jz185');
 
     // Remove password from user object
     const { password: pass, ...rest } = user._doc;
@@ -199,7 +199,7 @@ export const google = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (user) {
       // User already exists, generate token and log them in
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: user._id }, 'jz185');
       const { password, ...rest } = user._doc;
       res
         .status(200)
@@ -230,7 +230,7 @@ export const google = async (req, res, next) => {
 
       await newUser.save();
 
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: newUser._id }, 'jz185');
       const { password, ...rest } = newUser._doc;
       res
         .status(200)

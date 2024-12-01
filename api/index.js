@@ -10,7 +10,7 @@ dotenv.config();
 
 // Connect to MongoDB using credentials from the environment variable
 mongoose
-  .connect(process.env.MONGO)
+  .connect('mongodb+srv://jz185:ZhangJiaHe20020607@mern-ricebook.odu98.mongodb.net/?retryWrites=true&w=majority&appName=mern-ricebook')
   .then(() => {
     console.log("Connected to MongoDB");
   })
