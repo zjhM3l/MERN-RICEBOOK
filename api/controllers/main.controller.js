@@ -41,28 +41,27 @@ export const getRecentPosts = async (req, res) => {
 // Fetch posts with optional search query
 export const getPosts = async (req, res) => {
   try {
-    const { search } = req.query; // Get search query from URL parameters
-    console.log("Search query:", search); // Log the search query
+    const { search } = req.query; // 从 URL 参数中获取 search
+    console.log("Search query:", search || "No search query"); // 输出搜索关键字
 
-    let query = {};
+    // 如果 search 为空，不设置过滤条件
+    const query = search
+      ? {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { content: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {}; // 空查询返回所有帖子
 
-    if (search) {
-      // If there's a search query, look for posts that match the title or content
-      query = {
-        $or: [
-          { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
-          { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
-        ],
-      };
-    }
-
-    // Fetch posts based on the query and populate author details, sorted by creation time (descending)
+    // 查询帖子数据并按创建时间排序
     const posts = await Post.find(query)
       .populate("author", "username profilePicture")
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
   } catch (error) {
+    console.error("Error fetching posts:", error);
     res.status(500).json({ message: "Failed to fetch posts", error });
   }
 };

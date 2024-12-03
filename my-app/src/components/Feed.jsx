@@ -24,7 +24,8 @@ export const Feed = ({ showLikedPosts, showMoments, searchQuery }) => {
 
         // Check if there's already a query parameter (e.g., `?userId=`) before appending the search
         if (searchQuery) {
-          endpoint += endpoint.includes("?") ? `&search=${searchQuery}` : `?search=${searchQuery}`; // Append `search` query properly
+          // endpoint += endpoint.includes("?") ? `&search=${searchQuery}` : `?search=${searchQuery}`; // Append `search` query properly
+          endpoint += `?search=${searchQuery}`;
         }
 
         // Fetch the posts data
@@ -36,9 +37,10 @@ export const Feed = ({ showLikedPosts, showMoments, searchQuery }) => {
       }
     };
 
-    if (currentUser) {
-      fetchPosts(); // Fetch posts when the component loads or when showLikedPosts, showMoments, or searchQuery changes
-    }
+    // if (currentUser) {
+    //   fetchPosts(); // Fetch posts when the component loads or when showLikedPosts, showMoments, or searchQuery changes
+    // }
+    fetchPosts(); // 无论是否有 currentUser 都执行
   }, [showLikedPosts, showMoments, searchQuery, currentUser]); // Added searchQuery to dependencies
 
   // Handle expanding a post

@@ -65,10 +65,10 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
 
   const handleLogout = () => {
     dispatch(signOutSuccess());
-
+    setSearchQuery(""); // 清空搜索框内容
     fetch("http://localhost:3000/api/auth/logout", {
       method: "POST",
-      credentials: "include", // Include credentials for session clearance
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {
@@ -122,15 +122,15 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
         </Typography>
         <FacebookIcon sx={{ display: { xs: "block", sm: "none" } }} />
         <Search>
-          <TextField
-            sx={{ color: "black", width: "100%" }}
-            id="filled-search"
-            label="Search..."
-            type="search"
-            variant="filled"
-            onChange={handleSearchChange} // Call the search handler on input change
-            disabled={!currentUser || !isHomePage} // Disable the input if not on Home page
-          />
+        <TextField
+          sx={{ color: "black", width: "100%" }}
+          id="filled-search"
+          label={currentUser ? "Search..." : "Login to search"} // 动态显示提示
+          type="search"
+          variant="filled"
+          onChange={handleSearchChange}
+          disabled={!currentUser} // 禁用搜索框
+        />
         </Search>
         <Icons>
           {currentUser && (

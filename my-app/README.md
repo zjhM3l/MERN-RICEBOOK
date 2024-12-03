@@ -174,9 +174,34 @@ fuck fire base 我用mongo了
 不改变内容，把里面的中文注释改成英文，调整注释使代码更清晰
 
 
-
-
-
+一个bug，因为search的nav涉及到用户登录状态的检测，和失效转化， 当用户登出后，Search query: undefined 被多次打印。
+随后页面显示为 "No posts available"。
+问题可能出现在以下几个方面：
+searchQuery 的初始值和传递方式问题：
+如果用户登出后，Navbar 中的 setSearchQuery 可能没有被正确更新，导致 Feed 中的 searchQuery 为 undefined。
+后端未处理 searchQuery 为 undefined 的情况，可能导致数据库返回空结果。
+登出后的逻辑问题：
+登出后，currentUser 被清空，而 Feed 中的逻辑依赖 currentUser 去构造 API 请求。
+问题具体原因
+1. 登出后 currentUser 为 null 导致请求失败
+Feed 组件的 fetchPosts 函数中：
+if (currentUser) {
+  fetchPosts();
+}
+当 currentUser 为 null 时，fetchPosts 不会执行。但在 URL 中的 searchQuery 被传递为空 (undefined) 时，后端仍然会收到请求。
+2. searchQuery 未正确初始化
+在 Navbar 组件中，setSearchQuery 是动态更新的。如果登出后没有正确清空或初始化 searchQuery，则会传递 undefined。
+3. 后端对 undefined 处理不完善
+getPosts 的查询逻辑中，searchQuery 为 undefined 不会匹配任何条件：
+if (search) {
+  query = {
+    $or: [
+      { title: { $regex: search, $options: "i" } },
+      { content: { $regex: search, $options: "i" } },
+    ],
+  };
+}
+当 search 为 undefined 时，query 是空对象 {}。这意味着查询结果是所有帖子，但可能因为 currentUser 的逻辑影响而没有返回任何数据。
 
 
 用jest实现unit test
