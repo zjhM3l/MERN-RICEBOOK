@@ -18,12 +18,33 @@ export const ChatRoom = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      {/* Ensure the whole page fills the viewport height */}
-      <Box bgcolor={"background.default"} color={"text.primary"} height="100vh">
+      <Box
+        bgcolor={"background.default"}
+        color={"text.primary"}
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Navbar />
-        <Stack direction="row" spacing={2} justifyContent="space-between" height="calc(100vh - 64px)">
-          <FriendSidebar />
-          <Chat chatId={chatId} /> {/* Pass chatId to Chat component */}
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          sx={{
+            flex: 1,
+            overflow: "hidden",
+            paddingBottom: "16px",
+          }}
+        >
+          {/* Adjust FriendSidebar width */}
+          <Box sx={{ width: "20%", minWidth: "200px" }}>
+            <FriendSidebar />
+          </Box>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <Chat chatId={chatId} />
+          </Box>
         </Stack>
       </Box>
     </ThemeProvider>
