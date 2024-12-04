@@ -60,7 +60,7 @@ export const SigninForm = () => {
         setErrors(newErrors);
       } else {
         dispatch(signInSuccess(data));
-        navigate("/home"); // Redirect to home page
+        navigate("/"); // Redirect to home page
       }
     } catch (error) {
       dispatch(signInFailure(error.message));

@@ -125,15 +125,6 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments, setFeedToDefault }) 
               </ListItem>
             </>
           )}
-
-          {/* <ListItem disablePadding>
-            <ListItemButton component={Link} to="/settings">
-              <ListItemIcon>
-                <Settings />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-          </ListItem> */}
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>
