@@ -52,7 +52,11 @@ export const Home = () => {
         }}
       >
         {/* Navbar */}
-        <Navbar setSearchQuery={setSearchQuery} />
+        <Navbar
+          setSearchQuery={setSearchQuery}
+          showLikedPosts={showLikedPosts}
+          showMoments={showMoments}
+        />
 
         {/* Main Content */}
         <Stack

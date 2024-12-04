@@ -52,19 +52,22 @@ const UserBox = styled(Box)(({ theme }) => ({
 
 export const Navbar = ({ setSearchQuery }) => {
   const [open, setOpen] = useState(false);
-  const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // Count of unreplied messages
+  const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Check if the current page is Home
+  const isHomePage = location.pathname === "/home" || location.pathname === "/";
+
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value); // Update search query as the user types
+    setSearchQuery(e.target.value);
   };
 
   const handleLogout = () => {
     dispatch(signOutSuccess());
-    setSearchQuery(""); // Clear search box content
+    setSearchQuery("");
     fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
@@ -73,12 +76,9 @@ export const Navbar = ({ setSearchQuery }) => {
         if (!response.ok) {
           throw new Error("Failed to log out");
         }
-        console.log("Logout successful, redirecting...");
         navigate("/home");
       })
-      .catch((error) => {
-        console.error("Logout failed:", error);
-      });
+      .catch((error) => console.error("Logout failed:", error));
   };
 
   useEffect(() => {
@@ -94,37 +94,37 @@ export const Navbar = ({ setSearchQuery }) => {
           RICE BOOK
         </Typography>
         <FacebookIcon sx={{ display: { xs: "block", sm: "none" } }} />
-        <Search>
-          <TextField
-            sx={{
-              width: "100%",
-              "& .MuiInputBase-root": {
-                color: "inherit", // Use the parent's text color
-              },
-              "& .MuiInputLabel-root": {
-                color: "inherit", // Use the parent's text color for placeholder
-              },
-              "& .MuiFilledInput-root": {
-                backgroundColor: "inherit", // Match the parent's background color
-              },
-            }}
-            id="filled-search"
-            label={currentUser ? "Search..." : "Login to search"} // Dynamic placeholder
-            type="search"
-            variant="filled"
-            onChange={handleSearchChange}
-            disabled={!currentUser} // Disable if not logged in
-          />
-        </Search>
+        {isHomePage && ( // Conditionally render the search bar
+          <Search>
+            <TextField
+              sx={{
+                width: "100%",
+                "& .MuiInputBase-root": {
+                  color: "inherit",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "inherit",
+                },
+                "& .MuiFilledInput-root": {
+                  backgroundColor: "inherit",
+                },
+              }}
+              id="filled-search"
+              label={currentUser ? "Search..." : "Login to search"}
+              type="search"
+              variant="filled"
+              onChange={handleSearchChange}
+              disabled={!currentUser}
+            />
+          </Search>
+        )}
         <Icons>
           {currentUser && (
-            <>
-              <IconButton aria-label="mail" sx={{ color: "white" }}>
-                <Badge badgeContent={unrepliedMessagesCount} color="error">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
-            </>
+            <IconButton aria-label="mail" sx={{ color: "white" }}>
+              <Badge badgeContent={unrepliedMessagesCount} color="error">
+                <MailIcon />
+              </Badge>
+            </IconButton>
           )}
           <Avatar
             sx={{ width: 30, height: 30 }}
@@ -132,36 +132,14 @@ export const Navbar = ({ setSearchQuery }) => {
               currentUser?.profilePicture ||
               "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
             }
-            onClick={(e) => setOpen(true)}
+            onClick={() => setOpen(true)}
           />
         </Icons>
-        {!currentUser && (
-          <UserBox onClick={(e) => setOpen(true)}>
-            <Avatar
-              sx={{ width: 30, height: 30 }}
-              src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-            />
-            <Typography variant="span">Guest</Typography>
-          </UserBox>
-        )}
-        {currentUser && (
-          <UserBox onClick={(e) => setOpen(true)}>
-            <Avatar
-              sx={{ width: 30, height: 30 }}
-              src={
-                currentUser.profilePicture ||
-                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-              }
-            />
-            <Typography variant="span">{currentUser.username}</Typography>
-          </UserBox>
-        )}
       </StyledToolbar>
       <Menu
         id="demo-positioned-menu"
-        aria-labelledby="demo-positioned-button"
         open={open}
-        onClose={(e) => setOpen(false)}
+        onClose={() => setOpen(false)}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
