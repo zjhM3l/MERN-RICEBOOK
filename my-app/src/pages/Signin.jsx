@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import { Navbar } from "../components/Navbar";
-import { useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { SigninForm } from "../components/SigninForm";
 import { Logo } from "../components/Logo";
@@ -18,9 +17,18 @@ export const Signin = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Box bgcolor={"background.default"} color={"text.primary"}>
+      {/* Make the entire Box fill the viewport */}
+      <Box
+        bgcolor={"background.default"}
+        color={"text.primary"}
+        sx={{
+          minHeight: "100vh", // Ensure it fills the entire height
+          display: "flex", // Make it a flex container
+          flexDirection: "column", // Stack elements vertically
+        }}
+      >
         <Navbar />
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Stack direction="row" spacing={2} justifyContent="space-between" flex={1}>
           <Sidebar />
           <Stack
             spacing={2}
