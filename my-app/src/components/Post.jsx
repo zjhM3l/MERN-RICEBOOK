@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateFollowingSuccess } from "../redux/user/userSlice.js"; // Import the action to update following status
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import API_BASE_URL from "../config/config";
+import { Edit } from "./Edit"; // Import the Edit component
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -67,6 +68,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const [expanded, setExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // Controls card hover animation
   const [isFollowAction, setIsFollowAction] = useState(false); // New: To track if it’s a follow action
+  const [editOpen, setEditOpen] = useState(false); // State to control Edit modal
   const currentUser = useSelector((state) => state.user.currentUser); // Retrieve the current user
   const [isLiked, setIsLiked] = useState(
     currentUser && post.likes.includes(currentUser._id) // Add null check
@@ -93,6 +95,15 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   const handleExpandClick = (event) => {
     event.stopPropagation(); // Prevent event bubbling to stop card click
     setExpanded(!expanded);
+  };
+
+  const handleEditClick = (event) => {
+    event.stopPropagation(); // Prevent bubbling to card click
+    setEditOpen(true); // Open the Edit modal
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false); // Close the Edit modal
   };
 
   const handleMouseDown = (event) => {
@@ -350,15 +361,24 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         <IconButton
           aria-label="edit"
           onClick={(event) => {
-            event.stopPropagation(); // Prevent event bubbling to stop card click
-            // Add your edit handling logic here
+            event.stopPropagation(); // Prevent card click
+            setEditOpen(true); // Open edit modal
           }}
           style={{
-            display: currentUser && post.author._id === currentUser._id ? "block" : "none", // Show only if the user is the author
+            display: currentUser && post.author._id === currentUser._id ? "block" : "none", // Show only for the author
           }}
         >
           <EditNoteIcon />
         </IconButton>
+        {editOpen && (
+          <Edit
+            post={post}
+            onClose={() => setEditOpen(false)} // Close the modal on action
+            onEditSuccess={() => {
+              console.log("Post updated successfully");
+            }}
+          />
+        )}
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
