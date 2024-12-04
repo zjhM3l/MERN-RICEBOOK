@@ -62,12 +62,19 @@ export const Navbar = ({ setSearchQuery }) => {
   const isHomePage = location.pathname === "/home" || location.pathname === "/";
 
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    if (setSearchQuery) {
+      setSearchQuery(e.target.value); // Safely update search query
+    }
   };
 
   const handleLogout = () => {
     dispatch(signOutSuccess());
-    setSearchQuery("");
+
+    // Safely call setSearchQuery only if it's defined
+    if (setSearchQuery) {
+      setSearchQuery(""); // Clear search box content
+    }
+
     fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
@@ -76,7 +83,7 @@ export const Navbar = ({ setSearchQuery }) => {
         if (!response.ok) {
           throw new Error("Failed to log out");
         }
-        navigate("/home");
+        navigate("/home"); // Redirect to the Home page after logout
       })
       .catch((error) => console.error("Logout failed:", error));
   };
@@ -94,7 +101,7 @@ export const Navbar = ({ setSearchQuery }) => {
           RICE BOOK
         </Typography>
         <FacebookIcon sx={{ display: { xs: "block", sm: "none" } }} />
-        {isHomePage && ( // Conditionally render the search bar
+        {isHomePage && (
           <Search>
             <TextField
               sx={{
