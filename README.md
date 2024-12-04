@@ -156,21 +156,17 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 
 2. **Install dependencies**：
    ```bash
+   cd api
    npm install
+   cd ..
    cd my-app
    npm install
-   
-4. **Set up environment variables**：
-   Create a .env file in the root directory with the following:
-   ```plaintext
-   MONGO_URI=your_mongo_db_uri
-   JWT_SECRET=your_jwt_secret
-   FIREBASE_CONFIG=your_firebase_config
    
 ### Running the Application
 1. **Backend**:
    ```bash
-   npm run dev
+   cd api
+   npm start
 
 2. **Frontend**:
    ```bash
