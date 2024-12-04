@@ -26,7 +26,8 @@ const StyledToolbar = styled(Toolbar)({
 });
 
 const Search = styled("div")(({ theme }) => ({
-  backgroundColor: "white",
+  backgroundColor: theme.palette.mode === "dark" ? "#333" : "white",
+  color: theme.palette.mode === "dark" ? "white" : "black", // Adjust text color
   borderRadius: theme.shape.borderRadius,
   width: "40%",
 }));
@@ -49,7 +50,7 @@ const UserBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery function as a prop
+export const Navbar = ({ setSearchQuery }) => {
   const [open, setOpen] = useState(false);
   const [unrepliedMessagesCount, setUnrepliedMessagesCount] = useState(0); // Count of unreplied messages
   const { currentUser } = useSelector((state) => state.user);
@@ -57,16 +58,13 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if the current page is Home
-  const isHomePage = location.pathname === "/home" || location.pathname === "/";
-
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value); // Update search query as the user types
   };
 
   const handleLogout = () => {
     dispatch(signOutSuccess());
-    setSearchQuery(""); // 清空搜索框内容
+    setSearchQuery(""); // Clear search box content
     fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
@@ -83,34 +81,8 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
       });
   };
 
-  // Fetch the count of unreplied messages from the backend
   useEffect(() => {
-    const fetchUnrepliedMessagesCount = async () => {
-      if (currentUser) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/user/latest-conversations/${currentUser._id}`);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          setUnrepliedMessagesCount(data.unrepliedMessagesCount); // Update the count of unreplied messages
-        } catch (error) {
-          console.error("Error fetching unreplied messages count:", error);
-        }
-      }
-    };
-
-    fetchUnrepliedMessagesCount();
-  }, [currentUser]); // Re-fetch message count when currentUser changes
-
-  useEffect(() => {
-    if (
-      !currentUser &&
-      location.pathname !== "/sign-in" &&
-      location.pathname !== "/sign-up"
-    ) {
+    if (!currentUser && location.pathname !== "/sign-in" && location.pathname !== "/sign-up") {
       navigate("/home");
     }
   }, [currentUser, location.pathname, navigate]);
@@ -123,22 +95,32 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
         </Typography>
         <FacebookIcon sx={{ display: { xs: "block", sm: "none" } }} />
         <Search>
-        <TextField
-          sx={{ color: "black", width: "100%" }}
-          id="filled-search"
-          label={currentUser ? "Search..." : "Login to search"} // 动态显示提示
-          type="search"
-          variant="filled"
-          onChange={handleSearchChange}
-          disabled={!currentUser} // 禁用搜索框
-        />
+          <TextField
+            sx={{
+              width: "100%",
+              "& .MuiInputBase-root": {
+                color: "inherit", // Use the parent's text color
+              },
+              "& .MuiInputLabel-root": {
+                color: "inherit", // Use the parent's text color for placeholder
+              },
+              "& .MuiFilledInput-root": {
+                backgroundColor: "inherit", // Match the parent's background color
+              },
+            }}
+            id="filled-search"
+            label={currentUser ? "Search..." : "Login to search"} // Dynamic placeholder
+            type="search"
+            variant="filled"
+            onChange={handleSearchChange}
+            disabled={!currentUser} // Disable if not logged in
+          />
         </Search>
         <Icons>
           {currentUser && (
             <>
               <IconButton aria-label="mail" sx={{ color: "white" }}>
                 <Badge badgeContent={unrepliedMessagesCount} color="error">
-                  {/* Display unreplied message count */}
                   <MailIcon />
                 </Badge>
               </IconButton>
