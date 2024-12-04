@@ -385,11 +385,15 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
       {editOpen && (
             <Edit
               post={post}
-              onClose={() => setEditOpen(false)} // Close the modal on action
-              onEditSuccess={() => {
-                console.log("Post updated successfully");
+              onClose={() => setEditOpen(false)}
+              onEditSuccess={(updatedPost) => {
+              // Update the post with new data
+              post.title = updatedPost.title;
+              post.content = updatedPost.content;
+              post.cover = updatedPost.cover;
+              setEditOpen(false); // Close modal
               }}
-            />
+          />          
           )}
     </Box>
   );

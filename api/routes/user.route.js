@@ -10,12 +10,14 @@ import {
   postMessageToChat,
   getLatestConversations,
   createComment,
-  likeComment
+  likeComment,
+  updatePost
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
 router.post("/posts", createPost);
+router.put("/posts/:postId", updatePost);
 router.post("/profile", profile);
 router.post("/updateAvatar", updateAvatar);
 router.post("/toggleFollow", toggleFollow);

@@ -344,6 +344,28 @@ export const createPost = async (req, res) => {
   }
 };
 
+// Update an existing post
+export const updatePost = async (req, res) => {
+  const { postId } = req.params; // Get post ID from the URL
+  const { title, content } = req.body; // Get updated title and content
+
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { title, content },
+      { new: true } // Return the updated post
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json(updatedPost); // Return the updated post
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update post", error });
+  }
+};
+
 // Update user profile information
 export const profile = async (req, res, next) => {
   const { email, username, phone, zipcode, password, confirm } = req.body;
