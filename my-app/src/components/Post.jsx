@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Favorite from "@mui/icons-material/Favorite";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
-import Share from "@mui/icons-material/Share";
-import {
+import EditNoteIcon from '@mui/icons-material/EditNote';import {
   Avatar,
   Badge,
   Card,
@@ -349,13 +348,16 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
         </IconButton>
 
         <IconButton
-          aria-label="share"
+          aria-label="edit"
           onClick={(event) => {
             event.stopPropagation(); // Prevent event bubbling to stop card click
-            // Handle share logic here
+            // Add your edit handling logic here
+          }}
+          style={{
+            display: currentUser && post.author._id === currentUser._id ? "block" : "none", // Show only if the user is the author
           }}
         >
-          <Share />
+          <EditNoteIcon />
         </IconButton>
         <ExpandMore
           expand={expanded}
