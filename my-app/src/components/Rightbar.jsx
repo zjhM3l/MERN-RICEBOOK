@@ -14,6 +14,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
+import API_BASE_URL from "../config/config";
 
 export const Rightbar = () => {
   const [latestConversations, setLatestConversations] = useState([]); // Store latest messages
@@ -26,7 +27,7 @@ export const Rightbar = () => {
     const fetchLatestConversations = async () => {
       if (currentUser) {
         try {
-          const response = await fetch(`http://localhost:3000/api/user/latest-conversations/${currentUser._id}`);
+          const response = await fetch(`${API_BASE_URL}/user/latest-conversations/${currentUser._id}`);
 
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -45,7 +46,7 @@ export const Rightbar = () => {
     const fetchRecentPosts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/main/recent-posts"
+          `${API_BASE_URL}/main/recent-posts`
         );
 
         if (!response.ok) {

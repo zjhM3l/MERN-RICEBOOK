@@ -22,6 +22,7 @@ import { styled } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { updateFollowingSuccess } from "../redux/user/userSlice.js"; // Import the action to update following status
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import API_BASE_URL from "../config/config";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -133,7 +134,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   
     try {
       const response = await fetch(
-        "http://localhost:3000/api/user/toggleFollow",
+        `${API_BASE_URL}/user/toggleFollow`,
         {
           method: "POST",
           headers: {
@@ -181,7 +182,7 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/main/${post._id}/like`,
+        `${API_BASE_URL}/main/${post._id}/like`,
         {
           method: "POST",
           headers: {

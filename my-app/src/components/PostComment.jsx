@@ -4,11 +4,12 @@ import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import { useSelector } from "react-redux";
+import API_BASE_URL from "../config/config";
 
 // Helper function to fetch comments
 const fetchComments = async (postId, currentUser, setComments, setLikeStates) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/main/getcomments/${postId}`);
+    const res = await fetch(`${API_BASE_URL}/main/getcomments/${postId}`);
     const data = await res.json();
     
     // Initialize the like state for each comment
@@ -44,7 +45,7 @@ export const PostComment = ({ postId, refresh }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/user/likeComment`, {
+      const response = await fetch(`${API_BASE_URL}/user/likeComment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

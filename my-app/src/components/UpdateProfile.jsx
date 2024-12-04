@@ -17,6 +17,7 @@ import {
   getStorage,
 } from "firebase/storage";
 import { app } from "../firebase"; // Adjust the import path as necessary
+import API_BASE_URL from "../config/config";
 
 export const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -81,7 +82,7 @@ export const UpdateProfile = () => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3000/api/user/profile", {
+      const res = await fetch(`${API_BASE_URL}/user/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +127,7 @@ export const UpdateProfile = () => {
     });
     dataToSubmit.email = formData.email;
     try {
-      const res = await fetch("http://localhost:3000/api/user/profile", {
+      const res = await fetch(`${API_BASE_URL}/user/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +212,7 @@ export const UpdateProfile = () => {
         // Send the new photoURL to the backend
         try {
           const res = await fetch(
-            "http://localhost:3000/api/user/updateAvatar",
+            `${API_BASE_URL}/user/updateAvatar`,
             {
               method: "POST",
               headers: {

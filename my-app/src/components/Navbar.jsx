@@ -18,6 +18,7 @@ import Notifications from "@mui/icons-material/Notifications";
 import { useSelector, useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { signOutSuccess } from "../redux/user/userSlice.js";
+import API_BASE_URL from "../config/config";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -66,7 +67,7 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
   const handleLogout = () => {
     dispatch(signOutSuccess());
     setSearchQuery(""); // 清空搜索框内容
-    fetch("http://localhost:3000/api/auth/logout", {
+    fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     })
@@ -87,7 +88,7 @@ export const Navbar = ({ setSearchQuery }) => { // Pass the setSearchQuery funct
     const fetchUnrepliedMessagesCount = async () => {
       if (currentUser) {
         try {
-          const response = await fetch(`http://localhost:3000/api/user/latest-conversations/${currentUser._id}`);
+          const response = await fetch(`${API_BASE_URL}/user/latest-conversations/${currentUser._id}`);
           
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

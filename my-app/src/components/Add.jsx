@@ -25,6 +25,7 @@ import {
   getStorage,
 } from "firebase/storage";
 import { app } from "../firebase";
+import API_BASE_URL from "../config/config";
 
 // Styled modal for the post creation form
 const StyledModal = styled(Modal)({
@@ -116,7 +117,7 @@ export const Add = ({ onPostSuccess }) => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/api/user/posts", {
+      const res = await fetch(`${API_BASE_URL}/user/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

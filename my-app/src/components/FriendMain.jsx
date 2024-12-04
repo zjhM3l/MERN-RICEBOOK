@@ -7,6 +7,7 @@ import SwipeLeftAltIcon from '@mui/icons-material/SwipeLeftAlt';
 import SendIcon from '@mui/icons-material/Send';  // Import the send button
 import { useNavigate } from 'react-router-dom';  // Import useNavigate for navigation
 import { updateFollowingSuccess } from '../redux/user/userSlice.js';
+import API_BASE_URL from "../config/config";
 
 // FriendListItem component
 const FriendListItem = ({ friend, icon, onFollowToggle, onChatClick }) => {
@@ -73,7 +74,7 @@ export const FriendMain = () => {
     const fetchFriends = async () => {
       if (currentUser) {
         try {
-          const response = await fetch(`http://localhost:3000/api/user/${currentUser._id}/friends`, {
+          const response = await fetch(`${API_BASE_URL}/user/${currentUser._id}/friends`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
@@ -89,7 +90,7 @@ export const FriendMain = () => {
 
   const handleFollowToggle = async (friendId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/user/toggleFollow", {
+      const response = await fetch(`${API_BASE_URL}/user/toggleFollow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: currentUser._id, targetId: friendId }),
@@ -104,7 +105,7 @@ export const FriendMain = () => {
 
   const handleChatClick = async (friendId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/user/chat", {
+      const response = await fetch(`${API_BASE_URL}/user/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: currentUser._id, targetId: friendId }),

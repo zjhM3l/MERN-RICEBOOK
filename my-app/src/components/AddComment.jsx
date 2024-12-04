@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, TextareaAutosize, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import { FormatBold, FormatItalic, KeyboardArrowDown, Check } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import API_BASE_URL from "../config/config";
 
 export const AddComment = ({ postId, onCommentSuccess }) => {
   const [comment, setComment] = useState("");
@@ -29,7 +30,7 @@ export const AddComment = ({ postId, onCommentSuccess }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/user/createcomment", {
+      const res = await fetch(`${API_BASE_URL}/user/createcomment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

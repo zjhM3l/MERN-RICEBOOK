@@ -2,6 +2,7 @@ import { Link, Box, Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { OAuth } from "./OAuth";
+import API_BASE_URL from "../config/config";
 
 export const SignupForm = () => {
   const [formData, setFormData] = useState({});
@@ -15,7 +16,7 @@ export const SignupForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/auth/signup", {
+      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

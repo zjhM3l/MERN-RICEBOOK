@@ -20,6 +20,7 @@ import { red } from "@mui/material/colors";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import API_BASE_URL from "../config/config";
 
 // Custom styled Badge with ripple animation effect
 const StyledBadge = styled(Badge)(({ theme, triggerAnimation }) => ({
@@ -64,7 +65,7 @@ export const PostDetailMain = () => {
       const fetchPost = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3000/api/main/${postId}`
+            `${API_BASE_URL}/main/${postId}`
           );
           const data = await response.json();
           setPost(data);
@@ -85,7 +86,7 @@ export const PostDetailMain = () => {
 
   const handleLike = async () => {
     try {
-      await fetch(`http://localhost:3000/api/main/${postId}/like`, {
+      await fetch(`${API_BASE_URL}/main/${postId}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

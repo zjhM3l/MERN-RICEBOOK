@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import API_BASE_URL from "../config/config";
 
 export const Chat = ({ chatId }) => {
   const [messages, setMessages] = useState([]); // Initialize messages as an empty array
@@ -17,7 +18,7 @@ export const Chat = ({ chatId }) => {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/user/chat/${chatId}/messages`);
+        const response = await fetch(`${API_BASE_URL}/user/chat/${chatId}/messages`);
         const data = await response.json();
 
         // Ensure data is an array before setting the messages
@@ -51,7 +52,7 @@ export const Chat = ({ chatId }) => {
     if (!newMessage.trim() || !currentUser) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/user/chat/${chatId}/messages`, {
+      const response = await fetch(`${API_BASE_URL}/user/chat/${chatId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newMessage, senderId: currentUser._id }),

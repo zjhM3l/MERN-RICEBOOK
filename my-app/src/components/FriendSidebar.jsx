@@ -3,6 +3,7 @@ import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider, Ico
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';  // Import the back arrow icon
 import { useNavigate } from 'react-router-dom';  // For navigation
 import { useSelector } from 'react-redux';
+import API_BASE_URL from "../config/config";
 
 export const FriendSidebar = () => {
   const [friends, setFriends] = useState({
@@ -18,7 +19,7 @@ export const FriendSidebar = () => {
     const fetchFriends = async () => {
       if (currentUser) {
         try {
-          const response = await fetch(`http://localhost:3000/api/user/${currentUser._id}/friends`, {
+          const response = await fetch(`${API_BASE_URL}/user/${currentUser._id}/friends`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
@@ -34,7 +35,7 @@ export const FriendSidebar = () => {
 
   const handleChatClick = async (friendId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/user/chat", {
+      const response = await fetch(`${API_BASE_URL}/user/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: currentUser._id, targetId: friendId }),

@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { Post } from "./Post";
 import { useSelector } from "react-redux";
+import API_BASE_URL from "../config/config";
 
 export const Feed = ({ showLikedPosts, showMoments, searchQuery }) => {
   const [expandedPost, setExpandedPost] = useState(null);
@@ -15,11 +16,11 @@ export const Feed = ({ showLikedPosts, showMoments, searchQuery }) => {
         let endpoint;
 
         if (showLikedPosts) {
-          endpoint = `http://localhost:3000/api/main/posts/liked?userId=${currentUser._id}`;
+          endpoint = `${API_BASE_URL}/main/posts/liked?userId=${currentUser._id}`;
         } else if (showMoments) {
-          endpoint = `http://localhost:3000/api/main/posts/followed?userId=${currentUser._id}`;
+          endpoint = `${API_BASE_URL}/main/posts/followed?userId=${currentUser._id}`;
         } else {
-          endpoint = "http://localhost:3000/api/main/posts"; // Base endpoint for home feed
+          endpoint = `${API_BASE_URL}/main/posts`; // Base endpoint for home feed
         }
 
         // Check if there's already a query parameter (e.g., `?userId=`) before appending the search
