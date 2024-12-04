@@ -4,6 +4,7 @@ import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import EditNoteIcon from '@mui/icons-material/EditNote';import {
   Avatar,
   Badge,
+  Box,
   Card,
   CardActions,
   CardContent,
@@ -232,162 +233,164 @@ export const Post = ({ post, isExpanded, onExpand, onCollapse }) => {
   };
 
   return (
-    <Card
-      onClick={handleCardClick} // Add click event
-      onMouseEnter={() => setIsHovered(true)} // Enlarge on hover
-      onMouseLeave={() => setIsHovered(false)} // Shrink on mouse leave
-      sx={{
-        margin: 5,
-        cursor: "pointer", // Change cursor to pointer
-        transition: "transform 0.3s ease, opacity 0.4s ease",
-        transform: isHovered ? "scale(1.02)" : "scale(1)", // Control enlarge animation
-        opacity: isHovered ? 1 : 0.9,
-        width: isExpanded ? "80vw" : "auto",
-        height: isExpanded ? "auto" : "fit-content",
-        zIndex: isExpanded ? 10 : 1,
-        position: isExpanded ? "fixed" : "relative",
-        top: isExpanded ? "10%" : "auto",
-        left: isExpanded ? "7.5%" : "auto",
-        transformOrigin: "center center",
-        maxHeight: isExpanded ? "80vh" : "auto",
-        overflowY: isExpanded ? "auto" : "visible",
-      }}
-    >
-      <CardHeader
-        avatar={
-          <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            variant={isFollowing ? "dot" : "standard"}
-          >
-            <Avatar
-              sx={{
-                bgcolor: red[500],
-                transform: isPressed ? "scale(1.2)" : "scale(1)", // Avatar animation
-                transition: "transform 0.3s ease-in-out", // Smooth animation
-              }}
-              aria-label="recipe"
-              src={post.author?.profilePicture || ""}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp} // Prevent early mouse leave before long press
+    <Box>
+      <Card
+        onClick={handleCardClick} // Add click event
+        onMouseEnter={() => setIsHovered(true)} // Enlarge on hover
+        onMouseLeave={() => setIsHovered(false)} // Shrink on mouse leave
+        sx={{
+          margin: 5,
+          cursor: "pointer", // Change cursor to pointer
+          transition: "transform 0.3s ease, opacity 0.4s ease",
+          transform: isHovered ? "scale(1.02)" : "scale(1)", // Control enlarge animation
+          opacity: isHovered ? 1 : 0.9,
+          width: isExpanded ? "80vw" : "auto",
+          height: isExpanded ? "auto" : "fit-content",
+          zIndex: isExpanded ? 10 : 1,
+          position: isExpanded ? "fixed" : "relative",
+          top: isExpanded ? "10%" : "auto",
+          left: isExpanded ? "7.5%" : "auto",
+          transformOrigin: "center center",
+          maxHeight: isExpanded ? "80vh" : "auto",
+          overflowY: isExpanded ? "auto" : "visible",
+        }}
+      >
+        <CardHeader
+          avatar={
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              variant={isFollowing ? "dot" : "standard"}
             >
-              {post.author?.username ? post.author.username[0] : "U"}
-            </Avatar>
-          </StyledBadge>
-        }
-        action={
-          isExpanded ? (
-            <IconButton
-              aria-label="close"
-              onClick={(event) => {
-                event.stopPropagation(); // Prevent event bubbling
-                onCollapse();
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          ) : (
-            <IconButton
-              aria-label="settings"
-              onClick={(event) => {
-                event.stopPropagation(); // Prevent event bubbling
-                onExpand();
-              }}
-            >
-              <CropFree />
-            </IconButton>
-          )
-        }
-        title={post.author.username}
-        subheader={new Date(post.createdAt).toLocaleDateString()}
-      />
-      {post.cover && (
-        <CardMedia
-          component="img"
-          height="20%"
-          image={post.cover}
-          alt={post.title}
-        />
-      )}
-      <CardContent>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            "& img": {
-              maxWidth: "100%", // Ensure image max width is 100% without exceeding container
-              height: "auto", // Maintain original aspect ratio
-              display: "block", // Ensure image is in a block format
-              margin: "10px 0", // Add some margin around the image
-            },
-          }}
-          dangerouslySetInnerHTML={{
-            __html: expanded ? post.content : `${post.title}...`,
-          }}
-        />
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton
-          aria-label="add to favorites"
-          onClick={(event) => {
-            event.stopPropagation(); // Prevent event bubbling to stop card click
-            handleLikeToggle(event); // Pass event object
-          }}
-        >
-          <Checkbox
-            icon={
-              <Badge
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                color="error"
-                badgeContent={likeCount} // Show like count in real time
+              <Avatar
+                sx={{
+                  bgcolor: red[500],
+                  transform: isPressed ? "scale(1.2)" : "scale(1)", // Avatar animation
+                  transition: "transform 0.3s ease-in-out", // Smooth animation
+                }}
+                aria-label="recipe"
+                src={post.author?.profilePicture || ""}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp} // Prevent early mouse leave before long press
               >
-                <FavoriteBorder />
-              </Badge>
-            }
-            checkedIcon={
-              <Badge
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                color="error"
-                badgeContent={likeCount} // Show like count in real time
+                {post.author?.username ? post.author.username[0] : "U"}
+              </Avatar>
+            </StyledBadge>
+          }
+          action={
+            isExpanded ? (
+              <IconButton
+                aria-label="close"
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent event bubbling
+                  onCollapse();
+                }}
               >
-                <Favorite sx={{ color: "red" }} />
-              </Badge>
-            }
-            checked={isLiked} // Control whether the post is liked
-          />
-        </IconButton>
-
-        <IconButton
-          aria-label="edit"
-          onClick={(event) => {
-            event.stopPropagation(); // Prevent card click
-            setEditOpen(true); // Open edit modal
-          }}
-          style={{
-            display: currentUser && post.author._id === currentUser._id ? "block" : "none", // Show only for the author
-          }}
-        >
-          <EditNoteIcon />
-        </IconButton>
-        {editOpen && (
-          <Edit
-            post={post}
-            onClose={() => setEditOpen(false)} // Close the modal on action
-            onEditSuccess={() => {
-              console.log("Post updated successfully");
-            }}
+                <CloseIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="settings"
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent event bubbling
+                  onExpand();
+                }}
+              >
+                <CropFree />
+              </IconButton>
+            )
+          }
+          title={post.author.username}
+          subheader={new Date(post.createdAt).toLocaleDateString()}
+        />
+        {post.cover && (
+          <CardMedia
+            component="img"
+            height="20%"
+            image={post.cover}
+            alt={post.title}
           />
         )}
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-    </Card>
+        <CardContent>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              "& img": {
+                maxWidth: "100%", // Ensure image max width is 100% without exceeding container
+                height: "auto", // Maintain original aspect ratio
+                display: "block", // Ensure image is in a block format
+                margin: "10px 0", // Add some margin around the image
+              },
+            }}
+            dangerouslySetInnerHTML={{
+              __html: expanded ? post.content : `${post.title}...`,
+            }}
+          />
+        </CardContent>
+        <CardActions disableSpacing>
+          <IconButton
+            aria-label="add to favorites"
+            onClick={(event) => {
+              event.stopPropagation(); // Prevent event bubbling to stop card click
+              handleLikeToggle(event); // Pass event object
+            }}
+          >
+            <Checkbox
+              icon={
+                <Badge
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  color="error"
+                  badgeContent={likeCount} // Show like count in real time
+                >
+                  <FavoriteBorder />
+                </Badge>
+              }
+              checkedIcon={
+                <Badge
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  color="error"
+                  badgeContent={likeCount} // Show like count in real time
+                >
+                  <Favorite sx={{ color: "red" }} />
+                </Badge>
+              }
+              checked={isLiked} // Control whether the post is liked
+            />
+          </IconButton>
+
+          <IconButton
+            aria-label="edit"
+            onClick={(event) => {
+              event.stopPropagation(); // Prevent card click
+              setEditOpen(true); // Open edit modal
+            }}
+            style={{
+              display: currentUser && post.author._id === currentUser._id ? "block" : "none", // Show only for the author
+            }}
+          >
+            <EditNoteIcon />
+          </IconButton>
+          <ExpandMore
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </ExpandMore>
+        </CardActions>
+      </Card>
+      {editOpen && (
+            <Edit
+              post={post}
+              onClose={() => setEditOpen(false)} // Close the modal on action
+              onEditSuccess={() => {
+                console.log("Post updated successfully");
+              }}
+            />
+          )}
+    </Box>
   );
 };
