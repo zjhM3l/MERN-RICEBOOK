@@ -65,14 +65,14 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments, setFeedToDefault }) 
 
           {currentUser && (
             <>
-              <ListItem disablePadding>
+              {/* <ListItem disablePadding>
                 <ListItemButton component={Link} to="/groups">
                   <ListItemIcon>
                     <People />
                   </ListItemIcon>
                   <ListItemText primary="Groups" />
                 </ListItemButton>
-              </ListItem>
+              </ListItem> */}
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/friend">
                   <ListItemIcon>
@@ -126,14 +126,14 @@ export const Sidebar = ({ setFeedToLiked, setFeedToMoments, setFeedToDefault }) 
             </>
           )}
 
-          <ListItem disablePadding>
+          {/* <ListItem disablePadding>
             <ListItemButton component={Link} to="/settings">
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>
               <ListItemText primary="Settings" />
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>

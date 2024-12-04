@@ -42,7 +42,6 @@ export const getRecentPosts = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const { search } = req.query; // 从 URL 参数中获取 search
-    console.log("Search query:", search || "No search query"); // 输出搜索关键字
 
     // 如果 search 为空，不设置过滤条件
     const query = search

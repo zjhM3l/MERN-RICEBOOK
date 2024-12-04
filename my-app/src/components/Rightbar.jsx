@@ -73,12 +73,11 @@ export const Rightbar = () => {
   return (
     <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={300}>
-        <Typography variant="h6" fontWeight={100}>
+        {/* <Typography variant="h6" fontWeight={100}>
           Online Friends
         </Typography>
         <AvatarGroup max={7}>
-          {/* Your Avatar components here */}
-        </AvatarGroup>
+        </AvatarGroup> */}
 
         <Typography variant="h6" fontWeight={100} mt={2} mb={2}>
           Latest Posts
