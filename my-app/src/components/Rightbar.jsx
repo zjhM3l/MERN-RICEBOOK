@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   Avatar,
-  AvatarGroup,
   Box,
   ImageList,
   ImageListItem,
@@ -24,37 +23,39 @@ export const Rightbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Clear data when the user logs out
+    if (!currentUser) {
+      setLatestConversations([]);
+      setRecentPosts([]);
+      setUnrepliedMessagesCount(0);
+      return;
+    }
+
+    // Fetch data only when there is a current user
     const fetchLatestConversations = async () => {
-      if (currentUser) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/user/latest-conversations/${currentUser._id}`);
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          setLatestConversations(data.latestMessages);  // Save latest messages
-          setUnrepliedMessagesCount(data.unrepliedMessagesCount);  // Save unreplied messages count
-        } catch (error) {
-          console.error("Error fetching latest conversations:", error);
-          setLatestConversations([]);  // Set empty array on error
-        }
-      }
-    };
-
-    const fetchRecentPosts = async () => {
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/main/recent-posts`
-        );
-
+        const response = await fetch(`${API_BASE_URL}/user/latest-conversations/${currentUser._id}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        setLatestConversations(data.latestMessages); // Save latest messages
+        setUnrepliedMessagesCount(data.unrepliedMessagesCount); // Save unreplied messages count
+      } catch (error) {
+        console.error("Error fetching latest conversations:", error);
+        setLatestConversations([]); // Set empty array on error
+      }
+    };
 
+    const fetchRecentPosts = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/main/recent-posts`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
         if (Array.isArray(data)) {
           setRecentPosts(data); // Ensure data is an array
         } else {
@@ -73,12 +74,6 @@ export const Rightbar = () => {
   return (
     <Box flex={2} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" width={300}>
-        {/* <Typography variant="h6" fontWeight={100}>
-          Online Friends
-        </Typography>
-        <AvatarGroup max={7}>
-        </AvatarGroup> */}
-
         <Typography variant="h6" fontWeight={100} mt={2} mb={2}>
           Latest Posts
         </Typography>
@@ -167,7 +162,7 @@ export const Rightbar = () => {
           )}
         </List>
         <Typography variant="h6" fontWeight={100} mt={2}>
-          Unreplied Messages: {unrepliedMessagesCount} {/* Display unreplied messages count */}
+          Unreplied Messages: {unrepliedMessagesCount}
         </Typography>
       </Box>
     </Box>
