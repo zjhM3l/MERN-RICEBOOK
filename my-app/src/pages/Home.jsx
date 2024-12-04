@@ -42,18 +42,49 @@ export const Home = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Box bgcolor={"background.default"} color={"text.primary"}>
+      <Box
+        bgcolor={"background.default"}
+        color={"text.primary"}
+        sx={{
+          minHeight: "100vh", // Ensure the background fills the entire viewport
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Navbar */}
         <Navbar setSearchQuery={setSearchQuery} />
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+
+        {/* Main Content */}
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          sx={{
+            flex: 1, // Ensure this takes up remaining space
+            bgcolor: "background.default", // Consistent dark background
+          }}
+        >
+          {/* Sidebar */}
           <Sidebar
             setFeedToLiked={handleShowLikedPosts}
             setFeedToMoments={handleShowMoments}
             setFeedToDefault={handleShowDefaultFeed} // Reset feed to default on homepage click
           />
-          <Feed key={feedKey} searchQuery={searchQuery} showLikedPosts={showLikedPosts} showMoments={showMoments} /> {/* Feed will refresh based on the key */}
+
+          {/* Feed */}
+          <Feed
+            key={feedKey}
+            searchQuery={searchQuery}
+            showLikedPosts={showLikedPosts}
+            showMoments={showMoments}
+          />
+
+          {/* Right Sidebar */}
           <Rightbar />
         </Stack>
-        <Add onPostSuccess={refreshFeed} /> {/* Pass refresh function to Add */}
+
+        {/* Add New Post Button */}
+        <Add onPostSuccess={refreshFeed} />
       </Box>
     </ThemeProvider>
   );
