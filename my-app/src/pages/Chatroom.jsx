@@ -25,24 +25,29 @@ export const ChatRoom = () => {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
+          overflow: "hidden", // Prevent outer scrollbars
         }}
       >
+        {/* Navbar stays fixed */}
         <Navbar />
+
+        {/* Main Chat Room layout */}
         <Stack
           direction="row"
           spacing={2}
           justifyContent="space-between"
           sx={{
             flex: 1,
-            overflow: "hidden",
-            paddingBottom: "16px",
+            overflow: "hidden", // No outer scrolling
           }}
         >
-          {/* Adjust FriendSidebar width */}
-          <Box sx={{ width: "20%", minWidth: "200px" }}>
+          {/* Sidebar for Friends */}
+          <Box sx={{ width: "20%", minWidth: "200px", height: "calc(100vh - 64px)" }}>
             <FriendSidebar />
           </Box>
-          <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+
+          {/* Chat Section */}
+          <Box sx={{ flex: 1, height: "calc(100vh - 64px)", overflow: "hidden" }}>
             <Chat chatId={chatId} />
           </Box>
         </Stack>

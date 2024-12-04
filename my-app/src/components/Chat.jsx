@@ -1,53 +1,39 @@
-import { Box, Avatar, IconButton, Typography, Paper, Stack } from "@mui/material";
-import SendIcon from '@mui/icons-material/Send';
 import React, { useState, useEffect, useRef } from "react";
+import { Box, Avatar, IconButton, Typography, Paper, Stack } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { useSelector } from "react-redux";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import API_BASE_URL from "../config/config";
 
 export const Chat = ({ chatId }) => {
-  const [messages, setMessages] = useState([]); // Initialize messages as an empty array
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const currentUser = useSelector((state) => state.user.currentUser); // Get the current user from the Redux store
-  const messagesEndRef = useRef(null); // Reference for auto-scrolling to the bottom
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const messagesEndRef = useRef(null);
 
-  // Fetch chat messages when chatId or currentUser changes
   useEffect(() => {
-    if (!currentUser) return;
-
     const fetchMessages = async () => {
+      if (!currentUser) return;
+
       try {
         const response = await fetch(`${API_BASE_URL}/user/chat/${chatId}/messages`);
         const data = await response.json();
 
-        // Ensure data is an array before setting the messages
-        if (Array.isArray(data)) {
-          setMessages(data);
-        } else {
-          setMessages([]); // Set to an empty array if the response is not an array
-        }
+        setMessages(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch messages:", error);
-        setMessages([]); // Set empty array in case of an error
+        setMessages([]);
       }
     };
 
-    if (chatId) {
-      fetchMessages();
-    }
+    fetchMessages();
   }, [chatId, currentUser]);
 
-  // Automatically scroll to the bottom of the chat after new messages arrive
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle sending a new message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !currentUser) return;
 
@@ -59,36 +45,44 @@ export const Chat = ({ chatId }) => {
       });
 
       const message = await response.json();
-
-      // Manually set the sender to the current user
-      message.sender = currentUser;
-
-      // Add the new message to the message list
-      setMessages([...messages, message]);
-      setNewMessage(""); // Clear the message input
+      setMessages((prev) => [...prev, { ...message, sender: currentUser }]);
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  // Handle input change in ReactQuill
-  const handleQuillChange = (value) => {
-    setNewMessage(value);
-  };
-
   return (
-    <Box flex={4} p={2} display="flex" flexDirection="column" height="100%">
-      {/* Chat messages display area */}
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      sx={{
+        overflow: "hidden", // Prevent unnecessary scrolling outside chat messages area
+      }}
+    >
+      {/* Chat Messages Area */}
       <Box
         flexGrow={1}
-        overflow="auto"
         p={2}
         display="flex"
         flexDirection="column"
         gap={2}
         sx={{
-          maxHeight: '100%',  // Ensure chat area fills available height
-          borderRadius: '10px',
+          overflowY: "auto", // Allow scrolling only for the messages area
+          maxHeight: "calc(100vh - 180px)", // Adjust height based on input area and navbar
+          backgroundColor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: "10px",
+          scrollbarWidth: "thin",
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            borderRadius: "4px",
+          },
         }}
       >
         {messages.length > 0 ? (
@@ -99,7 +93,7 @@ export const Chat = ({ chatId }) => {
               alignItems="center"
               spacing={2}
             >
-              <Avatar alt={msg.sender.username} src={msg.sender.profilePicture || ''} />
+              <Avatar alt={msg.sender.username} src={msg.sender.profilePicture || ""} />
               <Box>
                 <Typography variant="body2" color="textSecondary">
                   {msg.sender.username}
@@ -110,10 +104,10 @@ export const Chat = ({ chatId }) => {
                     p: 2,
                     bgcolor: msg.sender._id === currentUser._id ? "primary.main" : "grey.200",
                     color: msg.sender._id === currentUser._id ? "white" : "black",
-                    borderRadius: '10px',
-                    maxWidth: '50vw', // Limit the chat bubble to half of the viewport width
-                    wordWrap: 'break-word',
-                    overflowWrap: 'break-word',
+                    borderRadius: "10px",
+                    maxWidth: "50vw",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
                   }}
                 >
                   <div dangerouslySetInnerHTML={{ __html: msg.content }} />
@@ -124,25 +118,35 @@ export const Chat = ({ chatId }) => {
         ) : (
           <Typography>No messages yet</Typography>
         )}
-        <div ref={messagesEndRef} /> {/* Auto-scroll reference */}
+        <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input and send button area with ReactQuill */}
-      <Box mt={2} display="flex" alignItems="center" gap={2}>
+      {/* Input Area */}
+      <Box
+        mt={2}
+        display="flex"
+        alignItems="center"
+        gap={2}
+        sx={{
+          borderTop: "1px solid",
+          borderColor: "divider",
+          pt: 2,
+          pb: 2,
+          backgroundColor: "background.default",
+        }}
+      >
         <Box flexGrow={1}>
           <ReactQuill
             theme="snow"
             value={newMessage}
-            onChange={handleQuillChange}
+            onChange={(value) => setNewMessage(value)}
             placeholder="Type your message..."
             modules={{
-              toolbar: [
-                ['image', 'video'],
-              ],
+              toolbar: [["bold", "italic", "underline", "image"]],
             }}
-            formats={['image', 'video']}
+            formats={["bold", "italic", "underline", "image"]}
             style={{
-              borderRadius: '10px',
+              borderRadius: "10px",
             }}
           />
         </Box>
@@ -150,8 +154,8 @@ export const Chat = ({ chatId }) => {
           color="primary"
           onClick={handleSendMessage}
           sx={{
-            '&:hover': {
-              bgcolor: 'primary.dark',
+            "&:hover": {
+              bgcolor: "primary.dark",
             },
           }}
         >
