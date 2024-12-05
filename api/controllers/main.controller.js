@@ -1,6 +1,7 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
+import mongoose from "mongoose";
 
 export const getComments = async (req, res) => {
   const { postId } = req.params; // Extract postId from req.params
