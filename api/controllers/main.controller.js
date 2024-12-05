@@ -38,12 +38,12 @@ export const getRecentPosts = async (req, res) => {
   }
 };
 
-// Fetch posts with optional search query
+// Fetch posts with optional search query and pagination
 export const getPosts = async (req, res) => {
   try {
-    const { search } = req.query; // 从 URL 参数中获取 search
+    const { search, limit = 10, page = 1 } = req.query; // Get search, limit, and page from query parameters
 
-    // 如果 search 为空，不设置过滤条件
+    // Build query
     const query = search
       ? {
           $or: [
@@ -51,82 +51,102 @@ export const getPosts = async (req, res) => {
             { content: { $regex: search, $options: "i" } },
           ],
         }
-      : {}; // 空查询返回所有帖子
+      : {};
 
-    // 查询帖子数据并按创建时间排序
+    // Pagination logic
+    const skip = (page - 1) * limit;
+
+    // Fetch posts with pagination
     const posts = await Post.find(query)
       .populate("author", "username profilePicture")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
-    res.status(200).json(posts);
+    // Total count for pagination metadata
+    const totalCount = await Post.countDocuments(query);
+
+    res.status(200).json({ posts, totalCount });
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ message: "Failed to fetch posts", error });
   }
 };
 
-// Fetch posts from users the current user follows with optional search query
+// Fetch liked posts for the current user with optional search query and pagination
+export const getLikedPosts = async (req, res) => {
+  try {
+    const { userId, search, limit = 10, page = 1 } = req.query;
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const skip = (page - 1) * limit;
+
+    let query = { likes: userId }; // Match posts liked by the user
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
+        { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
+      ];
+    }
+
+    const likedPosts = await Post.find(query)
+      .populate("author", "username profilePicture")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalCount = await Post.countDocuments(query);
+
+    res.status(200).json({ posts: likedPosts, totalCount });
+  } catch (error) {
+    console.error("Failed to fetch liked posts:", error);
+    res.status(500).json({ message: "Failed to fetch liked posts", error });
+  }
+};
+
+// Fetch posts from users the current user follows with optional search query and pagination
 export const getFollowedUsersPosts = async (req, res) => {
   try {
-    const userId = req.query.userId; // Get userId from the query parameters
-    const { search } = req.query; // Get search query from URL parameters
+    const { userId, search, limit = 10, page = 1 } = req.query;
 
-    // Find the current user to get the list of users they are following
-    const currentUser = await User.findById(userId).select('following');
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
+    const currentUser = await User.findById(userId).select("following");
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let query = {
-      author: { $in: currentUser.following },
-    };
+    const skip = (page - 1) * limit;
 
-    // If there's a search query, add conditions to search within the title or content
+    let query = { author: { $in: currentUser.following } };
+
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
-        { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
       ];
     }
 
-    // Fetch posts where the author is one of the users the current user is following
     const followedPosts = await Post.find(query)
-      .populate("author", "username profilePicture") // Populate author details
-      .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
+      .populate("author", "username profilePicture")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
-    res.status(200).json(followedPosts); // Send the followed users' posts as response
+    const totalCount = await Post.countDocuments(query);
+
+    res.status(200).json({ posts: followedPosts, totalCount });
   } catch (error) {
     console.error("Failed to fetch followed users' posts:", error);
     res.status(500).json({ message: "Failed to fetch followed users' posts", error });
-  }
-};
-
-// Fetch liked posts for the current user with optional search query
-export const getLikedPosts = async (req, res) => {
-  try {
-    const userId = req.query.userId; // Get userId from the query parameters
-    const { search } = req.query; // Get search query from URL parameters
-
-    let query = { likes: userId };
-
-    // If there's a search query, add conditions to search within the title or content
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } }, // Case-insensitive search on title
-        { content: { $regex: search, $options: "i" } }, // Case-insensitive search on content
-      ];
-    }
-
-    // Fetch posts that have the current user's ID in the `likes` array
-    const likedPosts = await Post.find(query)
-      .populate("author", "username profilePicture") // Populate author details
-      .sort({ createdAt: -1 }); // Sort posts by creation date (newest first)
-
-    res.status(200).json(likedPosts); // Send the liked posts as response
-  } catch (error) {
-    console.error("Failed to fetch liked posts:", error);
-    res.status(500).json({ message: "Failed to fetch liked posts", error });
   }
 };
 
