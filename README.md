@@ -177,6 +177,28 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 3. **Access the app**:
    Open http://localhost:3000 in your browser to see Ricebook in action.
 
+## Deployment
+
+### Test User Credentials
+- **Username**: `qhdplan@163.com`
+- **Password**: `Ljh20011026!`
+
+### Application Links
+- **Frontend**: [Rice Book Frontend](http://rice-book-frontend.surge.sh)
+- **Backend**: [Rice Book Backend](https://rice-book-c9430e7a29a6.herokuapp.com/)
+
+### Instructions to Test
+1. Visit the [Frontend Deployment](http://rice-book-frontend.surge.sh).
+2. Log in using the provided test user credentials:
+   - Username: `qhdplan@163.com`
+   - Password: `Ljh20011026!`
+3. Interact with the application:
+   - View posts from other users.
+   - Create your own posts.
+   - Like or follow posts.
+   - Test pagination and search functionalities.
+4. If there are any issues, the backend is hosted at [Rice Book Backend](https://rice-book-c9430e7a29a6.herokuapp.com/).
+
 ## Future Enhancements
 
 - **Profile Privacy**: Implement privacy settings for profile visibility and content sharing.
