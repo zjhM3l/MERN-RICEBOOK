@@ -1,6 +1,6 @@
 # Ricebook - A Full-Stack Social Media Application
 
-Ricebook is a comprehensive social media platform built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. The application allows users to interact, share posts, follow each other, and communicate in real-time. This README provides a detailed overview of the features, technologies, setup, and development insights encountered throughout the development process.
+Ricebook is a full-stack social media platform built using the **MERN (MongoDB, Express.js, React.js, Node.js)** stack. It allows users to interact, share posts, follow/unfollow users, and communicate in real-time. The application follows a **modular and test-driven development approach**, ensuring a scalable and maintainable system.
 
 ---
 
@@ -34,53 +34,53 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 ## Features
 
 ### User Authentication
-- **Sign-Up and Login**: Users can register and log in using their email and password. Input validation ensures email format and password strength.
-- **OAuth Integration**: Google and Facebook authentication are available for streamlined login, using `passport.js` with OAuth2.0.
-- **Session Persistence**: JWT-based authentication provides secure and scalable session handling with tokens stored securely.
+- **Sign-Up and Login**: Users can register and log in using email and password.
+- **OAuth Integration**: Google and Facebook authentication using `passport.js`.
+- **Session Management**: JWT-based authentication for session persistence.
 
 ### Profile Management
-- **User Profiles**: Each user has a customizable profile with a display picture, username, bio, and status headline (defaulted to the company’s catchphrase).
-- **Status Updates**: Users can update their status headline, displayed across their posts and profile.
-- **Avatar Upload**: Users can upload and change their profile pictures, which are stored on a cloud service like Firebase.
+- **Customizable Profiles**: Users can update avatars, bios, and headlines.
+- **Avatar Upload**: Images stored using **Firebase Storage**.
 
 ### Social Interactions
-- **Following System**: Users can follow/unfollow others. Follower and following lists update in real-time.
-- **Like and Comment on Posts**: Users can interact with posts through likes and comments, with feedback indicators for each interaction.
-- **Friend Recommendations**: Based on mutual connections and shared interests, recommended users to follow are displayed.
+- **Follow/Unfollow System**: Dynamic updates to followers and following lists.
+- **Likes and Comments**: Engage with posts interactively.
 
 ### Posts and Feed
-- **Post Creation**: Users can create posts with text, images, or a combination. The rich-text editor supports basic styling.
-- **User Feed**: A personalized feed of the latest posts from followed users, sorted by timestamp.
-- **Infinite Scroll**: Dynamic feed loading using infinite scroll for seamless user experience.
-- **Editing and Deleting Posts**: Users can modify or delete their posts with permissions and restrictions handled on the server.
+- **Create, Edit, Delete Posts**: Rich text support for posts.
+- **Feed Pagination**: Optimized loading using infinite scroll.
 
 ### Messaging and Notifications
-- **Real-time Chat**: Users can engage in private, real-time chats with others. Chat history is stored for continuity.
-- **Notifications**: Real-time notifications for new messages, likes, follows, and comments, with badges indicating unread notifications.
-- **Unread Message Count**: Badge displays the number of unread messages directly in the navigation bar for quick reference.
+- **Real-time Chat**: WebSocket-based messaging.
+- **Unread Notifications**: Alerts for new messages, likes, follows, and comments.
 
 ### Search and Filtering
-- **Global Search**: Users can search for posts, users, and hashtags. Search is optimized for performance with debouncing and throttling.
-- **Post Filtering**: Feed can be filtered by date, popularity, or specific hashtags, with a toggle for different views (grid or list).
+- **Global Search**: Find users, posts, and hashtags.
+- **Post Filtering**: Sort feed by relevance, date, and popularity.
 
 ### Real-time Updates
-- **WebSocket Integration**: Real-time updates for notifications, chat messages, and post interactions using WebSockets (Socket.io).
-- **Optimistic UI Updates**: Certain actions, like following/unfollowing and liking posts, show immediate feedback while syncing with the backend.
-
+- **Socket.io Integration**: Live updates for messages and notifications.
+- **Optimistic UI**: Fast feedback for actions like following and liking posts.
+  
 ---
 
 ## Tech Stack
 
-| Technology    | Purpose                                      |
-|---------------|----------------------------------------------|
-| **MongoDB**   | NoSQL Database to store user data, posts, messages, and notifications. |
-| **Express.js**| Backend framework for API handling, request routing, and middleware integration. |
-| **React.js**  | Frontend framework for UI rendering, state management, and routing. |
-| **Node.js**   | Server environment for backend logic and WebSocket connections. |
-| **Firebase**  | Image storage and authentication for user avatars and media files. |
-| **Socket.io** | Real-time communication for messaging and notifications. |
-| **Redux**     | State management for consistent data handling across components. |
-| **Material-UI** | Styling and layout framework for a responsive and modern UI. |
+| Technology    | Purpose |
+|--------------|---------|
+| **MongoDB** | NoSQL database for user data, posts, messages |
+| **Express.js** | Backend API framework |
+| **React.js** | Frontend UI framework |
+| **Node.js** | Backend runtime environment |
+| **Firebase** | Image storage for avatars and posts |
+| **Socket.io** | Real-time messaging |
+| **Redux** | State management |
+| **Material-UI** | UI components and styling |
+| **Jest** | Frontend testing framework |
+| **Jasmine** | Backend unit testing |
+| **Postman** | API testing |
+| **Surge** | Frontend deployment |
+| **Heroku** | Backend deployment |
 
 ---
 
@@ -98,6 +98,9 @@ Ricebook is a comprehensive social media platform built using the MERN (MongoDB,
 - **Post Routes**: `/api/posts`, `/api/posts/:id`, `/api/posts/like`, `/api/posts/comment`
 - **Message Routes**: `/api/messages/:conversationId`, `/api/messages/send`
 - **Notification Routes**: `/api/notifications`, `/api/notifications/read`
+
+- **API testing was done using Postman.** Each endpoint was validated before frontend integration.
+
 
 ### Authentication and Authorization
 - **JWT Tokens**: Secure, stateless authentication using JWTs stored in HTTP-only cookies.
